@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { db } = require('../config/database');
 const { getDeanSchoolScope } = require('./departmentService');
 const laboratoryService = require('./laboratoryService');
+const { broadcast } = require('./notificationStream');
 
 const INSTITUTIONAL_PERIODS = [
   { index: 1, start: '09:00', end: '10:00' },
@@ -225,12 +226,28 @@ async function getFacilityAvailability(filters = {}) {
 
   const bookingByLabId = {};
   labBookings.forEach((b) => {
-    bookingByLabId[b.lab_id] = b;
+    if (b.lab_id) {
+      bookingByLabId[b.lab_id] = b;
+      bookingByLabId[b.lab_id.toUpperCase()] = b;
+    }
   });
 
   const bookingByFacilityId = {};
   facBookings.forEach((b) => {
-    bookingByFacilityId[b.facility_id] = b;
+    if (b.facility_id) {
+      bookingByFacilityId[b.facility_id] = b;
+      bookingByFacilityId[b.facility_id.toUpperCase()] = b;
+      if (!b.facility_id.startsWith('RM-')) {
+        bookingByFacilityId[`RM-${b.facility_id}`] = b;
+      }
+      if (b.facility_id.startsWith('RM-')) {
+        bookingByFacilityId[b.facility_id.replace(/^RM-/, '')] = b;
+      }
+    }
+    if (b.facility_name) {
+      bookingByFacilityId[b.facility_name] = b;
+      bookingByFacilityId[b.facility_name.toUpperCase()] = b;
+    }
   });
 
   const slotsByRoomId = {};
@@ -265,7 +282,20 @@ async function getFacilityAvailability(filters = {}) {
     const labSlots = (labInfo && slotsByLabId[labInfo.lab_id]) || [];
     const matchingSlots = [...roomSlots, ...labSlots];
     const occupiedSlot = matchingSlots.length > 0 ? matchingSlots[0] : null;
-    const eventBooking = bookingByFacilityId[room.room_id] || (labInfo && bookingByFacilityId[labInfo.lab_id]) || (labInfo && bookingByLabId[labInfo.lab_id]) || null;
+
+    const eventBooking =
+      bookingByFacilityId[room.room_id] ||
+      bookingByFacilityId[room.room_number] ||
+      (room.room_number ? bookingByFacilityId[room.room_number.toUpperCase()] : null) ||
+      (labInfo && (
+        bookingByFacilityId[labInfo.lab_id] ||
+        bookingByFacilityId[labInfo.lab_id.toUpperCase()] ||
+        bookingByFacilityId[labInfo.lab_name] ||
+        bookingByFacilityId[labInfo.lab_name?.toUpperCase()] ||
+        bookingByLabId[labInfo.lab_id] ||
+        bookingByLabId[labInfo.lab_id.toUpperCase()]
+      )) ||
+      null;
 
     let status = 'AVAILABLE';
     if (occupiedSlot) {
@@ -363,7 +393,7 @@ async function getFacilityAvailability(filters = {}) {
     if (statusFilter === 'AVAILABLE' || statusFilter === 'VACANT_ONLY') {
       results = results.filter((r) => r.status === 'AVAILABLE');
     } else if (statusFilter === 'OCCUPIED') {
-      results = results.filter((r) => r.status === 'OCCUPIED' || r.status === 'EVENT');
+      results = results.filter((r) => r.status === 'OCCUPIED' || r.status === 'EVENT' || r.status === 'RESERVED');
     }
   }
 
@@ -377,7 +407,12 @@ async function getFacilityAvailability(filters = {}) {
       const matchSubject = r.session ? (r.session.subject_code.toLowerCase().includes(q) || r.session.subject_name.toLowerCase().includes(q)) : false;
       const matchFaculty = r.session ? r.session.faculty_name.toLowerCase().includes(q) : false;
       const matchCohort = r.session ? r.session.cohort_label.toLowerCase().includes(q) : false;
-      return matchName || matchRoom || matchEquip || matchIncharge || matchSubject || matchFaculty || matchCohort;
+      const matchEvent = r.event ? (
+        r.event.title.toLowerCase().includes(q) ||
+        (r.event.club_name || '').toLowerCase().includes(q) ||
+        r.event.coordinator_name.toLowerCase().includes(q)
+      ) : false;
+      return matchName || matchRoom || matchEquip || matchIncharge || matchSubject || matchFaculty || matchCohort || matchEvent;
     });
   }
 
@@ -857,7 +892,7 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
   const role = user ? (user.role || 'GUEST') : 'GUEST';
   const deptId = (filters.departmentId || (user ? user.departmentId : 'CSE') || 'CSE').toUpperCase();
 
-  const [totalRoomsRow, totalLabsRow, activeSlots, substitutionsToday, labBookingsToday] = await Promise.all([
+  const [totalRoomsRow, totalLabsRow, activeSlots, substitutionsToday, labBookingsToday, facBookingsToday] = await Promise.all([
     db.get('SELECT COUNT(*)::int as count FROM rooms'),
     db.get('SELECT COUNT(*)::int as count FROM laboratories'),
     db.all(
@@ -913,6 +948,16 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
           AND lb.status IN ('CONFIRMED', 'PENDING')
       `,
       [day]
+    ),
+    db.all(
+      `
+        SELECT fb.*, r.room_number, r.room_id
+        FROM facility_bookings fb
+        LEFT JOIN rooms r ON (fb.facility_id = r.room_id OR fb.facility_id = r.room_number OR fb.facility_id = REPLACE(r.room_id, 'RM-', ''))
+        WHERE fb.day_of_week = $1
+          AND fb.status IN ('CONFIRMED', 'PENDING')
+      `,
+      [day]
     )
   ]);
 
@@ -923,6 +968,15 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
   substitutionsToday.forEach((s) => {
     substBySlotId[s.slot_id] = s;
   });
+
+  const activeFacBookingsPeriod = facBookingsToday.filter((b) => b.period_index === pIndex || !b.period_index);
+  const activeLabBookingsPeriod = labBookingsToday.filter((b) => b.period_index === pIndex || !b.period_index);
+
+  const occupiedFacilityIds = new Set([
+    ...activeSlots.filter((s) => s.room_id).map((s) => s.room_id),
+    ...activeFacBookingsPeriod.map((b) => b.room_id || b.facility_id),
+    ...activeLabBookingsPeriod.map((b) => b.room_id || b.lab_id)
+  ]);
 
   const result = {
     role,
@@ -939,10 +993,10 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
     campusMetrics: {
       totalFacilities: totalRooms,
       totalLaboratories: totalLabs,
-      occupiedFacilitiesCount: activeSlots.length,
-      availableFacilitiesCount: Math.max(0, totalRooms - activeSlots.length),
+      occupiedFacilitiesCount: occupiedFacilityIds.size,
+      availableFacilitiesCount: Math.max(0, totalRooms - occupiedFacilityIds.size),
       activeSubstitutionsCount: substitutionsToday.length,
-      activeLabBookingsCount: labBookingsToday.length
+      activeLabBookingsCount: labBookingsToday.length + facBookingsToday.length
     }
   };
 
@@ -1101,7 +1155,9 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
 
     const labLiveStatus = deptLabs.map((lab) => {
       const activeLabSlot = activeSlots.find((s) => s.lab_id === lab.lab_id || s.room_id === lab.room_id);
-      const booking = labBookingsToday.find((b) => b.lab_id === lab.lab_id && (b.period_index === pIndex || !b.period_index));
+      const booking =
+        labBookingsToday.find((b) => (b.lab_id === lab.lab_id || b.room_id === lab.room_id) && (b.period_index === pIndex || !b.period_index)) ||
+        facBookingsToday.find((b) => (b.facility_id === lab.lab_id || b.facility_id === lab.room_id || b.room_id === lab.room_id) && (b.period_index === pIndex || !b.period_index));
       let status = 'AVAILABLE';
       if (activeLabSlot) status = 'OCCUPIED';
       else if (booking) status = 'EVENT';
@@ -1217,7 +1273,9 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
         );
 
         const activeSlot = labDaySlots.find((s) => s.period_index === pIndex);
-        const booking = labBookingsToday.find((b) => b.lab_id === lab.lab_id && (b.period_index === pIndex || !b.period_index));
+        const booking =
+        labBookingsToday.find((b) => (b.lab_id === lab.lab_id || b.room_id === lab.room_id) && (b.period_index === pIndex || !b.period_index)) ||
+        facBookingsToday.find((b) => (b.facility_id === lab.lab_id || b.facility_id === lab.room_id || b.room_id === lab.room_id) && (b.period_index === pIndex || !b.period_index));
 
         let liveStatus = 'AVAILABLE';
         if (activeSlot) liveStatus = 'OCCUPIED';
@@ -1314,9 +1372,15 @@ async function getRoleSpecificDashboard(user = null, filters = {}) {
 
     const busyLabs = [...new Set([
       ...activeSlots.filter((s) => s.lab_id).map((s) => s.lab_id),
-      ...labBookingsToday.filter((b) => b.period_index === pIndex || !b.period_index).map((b) => b.lab_id)
+      ...labBookingsToday.filter((b) => b.period_index === pIndex || !b.period_index).map((b) => b.lab_id),
+      ...facBookingsToday.filter((b) => (b.period_index === pIndex || !b.period_index) && (b.facility_type === 'LABORATORY')).map((b) => b.facility_id)
     ])];
-    const busyRooms = [...new Set(activeSlots.filter((s) => s.room_id).map((s) => s.room_id))];
+    const busyRooms = [...new Set([
+      ...activeSlots.filter((s) => s.room_id).map((s) => s.room_id),
+      ...activeFacBookingsPeriod.map((b) => b.room_id || b.facility_id),
+      ...activeFacBookingsPeriod.filter((b) => b.facility_id && !b.facility_id.startsWith('RM-')).map((b) => `RM-${b.facility_id}`),
+      ...activeLabBookingsPeriod.filter((b) => b.room_id).map((b) => b.room_id)
+    ])];
 
     let freeLabsSql = `
       SELECT l.lab_id, l.name, l.room_id, l.capacity, r.room_number, l.equipment_details
@@ -1490,6 +1554,8 @@ async function planFacilityEvent(data, currentUser, ipAddress = '127.0.0.1') {
       const p = targetPeriods[idx];
       const bookingId = idx === 0 ? primaryBookingId : `${primaryBookingId}-${p}`;
 
+      const spName = `sp_fb_insert_${idx}`;
+      await tx.run(`SAVEPOINT ${spName}`);
       try {
         await tx.run(
           `
@@ -1518,11 +1584,13 @@ async function planFacilityEvent(data, currentUser, ipAddress = '127.0.0.1') {
             currentUser.userId
           ]
         );
+        await tx.run(`RELEASE SAVEPOINT ${spName}`);
       } catch (insertErr) {
+        await tx.run(`ROLLBACK TO SAVEPOINT ${spName}`);
         if (insertErr.message && insertErr.message.includes('facility_bookings_facility_type_check')) {
           // If the underlying database table has a legacy 2-value check constraint ('CLASSROOM', 'LABORATORY'),
           // fall back to 'CLASSROOM' so booking for seminar halls, auditoriums, etc. never fails!
-          const fallbackType = facilityType === 'LABORATORY' ? 'LABORATORY' : 'CLASSROOM';
+          const fallbackType = (facilityType === 'LABORATORY' || lab) ? 'LABORATORY' : 'CLASSROOM';
           await tx.run(
             `
               INSERT INTO facility_bookings (
@@ -1595,6 +1663,17 @@ async function planFacilityEvent(data, currentUser, ipAddress = '127.0.0.1') {
         ipAddress
       ]
     );
+  });
+
+  // Real-time campus broadcast
+  broadcast('booking_change', {
+    action: 'CREATED',
+    bookingId: primaryBookingId,
+    facilityId,
+    dayOfWeek,
+    periodIndex,
+    duration,
+    status: 'CONFIRMED'
   });
 
   return {
@@ -1740,6 +1819,12 @@ async function cancelFacilityBooking(bookingId, currentUser, ipAddress = '127.0.
     );
   });
 
+  // Real-time campus broadcast
+  broadcast('booking_change', {
+    action: 'CANCELLED',
+    bookingId
+  });
+
   return { success: true, bookingId, message: `Reservation for "${booking.title}" has been cancelled.` };
 }
 
@@ -1754,7 +1839,7 @@ async function getClassAdjustmentRecommendations(filters = {}) {
   const day = (dayOfWeek || 'MONDAY').toUpperCase();
   const pIndex = parseInt(periodIndex, 10) || 1;
 
-  const [freeFacultyResult, occupiedRoomRows, occupiedLabRows] = await Promise.all([
+  const [freeFacultyResult, occupiedRoomRows, occupiedLabRows, facBookingRows, labBookingRows] = await Promise.all([
     getFreeFacultyForPeriod(day, pIndex, excludeFacultyId, departmentId),
     db.all(
       `
@@ -1773,11 +1858,35 @@ async function getClassAdjustmentRecommendations(filters = {}) {
         WHERE ts.day_of_week = $1 AND ts.period_index = $2 AND ts.is_laboratory = 1 AND ts.lab_id IS NOT NULL AND tv.status = 'PUBLISHED'
       `,
       [day, pIndex]
+    ),
+    db.all(
+      `
+        SELECT DISTINCT fb.facility_id
+        FROM facility_bookings fb
+        WHERE fb.day_of_week = $1 AND (fb.period_index = $2 OR fb.period_index IS NULL) AND fb.status IN ('CONFIRMED', 'PENDING')
+      `,
+      [day, pIndex]
+    ),
+    db.all(
+      `
+        SELECT DISTINCT lb.lab_id
+        FROM lab_bookings lb
+        WHERE lb.day_of_week = $1 AND (lb.period_index = $2 OR lb.period_index IS NULL) AND lb.status IN ('CONFIRMED', 'PENDING')
+      `,
+      [day, pIndex]
     )
   ]);
 
-  const occupiedRooms = occupiedRoomRows.map((r) => r.room_id);
-  const occupiedLabs = occupiedLabRows.map((l) => l.lab_id);
+  const occupiedRooms = [...new Set([
+    ...occupiedRoomRows.map((r) => r.room_id),
+    ...facBookingRows.map((b) => b.facility_id),
+    ...facBookingRows.filter((b) => !b.facility_id.startsWith('RM-')).map((b) => `RM-${b.facility_id}`)
+  ])];
+  const occupiedLabs = [...new Set([
+    ...occupiedLabRows.map((l) => l.lab_id),
+    ...labBookingRows.map((l) => l.lab_id),
+    ...facBookingRows.map((b) => b.facility_id)
+  ])];
 
   let roomQuery = "SELECT * FROM rooms WHERE room_type = 'CLASSROOM'";
   if (occupiedRooms.length > 0) {

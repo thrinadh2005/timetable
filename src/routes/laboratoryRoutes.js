@@ -150,9 +150,9 @@ router.get('/all-bookings', requireAuth, requireRole(['SUPER_ADMIN', 'DEAN', 'DE
       bookings = await getLabBookings(null, true);
     } else if (req.user.role === 'DEAN') {
       const scope = await getDeanSchoolScope(req.user.userId);
-      bookings = await getLabBookings(null, true, scope ? await labIdsOf(null, scope.schoolId) : []);
+      bookings = await getLabBookings(null, true, null, null, scope ? scope.departmentIds : null);
     } else if (req.user.role === 'DEPT_ADMIN') {
-      bookings = await getLabBookings(null, true, await labIdsOf(req.user.departmentId, null));
+      bookings = await getLabBookings(null, true, null, null, req.user.departmentId);
     } else if (req.user.role === 'NON_TEACHING_STAFF') {
       const staffId = req.user.pnrno || req.user.pnr;
       const labs = await getLaboratoriesByDepartment(req.user.departmentId, null);
@@ -160,7 +160,7 @@ router.get('/all-bookings', requireAuth, requireRole(['SUPER_ADMIN', 'DEAN', 'DE
         .filter((lab) => lab.incharge_id === staffId || lab.assistant_incharge_id === staffId)
         .map((lab) => lab.lab_id);
       const scopeLabIds = governed.length > 0 ? governed : labs.map((lab) => lab.lab_id);
-      bookings = await getLabBookings(null, true, scopeLabIds);
+      bookings = await getLabBookings(null, true, scopeLabIds, null, req.user.departmentId);
     } else {
       bookings = await getLabBookings(null, true, null, req.user.userId);
     }

@@ -205,13 +205,22 @@ async function initializeSchema() {
     const check = await db.get("SELECT COUNT(*)::int as cnt FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users'");
     if (check && check.cnt > 0) {
       try {
-        await db.exec(`
-          ALTER TABLE public.facility_bookings DROP CONSTRAINT IF EXISTS facility_bookings_facility_type_check;
+        await db.run('ALTER TABLE public.facility_bookings DROP CONSTRAINT IF EXISTS facility_bookings_facility_type_check');
+        await db.run(`
           ALTER TABLE public.facility_bookings ADD CONSTRAINT facility_bookings_facility_type_check 
-            CHECK (facility_type IN ('CLASSROOM', 'LABORATORY', 'SEMINAR_HALL', 'AUDITORIUM', 'WORKSHOP', 'DRAWING_HALL', 'CONFERENCE_HALL', 'FACILITY'));
+            CHECK (facility_type IN ('CLASSROOM', 'LABORATORY', 'SEMINAR_HALL', 'AUDITORIUM', 'WORKSHOP', 'DRAWING_HALL', 'CONFERENCE_HALL', 'FACILITY'))
         `);
-      } catch (patchErr) {
-        // Table may not have been created yet or constraint already compatible
+      } catch (patchErr1) {
+        console.warn('[DB Schema Patch] facility_type constraint warning:', patchErr1.message);
+      }
+      try {
+        await db.run('ALTER TABLE public.facility_bookings DROP CONSTRAINT IF EXISTS facility_bookings_status_check');
+        await db.run(`
+          ALTER TABLE public.facility_bookings ADD CONSTRAINT facility_bookings_status_check 
+            CHECK (status IN ('CONFIRMED', 'PENDING', 'CANCELLED', 'REJECTED', 'COMPLETED'))
+        `);
+      } catch (patchErr2) {
+        console.warn('[DB Schema Patch] status constraint warning:', patchErr2.message);
       }
       initialized = true;
       return;

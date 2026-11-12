@@ -80,10 +80,25 @@ function publish(userId, payload) {
   return set.size;
 }
 
+/**
+ * Broadcasts an event payload to every live SSE connection across all users.
+ * Used for instant campus-wide booking invalidation and real-time updates.
+ */
+function broadcast(event, payload) {
+  let count = 0;
+  for (const set of clients.values()) {
+    for (const res of set) {
+      writeEvent(res, event, payload);
+      count++;
+    }
+  }
+  return count;
+}
+
 function connectionCount() {
   let total = 0;
   for (const set of clients.values()) total += set.size;
   return total;
 }
 
-module.exports = { subscribe, publish, connectionCount };
+module.exports = { subscribe, publish, broadcast, connectionCount };

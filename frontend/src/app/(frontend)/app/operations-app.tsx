@@ -5043,7 +5043,7 @@ function LaboratoriesRegisterView({
   const [sortBy, setSortBy] = useState<'name_asc' | 'capacity_desc' | 'capacity_asc' | 'dept_asc' | 'code_asc'>('name_asc')
   const [scopeFilter, setScopeFilter] = useState<'ALL' | 'MY_LABS'>('ALL')
   const [checkDay, setCheckDay] = useState<string>(defaultDay)
-  const [checkPeriod, setCheckPeriod] = useState<number | null>(clockState?.period ?? null)
+  const [checkPeriod, setCheckPeriod] = useState<number | null>(clockState?.period ?? 1)
   const [freeLabsOnly, setFreeLabsOnly] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
@@ -5067,11 +5067,47 @@ function LaboratoriesRegisterView({
   const labSlotMap = useMemo(() => {
     const m = new Map<string, any>()
     for (const f of labSlotAvailabilityRes.data?.data?.facilities || []) {
-      if (f.lab_id) m.set(String(f.lab_id), f)
-      if (f.room_id) m.set(String(f.room_id), f)
+      if (f.lab_id) {
+        m.set(String(f.lab_id), f)
+        m.set(String(f.lab_id).toUpperCase(), f)
+      }
+      if (f.room_id) {
+        m.set(String(f.room_id), f)
+        m.set(String(f.room_id).toUpperCase(), f)
+      }
+      if (f.facility_id) {
+        m.set(String(f.facility_id), f)
+        m.set(String(f.facility_id).toUpperCase(), f)
+      }
+      if (f.room_number) {
+        m.set(String(f.room_number), f)
+        m.set(String(f.room_number).toUpperCase(), f)
+      }
+      if (f.name) {
+        m.set(String(f.name), f)
+        m.set(String(f.name).toUpperCase(), f)
+      }
     }
     return m
   }, [labSlotAvailabilityRes.data])
+
+  const isLabFree = useCallback((r: AcademicRecord) => {
+    if (checkPeriod === null) return true
+    const meta = r.meta || {}
+    const labId = String(meta.lab_id || r.id)
+    const roomId = String(meta.room_id || '')
+    const roomNumber = String(meta.room_number || '')
+    const live = labSlotMap.get(labId) || labSlotMap.get(labId.toUpperCase()) ||
+                 labSlotMap.get(roomId) || labSlotMap.get(roomId.toUpperCase()) ||
+                 labSlotMap.get(roomNumber) || labSlotMap.get(roomNumber.toUpperCase()) ||
+                 labSlotMap.get(r.title) || labSlotMap.get(r.title.toUpperCase())
+    return !live || live.status === 'AVAILABLE'
+  }, [checkPeriod, labSlotMap])
+
+  const freeLabsCount = useMemo(() => {
+    if (checkPeriod === null) return records.length
+    return records.filter((r) => isLabFree(r)).length
+  }, [records, isLabFree, checkPeriod])
 
   // Incident state
   const [incidents, setIncidents] = useState<any[]>([])
@@ -5186,6 +5222,11 @@ function LaboratoriesRegisterView({
           return false
         }
       }
+
+      if (freeLabsOnly && !isLabFree(r)) {
+        return false
+      }
+
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase()
         const titleMatch = r.title.toLowerCase().includes(q)
@@ -5210,7 +5251,7 @@ function LaboratoriesRegisterView({
     })
 
     return list
-  }, [records, deptFilter, categoryFilter, capacityFilter, sortBy, scopeFilter, searchTerm, isTechnician, user])
+  }, [records, deptFilter, categoryFilter, capacityFilter, sortBy, scopeFilter, searchTerm, isTechnician, user, freeLabsOnly, isLabFree])
 
   const filteredIncidents = useMemo(() => {
     return incidents.filter((inc) => {
@@ -5353,6 +5394,83 @@ function LaboratoriesRegisterView({
 
       {activeTab === 'labs' ? (
         <>
+          {/* Prominent Live Lab Vacancy & Period Finder Bar */}
+          <div className="p-3 sm:p-4 rounded-xl border border-[#08747c]/30 dark:border-[#08747c]/50 bg-gradient-to-r from-[#08747c]/10 via-[#08747c]/5 to-transparent dark:from-[#08747c]/20 dark:via-[#08747c]/10 dark:to-transparent flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#003135] dark:text-[#55d6dc]">
+                <FlaskConical size={16} className="text-[#08747c] dark:text-[#55d6dc]" />
+                <span>Period Vacancy Filter:</span>
+              </div>
+
+              {/* Day Selector */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3]">Day:</span>
+                <select
+                  value={checkDay}
+                  onChange={(e) => setCheckDay(e.target.value)}
+                  className="h-8 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2 text-xs font-bold text-[#003135] dark:text-[#55d6dc] outline-none shadow-2xs cursor-pointer"
+                >
+                  {ACADEMIC_DAYS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Period Selector Buttons */}
+              <div className="flex items-center gap-1">
+                <span className="text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mr-0.5">Period:</span>
+                {[1, 2, 3, 4, 5, 6, 7].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setCheckPeriod(p)}
+                    className={`h-8 px-2.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                      checkPeriod === p
+                        ? 'bg-[#08747c] text-white shadow-2xs'
+                        : 'bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] border border-[#d6dfde] dark:border-[#124349] hover:bg-[#edf2f1]'
+                    }`}
+                    title={`Check Period P${p}`}
+                  >
+                    P{p}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCheckPeriod(null)
+                    setFreeLabsOnly(false)
+                  }}
+                  className={`h-8 px-2 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    checkPeriod === null
+                      ? 'bg-[#003135] text-white'
+                      : 'text-[#647376] dark:text-[#8ea5a3] hover:underline'
+                  }`}
+                >
+                  All
+                </button>
+              </div>
+            </div>
+
+            {/* Free Labs Only Toggle & Live Counter */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setFreeLabsOnly((prev) => !prev)}
+                className={`h-8 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-xs ${
+                  freeLabsOnly
+                    ? 'bg-emerald-600 text-white ring-2 ring-emerald-400'
+                    : 'bg-white dark:bg-[#072a2f] border border-emerald-600/50 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${freeLabsOnly ? 'bg-white animate-pulse' : 'bg-emerald-500'}`} />
+                <span>{freeLabsOnly ? 'Showing Free Labs Only' : 'Filter Free Labs'}</span>
+                <span className="font-mono text-[11px] px-1.5 py-0.2 rounded bg-black/10 dark:bg-white/10 font-extrabold">
+                  {freeLabsCount} free
+                </span>
+              </button>
+            </div>
+          </div>
+
           {/* Filter and Search Bar for Laboratories */}
           <Panel className="p-2.5 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl space-y-2 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
@@ -12094,6 +12212,11 @@ function TimetableDocumentReviewModal({
   const [activeDay, setActiveDay] = useState<string>('ALL')
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isEditing, setIsEditing] = useState(false)
+  const [editableSlots, setEditableSlots] = useState<StagedSlot[]>([])
+  const [isDirty, setIsDirty] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
 
   const loadDocument = useCallback(async () => {
     setLoading(true)
@@ -12110,6 +12233,8 @@ function TimetableDocumentReviewModal({
         throw new Error(payload.message || 'Failed to load staged timetable details.')
       }
       setDoc(payload.data)
+      setEditableSlots(payload.data.slots || [])
+      setIsDirty(false)
     } catch (e: any) {
       setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
@@ -12121,55 +12246,137 @@ function TimetableDocumentReviewModal({
     loadDocument()
   }, [loadDocument])
 
-  const slots = doc?.slots || []
+  const currentSlots = isEditing ? editableSlots : (doc?.slots || [])
   const isCommitted = String(doc?.status || '').toUpperCase() === 'COMMITTED'
+
+  const updateSlot = (origIdx: number, field: keyof StagedSlot, value: any) => {
+    setEditableSlots((prev) => {
+      const next = [...prev]
+      next[origIdx] = { ...next[origIdx], [field]: value }
+      if (field === 'is_laboratory') {
+        next[origIdx].course_type = value ? 'LABORATORY' : 'THEORY'
+      }
+      return next
+    })
+    setIsDirty(true)
+  }
+
+  const handleDeleteSlot = (origIdx: number) => {
+    setEditableSlots((prev) => prev.filter((_, i) => i !== origIdx))
+    setIsDirty(true)
+  }
+
+  const handleAddSlot = () => {
+    const newSlot: StagedSlot = {
+      slot_id: `SLOT-${doc?.department_id || 'CSE'}-${Date.now().toString(36).slice(-5)}`,
+      section_id: activeSection !== 'ALL' ? activeSection : `${doc?.department_id || 'CSE'}-SEM_5-A`,
+      day_of_week: activeDay !== 'ALL' ? activeDay : 'MONDAY',
+      period_index: 1,
+      start_time: '09:00',
+      end_time: '10:00',
+      subject_code: '23CS501',
+      subject_name: 'Course Title',
+      course_type: 'THEORY',
+      faculty_name: 'Faculty Instructor',
+      room_id: '5-S-09',
+      is_laboratory: 0
+    }
+    setEditableSlots((prev) => [newSlot, ...prev])
+    setIsDirty(true)
+    setIsEditing(true)
+    setViewMode('table')
+  }
+
+  const handleSaveAlterations = async () => {
+    if (!doc) return
+    setIsSaving(true)
+    setSaveSuccess(null)
+    setError(null)
+    try {
+      const token = readAuthSession()?.token
+      const res = await fetch(`/api/v1/timetables/ingest/staged/${encodeURIComponent(doc.doc_id)}/slots`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ slots: editableSlots })
+      })
+      const payload = await res.json()
+      if (!res.ok || !payload.success) {
+        throw new Error(payload.message || 'Failed to save timetable alterations.')
+      }
+      setDoc((prev) => prev ? { ...prev, slots: editableSlots } : null)
+      setIsDirty(false)
+      setSaveSuccess(`Alterations successfully saved! (${editableSlots.length} slots staged).`)
+      window.dispatchEvent(new CustomEvent('gmritdu:toast', {
+        detail: { message: `Saved ${editableSlots.length} timetable slots successfully.`, type: 'success' }
+      }))
+      setTimeout(() => setSaveSuccess(null), 4000)
+    } catch (e: any) {
+      setError(e instanceof Error ? e.message : 'Failed to save alterations.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleDiscardChanges = () => {
+    if (doc?.slots) {
+      setEditableSlots(doc.slots)
+      setIsDirty(false)
+      setIsEditing(false)
+    }
+  }
 
   const uniqueSections = useMemo(() => {
     const set = new Set<string>()
-    slots.forEach((s) => {
+    currentSlots.forEach((s) => {
       if (s.section_id) set.add(s.section_id)
     })
     return Array.from(set).sort()
-  }, [slots])
+  }, [currentSlots])
 
   const uniqueFaculty = useMemo(() => {
     const set = new Set<string>()
-    slots.forEach((s) => {
+    currentSlots.forEach((s) => {
       if (s.faculty_name) set.add(s.faculty_name)
       else if (s.faculty_id) set.add(s.faculty_id)
     })
     return Array.from(set)
-  }, [slots])
+  }, [currentSlots])
 
   const uniqueRooms = useMemo(() => {
     const set = new Set<string>()
-    slots.forEach((s) => {
+    currentSlots.forEach((s) => {
       if (s.room_id) set.add(s.room_id)
     })
     return Array.from(set)
-  }, [slots])
+  }, [currentSlots])
 
-  const filteredSlots = useMemo(() => {
-    return slots.filter((s) => {
-      if (activeSection !== 'ALL' && s.section_id !== activeSection) return false
-      if (activeDay !== 'ALL' && s.day_of_week !== activeDay) return false
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase()
-        const codeMatch = String(s.subject_code || '').toLowerCase().includes(q)
-        const nameMatch = String(s.subject_name || '').toLowerCase().includes(q)
-        const facMatch = String(s.faculty_name || '').toLowerCase().includes(q)
-        const roomMatch = String(s.room_id || '').toLowerCase().includes(q)
-        const secMatch = String(s.section_id || '').toLowerCase().includes(q)
-        if (!codeMatch && !nameMatch && !facMatch && !roomMatch && !secMatch) return false
-      }
-      return true
-    })
-  }, [slots, activeSection, activeDay, searchQuery])
+  const displayedSlots = useMemo(() => {
+    const source = isEditing ? editableSlots : (doc?.slots || [])
+    return source
+      .map((s, origIdx) => ({ ...s, _origIdx: origIdx }))
+      .filter((s) => {
+        if (activeSection !== 'ALL' && s.section_id !== activeSection) return false
+        if (activeDay !== 'ALL' && s.day_of_week !== activeDay) return false
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase()
+          const codeMatch = String(s.subject_code || '').toLowerCase().includes(q)
+          const nameMatch = String(s.subject_name || '').toLowerCase().includes(q)
+          const facMatch = String(s.faculty_name || '').toLowerCase().includes(q)
+          const roomMatch = String(s.room_id || '').toLowerCase().includes(q)
+          const secMatch = String(s.section_id || '').toLowerCase().includes(q)
+          if (!codeMatch && !nameMatch && !facMatch && !roomMatch && !secMatch) return false
+        }
+        return true
+      })
+  }, [isEditing, editableSlots, doc?.slots, activeSection, activeDay, searchQuery])
 
   const handleDownloadCsv = () => {
     if (!doc) return
     const headers = ['Day', 'Period', 'Section', 'Subject Code', 'Subject Name', 'Faculty Name', 'Room', 'Type']
-    const rows = filteredSlots.map((s) => [
+    const rows = displayedSlots.map((s) => [
       s.day_of_week,
       s.period_index,
       s.section_id,
@@ -12268,6 +12475,11 @@ function TimetableDocumentReviewModal({
                 }`}>
                   {isCommitted ? '\u25CF PUBLISHED' : '\u25B2 PENDING REVIEW'}
                 </span>
+                {isEditing && (
+                  <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded bg-amber-500 text-white animate-pulse">
+                    EDIT MODE ACTIVE
+                  </span>
+                )}
               </div>
               <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
                 Dept: <span className="font-semibold">{doc?.department_id || 'CSE'}</span> &bull; {doc?.semester_label || 'Semester'} ({doc?.academic_year || '2026-27'}) &bull; Uploaded by: {doc?.uploaded_by || 'Admin'}
@@ -12281,6 +12493,18 @@ function TimetableDocumentReviewModal({
 
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {saveSuccess && (
+            <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center justify-between animate-fade-in">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 size={16} />
+                {saveSuccess}
+              </span>
+              <button type="button" onClick={() => setSaveSuccess(null)} className="text-emerald-700 dark:text-emerald-400 hover:underline">
+                Dismiss
+              </button>
+            </div>
+          )}
+
           {loading ? (
             <div className="p-12 text-center space-y-3">
               <LoaderCircle size={32} className="animate-spin text-[#08747c] dark:text-[#55d6dc] mx-auto" />
@@ -12307,7 +12531,7 @@ function TimetableDocumentReviewModal({
                 <div className="p-2.5 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
                   <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">Total Extracted Slots</span>
                   <span className="text-base font-bold text-[#003135] dark:text-[#55d6dc] font-mono">
-                    {slots.length} <span className="text-xs font-normal text-[#647376]">slots</span>
+                    {currentSlots.length} <span className="text-xs font-normal text-[#647376]">slots</span>
                   </span>
                 </div>
                 <div className="p-2.5 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
@@ -12347,10 +12571,10 @@ function TimetableDocumentReviewModal({
                         : 'bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] border border-[#dce4e3] dark:border-[#124349]'
                     }`}
                   >
-                    All Sections ({slots.length})
+                    All Sections ({currentSlots.length})
                   </button>
                   {uniqueSections.map((sec) => {
-                    const secCount = slots.filter((s) => s.section_id === sec).length
+                    const secCount = currentSlots.filter((s) => s.section_id === sec).length
                     const shortName = sec.split('-').pop() || sec
                     return (
                       <button
@@ -12369,7 +12593,7 @@ function TimetableDocumentReviewModal({
                   })}
                 </div>
 
-                {/* Day selector & View toggle */}
+                {/* Day selector & Action Suite */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
                   <div className="flex items-center gap-1 overflow-x-auto">
                     <button
@@ -12399,7 +12623,7 @@ function TimetableDocumentReviewModal({
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <div className="relative">
                       <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#758386]" />
                       <input
@@ -12407,9 +12631,60 @@ function TimetableDocumentReviewModal({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search slot, teacher, room..."
-                        className="h-7 w-44 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] pl-7 pr-2 text-[11px] text-[#003135] dark:text-[#e0f2fe] outline-none"
+                        className="h-7 w-36 sm:w-44 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] pl-7 pr-2 text-[11px] text-[#003135] dark:text-[#e0f2fe] outline-none"
                       />
                     </div>
+
+                    {/* Alter / Edit Mode Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = !isEditing
+                        setIsEditing(next)
+                        if (next) setViewMode('table')
+                      }}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition cursor-pointer ${
+                        isEditing
+                          ? 'bg-amber-600 text-white shadow-2xs ring-2 ring-amber-400'
+                          : 'border border-[#08747c]/40 bg-[#08747c]/10 text-[#08747c] dark:text-[#55d6dc] hover:bg-[#08747c] hover:text-white'
+                      }`}
+                    >
+                      <Sliders size={12} />
+                      <span>{isEditing ? 'Editing Schedule' : 'Alter / Edit Slots'}</span>
+                    </button>
+
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={handleAddSlot}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-[#024950] text-white hover:bg-[#003135] transition cursor-pointer shadow-2xs"
+                      >
+                        <Plus size={12} />
+                        <span>Add Slot</span>
+                      </button>
+                    )}
+
+                    {isDirty && (
+                      <button
+                        type="button"
+                        disabled={isSaving}
+                        onClick={handleSaveAlterations}
+                        className="flex items-center gap-1 px-3 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition cursor-pointer animate-pulse"
+                      >
+                        <CheckCircle2 size={12} />
+                        <span>{isSaving ? 'Saving...' : 'Save Alterations'}</span>
+                      </button>
+                    )}
+
+                    {isDirty && (
+                      <button
+                        type="button"
+                        onClick={handleDiscardChanges}
+                        className="px-2 py-1 rounded-lg text-[11px] font-semibold text-[#647376] hover:bg-slate-200 dark:hover:bg-slate-800 transition cursor-pointer"
+                      >
+                        Discard
+                      </button>
+                    )}
 
                     <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-0.5">
                       <button
@@ -12467,7 +12742,7 @@ function TimetableDocumentReviewModal({
                               {day}
                             </td>
                             {[1, 2].map((p) => {
-                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              const cellSlots = displayedSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
                               return (
                                 <td key={p} className="p-1.5 align-top min-w-[125px]">
                                   {renderSlotCell(cellSlots)}
@@ -12478,7 +12753,7 @@ function TimetableDocumentReviewModal({
                               <span className="[writing-mode:vertical-lr] rotate-180 inline-block py-1">BREAK</span>
                             </td>
                             {[3, 4].map((p) => {
-                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              const cellSlots = displayedSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
                               return (
                                 <td key={p} className="p-1.5 align-top min-w-[125px]">
                                   {renderSlotCell(cellSlots)}
@@ -12489,7 +12764,7 @@ function TimetableDocumentReviewModal({
                               <span className="[writing-mode:vertical-lr] rotate-180 inline-block py-1">LUNCH</span>
                             </td>
                             {[5, 6, 7].map((p) => {
-                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              const cellSlots = displayedSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
                               return (
                                 <td key={p} className="p-1.5 align-top min-w-[125px]">
                                   {renderSlotCell(cellSlots)}
@@ -12504,11 +12779,11 @@ function TimetableDocumentReviewModal({
                 </div>
               )}
 
-              {/* View 2: Detailed Slots List View */}
+              {/* View 2: Detailed Slots List View / Alteration Matrix */}
               {viewMode === 'table' && (
-                <div className="overflow-auto max-h-[50vh] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
-                  <table className="w-full border-collapse text-left text-xs min-w-[800px]">
-                    <thead className="sticky top-0 bg-[#f7f9f9] dark:bg-[#031d21] border-b border-[#dce4e3] dark:border-[#124349]">
+                <div className="overflow-auto max-h-[52vh] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <table className="w-full border-collapse text-left text-xs min-w-[850px]">
+                    <thead className="sticky top-0 bg-[#f7f9f9] dark:bg-[#031d21] border-b border-[#dce4e3] dark:border-[#124349] z-10">
                       <tr className="text-[11px] text-[#526164] dark:text-[#8ea5a3]">
                         <th className="p-2.5 font-bold text-[#003135] dark:text-[#55d6dc]">Day &amp; Period</th>
                         <th className="p-2.5 font-semibold">Section</th>
@@ -12516,57 +12791,185 @@ function TimetableDocumentReviewModal({
                         <th className="p-2.5 font-semibold">Faculty Instructor</th>
                         <th className="p-2.5 font-semibold">Venue / Room</th>
                         <th className="p-2.5 font-semibold">Type</th>
+                        {isEditing && <th className="p-2.5 text-center font-semibold">Actions</th>}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e8efee] dark:divide-[#124349]">
-                      {filteredSlots.length === 0 ? (
+                      {displayedSlots.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="p-6 text-center text-[#7a898c]">
+                          <td colSpan={isEditing ? 7 : 6} className="p-6 text-center text-[#7a898c]">
                             No timetable slots found matching the selected filters.
                           </td>
                         </tr>
                       ) : (
-                        filteredSlots.map((s, idx) => (
-                          <tr key={s.slot_id || idx} className="hover:bg-[#fafcfc] dark:hover:bg-[#082e34]">
-                            <td className="p-2.5 font-mono text-[11px]">
-                              <span className="font-bold text-[#003135] dark:text-[#55d6dc] block">{s.day_of_week}</span>
-                              <span className="text-[10px] text-[#7a898c]">Period {s.period_index} ({s.start_time || '09:00'} - {s.end_time || '10:00'})</span>
-                            </td>
-                            <td className="p-2.5">
-                              <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
-                                {s.section_id}
-                              </span>
-                            </td>
-                            <td className="p-2.5">
-                              <span className="font-bold text-slate-900 dark:text-slate-100 block">{s.subject_code}</span>
-                              <span className="text-[11px] text-[#526164] dark:text-[#8ea5a3]">{s.subject_name}</span>
-                            </td>
-                            <td className="p-2.5">
-                              <span className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                                <UserCheck size={11} className="text-[#08747c] shrink-0" />
-                                {s.faculty_name || s.faculty_id || 'TBD'}
-                              </span>
-                            </td>
-                            <td className="p-2.5">
-                              <span className="text-xs font-mono text-slate-800 dark:text-slate-200 flex items-center gap-1">
-                                <MapPin size={11} className="text-[#08747c] shrink-0" />
-                                {s.room_id || 'TBD'}
-                              </span>
-                            </td>
-                            <td className="p-2.5">
-                              <span className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
-                                s.is_laboratory
-                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300'
-                                  : 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-800 dark:text-cyan-300'
-                              }`}>
-                                {s.is_laboratory ? 'LABORATORY' : 'THEORY'}
-                              </span>
-                            </td>
-                          </tr>
-                        ))
+                        displayedSlots.map((s) => {
+                          const origIdx = s._origIdx
+
+                          if (isEditing) {
+                            return (
+                              <tr key={s.slot_id || origIdx} className="hover:bg-[#fafcfc] dark:hover:bg-[#082e34] bg-amber-50/20 dark:bg-amber-950/10">
+                                <td className="p-2 font-mono text-[11px]">
+                                  <div className="flex items-center gap-1">
+                                    <select
+                                      value={s.day_of_week}
+                                      onChange={(e) => updateSlot(origIdx, 'day_of_week', e.target.value)}
+                                      className="h-7 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1 font-bold text-[#003135] dark:text-[#55d6dc]"
+                                    >
+                                      {REVIEW_DAYS.map((d) => (
+                                        <option key={d} value={d}>{d.slice(0, 3)}</option>
+                                      ))}
+                                    </select>
+                                    <select
+                                      value={s.period_index}
+                                      onChange={(e) => updateSlot(origIdx, 'period_index', Number(e.target.value))}
+                                      className="h-7 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1 font-bold text-[#003135] dark:text-[#55d6dc]"
+                                    >
+                                      {[1, 2, 3, 4, 5, 6, 7].map((p) => (
+                                        <option key={p} value={p}>P{p}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                </td>
+
+                                <td className="p-2">
+                                  <input
+                                    type="text"
+                                    value={s.section_id}
+                                    onChange={(e) => updateSlot(origIdx, 'section_id', e.target.value)}
+                                    className="h-7 w-28 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5 font-mono font-bold"
+                                  />
+                                </td>
+
+                                <td className="p-2">
+                                  <div className="space-y-1">
+                                    <input
+                                      type="text"
+                                      value={s.subject_code}
+                                      onChange={(e) => updateSlot(origIdx, 'subject_code', e.target.value)}
+                                      placeholder="Subject Code"
+                                      className="h-6 w-28 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5 font-mono font-bold text-[#08747c] dark:text-[#55d6dc]"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={s.subject_name}
+                                      onChange={(e) => updateSlot(origIdx, 'subject_name', e.target.value)}
+                                      placeholder="Subject Name"
+                                      className="h-6 w-full text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5"
+                                    />
+                                  </div>
+                                </td>
+
+                                <td className="p-2">
+                                  <input
+                                    type="text"
+                                    value={s.faculty_name}
+                                    onChange={(e) => updateSlot(origIdx, 'faculty_name', e.target.value)}
+                                    placeholder="Faculty Instructor"
+                                    className="h-7 w-36 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5"
+                                  />
+                                </td>
+
+                                <td className="p-2">
+                                  <input
+                                    type="text"
+                                    value={s.room_id}
+                                    onChange={(e) => updateSlot(origIdx, 'room_id', e.target.value)}
+                                    placeholder="Room / Lab"
+                                    className="h-7 w-24 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5 font-mono font-bold"
+                                  />
+                                </td>
+
+                                <td className="p-2">
+                                  <select
+                                    value={s.is_laboratory ? 'LABORATORY' : 'THEORY'}
+                                    onChange={(e) => updateSlot(origIdx, 'is_laboratory', e.target.value === 'LABORATORY' ? 1 : 0)}
+                                    className="h-7 text-[11px] rounded border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-1.5 font-bold"
+                                  >
+                                    <option value="THEORY">THEORY</option>
+                                    <option value="LABORATORY">LAB</option>
+                                  </select>
+                                </td>
+
+                                <td className="p-2 text-center">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSlot(origIdx)}
+                                    className="p-1 rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                                    title="Delete slot"
+                                  >
+                                    <X size={14} />
+                                  </button>
+                                </td>
+                              </tr>
+                            )
+                          }
+
+                          return (
+                            <tr key={s.slot_id || origIdx} className="hover:bg-[#fafcfc] dark:hover:bg-[#082e34]">
+                              <td className="p-2.5 font-mono text-[11px]">
+                                <span className="font-bold text-[#003135] dark:text-[#55d6dc] block">{s.day_of_week}</span>
+                                <span className="text-[10px] text-[#7a898c]">Period {s.period_index} ({s.start_time || '09:00'} - {s.end_time || '10:00'})</span>
+                              </td>
+                              <td className="p-2.5">
+                                <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
+                                  {s.section_id}
+                                </span>
+                              </td>
+                              <td className="p-2.5">
+                                <span className="font-bold text-slate-900 dark:text-slate-100 block">{s.subject_code}</span>
+                                <span className="text-[11px] text-[#526164] dark:text-[#8ea5a3]">{s.subject_name}</span>
+                              </td>
+                              <td className="p-2.5">
+                                <span className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                                  <UserCheck size={11} className="text-[#08747c] shrink-0" />
+                                  {s.faculty_name || s.faculty_id || 'TBD'}
+                                </span>
+                              </td>
+                              <td className="p-2.5">
+                                <span className="text-xs font-mono text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                                  <MapPin size={11} className="text-[#08747c] shrink-0" />
+                                  {s.room_id || 'TBD'}
+                                </span>
+                              </td>
+                              <td className="p-2.5">
+                                <span className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
+                                  s.is_laboratory
+                                    ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300'
+                                    : 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-800 dark:text-cyan-300'
+                                }`}>
+                                  {s.is_laboratory ? 'LABORATORY' : 'THEORY'}
+                                </span>
+                              </td>
+                            </tr>
+                          )
+                        })
                       )}
                     </tbody>
                   </table>
+
+                  {isEditing && (
+                    <div className="p-2.5 bg-[#f8faf9] dark:bg-[#042024] border-t border-[#dce4e3] dark:border-[#124349] flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={handleAddSlot}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#08747c] hover:bg-[#003135] text-white transition cursor-pointer shadow-2xs"
+                      >
+                        <Plus size={13} />
+                        Add New Timetable Slot
+                      </button>
+                      {isDirty && (
+                        <button
+                          type="button"
+                          disabled={isSaving}
+                          onClick={handleSaveAlterations}
+                          className="inline-flex items-center gap-1 px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition cursor-pointer animate-pulse"
+                        >
+                          <Save size={13} />
+                          {isSaving ? 'Saving Alterations...' : 'Save Alterations to Staged Schedule'}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </>
@@ -12586,34 +12989,52 @@ function TimetableDocumentReviewModal({
               Export Verified CSV
             </button>
             <span className="text-[11px] text-[#7a898c] dark:text-[#7ba09d] hidden sm:inline">
-              Showing {filteredSlots.length} of {slots.length} slots
+              Showing {displayedSlots.length} of {currentSlots.length} slots
             </span>
           </div>
 
           <div className="flex items-center gap-2">
+            {isDirty && (
+              <button
+                type="button"
+                disabled={isSaving}
+                onClick={handleSaveAlterations}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition cursor-pointer"
+              >
+                <Save size={13} />
+                {isSaving ? 'Saving...' : 'Save Alterations'}
+              </button>
+            )}
+
             {!isCommitted ? (
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  if (isDirty) {
+                    await handleSaveAlterations()
+                  }
                   onClose()
                   if (onPublish && doc) onPublish(doc.doc_id, doc.original_filename)
                 }}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#024950] hover:bg-[#003135] text-white shadow-xs transition cursor-pointer"
               >
                 <CheckCircle2 size={13} />
-                Publish to Live Schedule
+                {isDirty ? 'Save & Publish to Schedule' : 'Publish to Live Schedule'}
               </button>
             ) : (
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  if (isDirty) {
+                    await handleSaveAlterations()
+                  }
                   onClose()
                   if (onPublish && doc) onPublish(doc.doc_id, doc.original_filename)
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 transition cursor-pointer"
               >
                 <RefreshCw size={12} />
-                Re-Publish / Sync Live Schedule
+                {isDirty ? 'Save & Re-Publish Live Schedule' : 'Re-Publish / Sync Live Schedule'}
               </button>
             )}
             <button
@@ -12899,26 +13320,31 @@ function IngestionAuditStagingTableView({
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-end gap-1.5 flex-wrap">
                         <button
                           type="button"
                           onClick={() => setReviewDocId(docId)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-[#08747c]/30 dark:border-[#08747c]/50 bg-[#08747c]/10 dark:bg-[#08747c]/20 text-[#08747c] dark:text-[#55d6dc] hover:bg-[#08747c] hover:text-white transition cursor-pointer shadow-2xs"
-                          title="Review & check extracted timetable schedule grid and slot details"
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow-xs ${
+                            !isCommitted
+                              ? 'bg-[#08747c] text-white hover:bg-[#003135]'
+                              : 'border border-[#08747c]/50 bg-[#08747c]/15 text-[#08747c] dark:text-[#55d6dc] hover:bg-[#08747c] hover:text-white'
+                          }`}
+                          title="Review schedule matrix, inspect slots, and alter details before publishing"
                         >
                           <Eye size={13} />
-                          Review Timetable
+                          {!isCommitted ? 'Review & Alter Schedule' : 'Inspect Timetable'}
                         </button>
                         {!isCommitted ? (
                           <button
                             disabled={committingDocId === docId}
                             onClick={() => handleCommit(docId, filename)}
-                            className="rounded-lg bg-[#024950] px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] transition disabled:opacity-50 btn-interactive cursor-pointer"
+                            className="rounded-lg bg-[#024950] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-[#003135] transition disabled:opacity-50 btn-interactive cursor-pointer flex items-center gap-1"
                           >
-                            {committingDocId === docId ? 'Publishing…' : 'Publish to Schedule'}
+                            <CheckCircle2 size={13} />
+                            {committingDocId === docId ? 'Publishing…' : 'Publish to Live'}
                           </button>
                         ) : (
-                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 justify-end ml-1">
+                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 justify-end ml-1">
                             <CheckCircle2 size={13} />
                             Published Active
                           </span>

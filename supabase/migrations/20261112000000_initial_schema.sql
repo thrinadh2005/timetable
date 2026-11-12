@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS public.facility_bookings (
   faculty_mentor TEXT,
   expected_attendees INTEGER,
   booked_by_user_id TEXT,
-  status TEXT NOT NULL DEFAULT 'CONFIRMED' CHECK (status IN ('CONFIRMED', 'CANCELLED', 'COMPLETED')),
+  status TEXT NOT NULL DEFAULT 'CONFIRMED' CHECK (status IN ('CONFIRMED', 'PENDING', 'CANCELLED', 'REJECTED', 'COMPLETED')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_fac_bookings_facility ON public.facility_bookings(facility_id, day_of_week, period_index);

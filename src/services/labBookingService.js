@@ -5,6 +5,7 @@ const {
   notifyRole,
   notifyUser
 } = require('./notificationService');
+const { broadcast } = require('./notificationStream');
 
 async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
   const labId = data.labId || data.lab_id;
@@ -98,6 +99,23 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
           `Laboratory already booked: Event '${existingBooking.title}' is already scheduled for ${lab.name} on ${dayOfWeek} Period ${curP}.`
         );
       }
+
+      const existingFacBooking = await db.get(
+        `
+          SELECT * FROM facility_bookings
+          WHERE (facility_id = $1 OR facility_id = $2)
+            AND day_of_week = $3
+            AND period_index = $4
+            AND status IN ('CONFIRMED', 'PENDING')
+        `,
+        [lab.room_id, lab.lab_id, dayOfWeek, curP]
+      );
+
+      if (existingFacBooking) {
+        throw new Error(
+          `Facility already booked: Event '${existingFacBooking.title}' is already scheduled for ${lab.name} on ${dayOfWeek} Period ${curP}.`
+        );
+      }
     }
   }
 
@@ -105,6 +123,7 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
   const effectiveDate = bookingDate || new Date().toISOString().split('T')[0];
   const bookingTitle = durationPeriods > 1 ? `${title.trim()} (P${pIndex}-P${pIndex + durationPeriods - 1} Continuous Block)` : title.trim();
   const initialStatus = (isDean || isHOD) ? 'CONFIRMED' : 'PENDING';
+  const effectiveRoomId = lab.room_id || lab.lab_id;
 
   await db.transaction(async (tx) => {
     await tx.run(
@@ -131,9 +150,41 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
       ]
     );
 
+    await tx.run(
+      `
+        INSERT INTO facility_bookings (
+          booking_id, facility_id, facility_name, facility_type, title,
+          description, booking_date, day_of_week, period_index,
+          start_time, end_time, coordinator_name, expected_attendees,
+          booked_by_user_id, status
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        ON CONFLICT (booking_id) DO UPDATE SET
+          status = EXCLUDED.status,
+          title = EXCLUDED.title
+      `,
+      [
+        bookingId,
+        effectiveRoomId,
+        lab.name,
+        'LABORATORY',
+        bookingTitle,
+        description ? description.trim() : null,
+        effectiveDate,
+        dayOfWeek,
+        pIndex,
+        startTime || null,
+        endTime || null,
+        coordinatorName ? coordinatorName.trim() : currentUser.fullName,
+        lab.capacity || 60,
+        currentUser.userId,
+        initialStatus
+      ]
+    );
+
     if (pIndex && durationPeriods > 1) {
       for (let curP = pIndex + 1; curP < pIndex + durationPeriods; curP++) {
         const companionId = `${bookingId}-P${curP}`;
+        const companionTitle = `${title.trim()} (P${pIndex}-P${pIndex + durationPeriods - 1} Part ${curP - pIndex + 1})`;
         await tx.run(
           `
             INSERT INTO lab_bookings (
@@ -144,7 +195,7 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
           [
             companionId,
             lab.lab_id,
-            `${title.trim()} (P${pIndex}-P${pIndex + durationPeriods - 1} Part ${curP - pIndex + 1})`,
+            companionTitle,
             description ? description.trim() : null,
             bookingType,
             effectiveDate,
@@ -153,6 +204,37 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
             startTime || null,
             endTime || null,
             coordinatorName ? coordinatorName.trim() : currentUser.fullName,
+            currentUser.userId,
+            initialStatus
+          ]
+        );
+
+        await tx.run(
+          `
+            INSERT INTO facility_bookings (
+              booking_id, facility_id, facility_name, facility_type, title,
+              description, booking_date, day_of_week, period_index,
+              start_time, end_time, coordinator_name, expected_attendees,
+              booked_by_user_id, status
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            ON CONFLICT (booking_id) DO UPDATE SET
+              status = EXCLUDED.status,
+              title = EXCLUDED.title
+          `,
+          [
+            companionId,
+            effectiveRoomId,
+            lab.name,
+            'LABORATORY',
+            companionTitle,
+            description ? description.trim() : null,
+            effectiveDate,
+            dayOfWeek,
+            curP,
+            startTime || null,
+            endTime || null,
+            coordinatorName ? coordinatorName.trim() : currentUser.fullName,
+            lab.capacity || 60,
             currentUser.userId,
             initialStatus
           ]
@@ -177,6 +259,17 @@ async function createLabBooking(data, currentUser, ipAddress = '127.0.0.1') {
         ipAddress
       ]
     );
+  });
+
+  // Real-time campus broadcast: notify all connected SSE clients instantly
+  broadcast('booking_change', {
+    action: 'CREATED',
+    bookingId,
+    labId: lab.lab_id,
+    facilityId: effectiveRoomId,
+    dayOfWeek,
+    periodIndex: pIndex,
+    status: initialStatus
   });
 
   if (initialStatus === 'PENDING') {
@@ -230,7 +323,10 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
   const rootId = rawId.replace(/-P\d+$/i, '');
   const existing =
     (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [rootId])) ||
-    (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [rawId]));
+    (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [rawId])) ||
+    (await db.get('SELECT * FROM facility_bookings WHERE booking_id = $1', [rootId])) ||
+    (await db.get('SELECT * FROM facility_bookings WHERE booking_id = $1', [rawId]));
+
   if (!existing) {
     throw new Error(`Booking '${rawId}' was not found.`);
   }
@@ -241,6 +337,11 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
   await db.transaction(async (tx) => {
     await tx.run(
       'UPDATE lab_bookings SET status = $1 WHERE booking_id = $2 OR booking_id LIKE $3',
+      [newStatus, targetId, `${targetId}-%`]
+    );
+
+    await tx.run(
+      'UPDATE facility_bookings SET status = $1 WHERE booking_id = $2 OR booking_id LIKE $3',
       [newStatus, targetId, `${targetId}-%`]
     );
 
@@ -261,6 +362,13 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
         ipAddress
       ]
     );
+  });
+
+  // Real-time broadcast
+  broadcast('booking_change', {
+    action: newStatus,
+    bookingId: targetId,
+    status: newStatus
   });
 
   const approved = action.toUpperCase() === 'APPROVE';
@@ -286,46 +394,92 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
   };
 }
 
-async function getLabBookings(labId = null, includeAllStatuses = false, labIds = null, bookedByUserId = null) {
-  let query = `
-    SELECT lb.*, l.name as lab_name, l.room_id, l.department_id, r.room_number,
-           s.full_name as incharge_name
-    FROM lab_bookings lb
-    JOIN laboratories l ON lb.lab_id = l.lab_id
-    JOIN rooms r ON l.room_id = r.room_id
-    LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
-    WHERE 1=1
-  `;
-  const params = [];
+async function getLabBookings(labId = null, includeAllStatuses = false, labIds = null, bookedByUserId = null, departmentId = null) {
+  // Query both lab_bookings and facility_bookings to provide a unified, authoritative booking view
+  const [labRows, facRows] = await Promise.all([
+    db.all(`
+      SELECT lb.*, l.name as lab_name, l.name as facility_name, l.room_id, l.department_id, r.room_number,
+             s.full_name as incharge_name, NULL as club_name, NULL as expected_attendees, NULL as faculty_mentor
+      FROM lab_bookings lb
+      JOIN laboratories l ON lb.lab_id = l.lab_id
+      JOIN rooms r ON l.room_id = r.room_id
+      LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
+    `),
+    db.all(`
+      SELECT fb.*, COALESCE(l.lab_id, fb.facility_id) as lab_id, fb.facility_type as booking_type,
+             COALESCE(l.name, fb.facility_name, r.room_number, fb.facility_id) as lab_name,
+             COALESCE(fb.facility_name, l.name, r.room_number, fb.facility_id) as facility_name,
+             COALESCE(r.room_id, l.room_id, fb.facility_id) as room_id,
+             COALESCE(r.department_id, l.department_id, 'CSE') as department_id,
+             COALESCE(r.room_number, fb.facility_id) as room_number,
+             s.full_name as incharge_name
+      FROM facility_bookings fb
+      LEFT JOIN rooms r ON (fb.facility_id = r.room_id OR fb.facility_id = r.room_number OR fb.facility_id = REPLACE(r.room_id, 'RM-', ''))
+      LEFT JOIN laboratories l ON (fb.facility_id = l.lab_id OR fb.facility_id = l.room_id OR r.room_id = l.room_id)
+      LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
+    `)
+  ]);
 
-  if (includeAllStatuses) {
-    query += " AND lb.status IN ('CONFIRMED', 'PENDING')";
-  } else {
-    query += " AND lb.status = 'CONFIRMED'";
+  const byId = new Map();
+  for (const row of facRows) {
+    byId.set(row.booking_id, row);
+  }
+  for (const row of labRows) {
+    if (byId.has(row.booking_id)) {
+      byId.set(row.booking_id, { ...byId.get(row.booking_id), ...row });
+    } else {
+      byId.set(row.booking_id, row);
+    }
   }
 
+  let list = Array.from(byId.values());
+
+  // Status filtering
+  if (includeAllStatuses) {
+    list = list.filter((b) => ['CONFIRMED', 'PENDING', 'CANCELLED', 'REJECTED'].includes(b.status));
+  } else {
+    list = list.filter((b) => b.status === 'CONFIRMED');
+  }
+
+  // Lab IDs filter
   if (Array.isArray(labIds)) {
     if (labIds.length === 0) return [];
-    const phs = labIds.map((_, i) => `$${params.length + i + 1}`).join(', ');
-    query += ` AND lb.lab_id IN (${phs})`;
-    params.push(...labIds);
+    const set = new Set(labIds);
+    list = list.filter((b) => set.has(b.lab_id) || set.has(b.room_id) || set.has(b.facility_id));
   } else if (labId) {
-    params.push(labId);
-    query += ` AND lb.lab_id = $${params.length}`;
+    list = list.filter((b) => b.lab_id === labId || b.room_id === labId || b.facility_id === labId);
   }
 
+  // Booked by user filter
   if (bookedByUserId) {
-    params.push(bookedByUserId);
-    query += ` AND lb.booked_by_user_id = $${params.length}`;
+    list = list.filter((b) => b.booked_by_user_id === bookedByUserId);
   }
 
-  query += ' ORDER BY lb.created_at DESC';
+  // Department filter
+  if (Array.isArray(departmentId)) {
+    if (departmentId.length > 0) {
+      const dSet = new Set(departmentId);
+      list = list.filter((b) => dSet.has(b.department_id));
+    }
+  } else if (departmentId && departmentId !== 'ALL') {
+    list = list.filter((b) => b.department_id === departmentId);
+  }
 
-  return db.all(query, params);
+  // Sort: newest first
+  list.sort((a, b) => {
+    const dateComp = String(b.booking_date || '').localeCompare(String(a.booking_date || ''));
+    if (dateComp !== 0) return dateComp;
+    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+  });
+
+  return list;
 }
 
 async function deleteLabBooking(bookingId, currentUser, ipAddress = '127.0.0.1') {
-  const existing = await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [bookingId]);
+  const existing =
+    (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [bookingId])) ||
+    (await db.get('SELECT * FROM facility_bookings WHERE booking_id = $1', [bookingId]));
+
   if (!existing) {
     throw new Error(`Booking '${bookingId}' was not found.`);
   }
@@ -341,6 +495,10 @@ async function deleteLabBooking(bookingId, currentUser, ipAddress = '127.0.0.1')
   await db.transaction(async (tx) => {
     await tx.run(
       "UPDATE lab_bookings SET status = 'CANCELLED' WHERE booking_id = $1 OR booking_id LIKE $2",
+      [bookingId, `${bookingId}-%`]
+    );
+    await tx.run(
+      "UPDATE facility_bookings SET status = 'CANCELLED' WHERE booking_id = $1 OR booking_id LIKE $2",
       [bookingId, `${bookingId}-%`]
     );
 
@@ -363,6 +521,12 @@ async function deleteLabBooking(bookingId, currentUser, ipAddress = '127.0.0.1')
     );
   });
 
+  // Real-time broadcast
+  broadcast('booking_change', {
+    action: 'CANCELLED',
+    bookingId
+  });
+
   return {
     success: true,
     message: 'Laboratory booking cancelled successfully.'
@@ -371,39 +535,68 @@ async function deleteLabBooking(bookingId, currentUser, ipAddress = '127.0.0.1')
 
 async function getPendingLabRequests(departmentId = null, statusFilter = 'PENDING') {
   const normalizedStatus = String(statusFilter || 'PENDING').toUpperCase();
-  let statusClause = "lb.status = 'PENDING'";
-  if (normalizedStatus === 'ALL') {
-    statusClause = "lb.status IN ('PENDING', 'CONFIRMED', 'CANCELLED')";
-  } else if (['PENDING', 'CONFIRMED', 'CANCELLED'].includes(normalizedStatus)) {
-    statusClause = `lb.status = '${normalizedStatus}'`;
+
+  const [labRows, facRows] = await Promise.all([
+    db.all(`
+      SELECT lb.*, l.name as lab_name, l.name as facility_name, l.room_id, l.department_id, r.room_number,
+             s.full_name as incharge_name, u.full_name as requester_name, u.role as requester_role, u.pnrno as requester_pnr
+      FROM lab_bookings lb
+      JOIN laboratories l ON lb.lab_id = l.lab_id
+      JOIN rooms r ON l.room_id = r.room_id
+      LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
+      LEFT JOIN users u ON lb.booked_by_user_id = u.user_id
+      WHERE lb.booking_id !~ '-P[0-9]+$'
+    `),
+    db.all(`
+      SELECT fb.*, COALESCE(l.lab_id, fb.facility_id) as lab_id, fb.facility_type as booking_type,
+             COALESCE(l.name, fb.facility_name, r.room_number, fb.facility_id) as lab_name,
+             COALESCE(fb.facility_name, l.name, r.room_number, fb.facility_id) as facility_name,
+             COALESCE(r.room_id, l.room_id, fb.facility_id) as room_id,
+             COALESCE(r.department_id, l.department_id, 'CSE') as department_id,
+             COALESCE(r.room_number, fb.facility_id) as room_number,
+             s.full_name as incharge_name, u.full_name as requester_name, u.role as requester_role, u.pnrno as requester_pnr
+      FROM facility_bookings fb
+      LEFT JOIN rooms r ON (fb.facility_id = r.room_id OR fb.facility_id = r.room_number OR fb.facility_id = REPLACE(r.room_id, 'RM-', ''))
+      LEFT JOIN laboratories l ON (fb.facility_id = l.lab_id OR fb.facility_id = l.room_id OR r.room_id = l.room_id)
+      LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
+      LEFT JOIN users u ON fb.booked_by_user_id = u.user_id
+      WHERE fb.booking_id !~ '-P[0-9]+$'
+    `)
+  ]);
+
+  const byId = new Map();
+  for (const row of facRows) {
+    byId.set(row.booking_id, row);
+  }
+  for (const row of labRows) {
+    if (byId.has(row.booking_id)) {
+      byId.set(row.booking_id, { ...byId.get(row.booking_id), ...row });
+    } else {
+      byId.set(row.booking_id, row);
+    }
   }
 
-  let query = `
-    SELECT lb.*, l.name as lab_name, l.room_id, l.department_id, r.room_number,
-           s.full_name as incharge_name, u.full_name as requester_name, u.role as requester_role, u.pnrno as requester_pnr
-    FROM lab_bookings lb
-    JOIN laboratories l ON lb.lab_id = l.lab_id
-    JOIN rooms r ON l.room_id = r.room_id
-    LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
-    LEFT JOIN users u ON lb.booked_by_user_id = u.user_id
-    WHERE ${statusClause}
-      AND lb.booking_id !~ '-P[0-9]+$'
-  `;
-  const params = [];
+  let list = Array.from(byId.values());
+
+  // Filter by status
+  if (normalizedStatus === 'ALL') {
+    list = list.filter((r) => ['PENDING', 'CONFIRMED', 'CANCELLED'].includes(r.status));
+  } else if (['PENDING', 'CONFIRMED', 'CANCELLED'].includes(normalizedStatus)) {
+    list = list.filter((r) => r.status === normalizedStatus);
+  }
+
+  // Filter by department
   if (Array.isArray(departmentId)) {
-    if (departmentId.length === 0) {
-      query += ' AND 1 = 0';
-    } else {
-      const phs = departmentId.map((_, i) => `$${params.length + i + 1}`).join(', ');
-      query += ` AND (l.department_id IN (${phs}) OR r.department_id IN (${phs}))`;
-      params.push(...departmentId);
+    if (departmentId.length > 0) {
+      const dSet = new Set(departmentId);
+      list = list.filter((r) => dSet.has(r.department_id));
     }
   } else if (departmentId && departmentId !== 'ALL') {
-    params.push(departmentId);
-    query += ` AND (l.department_id = $${params.length} OR r.department_id = $${params.length})`;
+    list = list.filter((r) => r.department_id === departmentId);
   }
-  query += ' ORDER BY lb.created_at DESC';
-  return db.all(query, params);
+
+  list.sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+  return list;
 }
 
 module.exports = {
