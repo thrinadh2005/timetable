@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS public.facility_bookings (
   booking_id TEXT PRIMARY KEY,
   facility_id TEXT NOT NULL,
   facility_name TEXT,
-  facility_type TEXT NOT NULL CHECK (facility_type IN ('CLASSROOM', 'LABORATORY')),
+  facility_type TEXT NOT NULL CHECK (facility_type IN ('CLASSROOM', 'LABORATORY', 'SEMINAR_HALL', 'AUDITORIUM', 'WORKSHOP', 'DRAWING_HALL', 'CONFERENCE_HALL', 'FACILITY')),
   title TEXT NOT NULL,
   club_name TEXT,
   description TEXT,

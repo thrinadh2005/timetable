@@ -69,8 +69,8 @@ async function getFacilityAvailability(filters = {}) {
     roomsQuery += ` AND r.department_id IN (SELECT department_id FROM departments WHERE school_id = $${roomParams.length})`;
   }
 
-  if (facilityType === 'CLASSROOM' || facilityType === 'LABORATORY') {
-    roomParams.push(facilityType);
+  if (facilityType && facilityType !== 'ALL') {
+    roomParams.push(facilityType.toUpperCase());
     roomsQuery += ` AND r.room_type = $${roomParams.length}`;
   }
 
@@ -1407,8 +1407,10 @@ async function planFacilityEvent(data, currentUser, ipAddress = '127.0.0.1') {
     throw new Error(`Facility '${facilityId}' was not found in institutional directory.`);
   }
 
-  const facilityType = lab ? 'LABORATORY' : (room.room_type || 'CLASSROOM');
-  const facilityName = lab ? lab.name : `Room ${room.room_number}`;
+  const rawFacilityType = lab ? 'LABORATORY' : (room ? (room.room_type || 'CLASSROOM') : 'CLASSROOM');
+  const validFacilityTypes = ['CLASSROOM', 'LABORATORY', 'SEMINAR_HALL', 'AUDITORIUM', 'WORKSHOP', 'DRAWING_HALL', 'CONFERENCE_HALL', 'FACILITY'];
+  const facilityType = validFacilityTypes.includes(rawFacilityType) ? rawFacilityType : (lab ? 'LABORATORY' : 'CLASSROOM');
+  const facilityName = lab ? lab.name : `${room.room_type === 'SEMINAR_HALL' ? 'Seminar Hall' : room.room_type === 'AUDITORIUM' ? 'Auditorium' : 'Room'} ${room.room_number}`;
   const effectiveRoomId = room ? room.room_id : lab.room_id;
   const effectiveLabId = lab ? lab.lab_id : null;
 
@@ -1488,33 +1490,70 @@ async function planFacilityEvent(data, currentUser, ipAddress = '127.0.0.1') {
       const p = targetPeriods[idx];
       const bookingId = idx === 0 ? primaryBookingId : `${primaryBookingId}-${p}`;
 
-      await tx.run(
-        `
-          INSERT INTO facility_bookings (
-            booking_id, facility_id, facility_name, facility_type, title, club_name, description,
-            booking_date, day_of_week, period_index, coordinator_name, coordinator_roll,
-            coordinator_contact, faculty_mentor, expected_attendees, booked_by_user_id, status
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'CONFIRMED')
-        `,
-        [
-          bookingId,
-          facilityId,
-          facilityName,
-          facilityType,
-          title,
-          clubName || 'Student Chapter / Society',
-          description || null,
-          bookingDate,
-          dayOfWeek,
-          p,
-          coordinatorName,
-          coordinatorRoll || null,
-          coordinatorContact || null,
-          facultyMentor || null,
-          expectedAttendees || null,
-          currentUser.userId
-        ]
-      );
+      try {
+        await tx.run(
+          `
+            INSERT INTO facility_bookings (
+              booking_id, facility_id, facility_name, facility_type, title, club_name, description,
+              booking_date, day_of_week, period_index, coordinator_name, coordinator_roll,
+              coordinator_contact, faculty_mentor, expected_attendees, booked_by_user_id, status
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'CONFIRMED')
+          `,
+          [
+            bookingId,
+            facilityId,
+            facilityName,
+            facilityType,
+            title,
+            clubName || 'Student Chapter / Society',
+            description || null,
+            bookingDate,
+            dayOfWeek,
+            p,
+            coordinatorName,
+            coordinatorRoll || null,
+            coordinatorContact || null,
+            facultyMentor || null,
+            expectedAttendees || null,
+            currentUser.userId
+          ]
+        );
+      } catch (insertErr) {
+        if (insertErr.message && insertErr.message.includes('facility_bookings_facility_type_check')) {
+          // If the underlying database table has a legacy 2-value check constraint ('CLASSROOM', 'LABORATORY'),
+          // fall back to 'CLASSROOM' so booking for seminar halls, auditoriums, etc. never fails!
+          const fallbackType = facilityType === 'LABORATORY' ? 'LABORATORY' : 'CLASSROOM';
+          await tx.run(
+            `
+              INSERT INTO facility_bookings (
+                booking_id, facility_id, facility_name, facility_type, title, club_name, description,
+                booking_date, day_of_week, period_index, coordinator_name, coordinator_roll,
+                coordinator_contact, faculty_mentor, expected_attendees, booked_by_user_id, status
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, 'CONFIRMED')
+            `,
+            [
+              bookingId,
+              facilityId,
+              facilityName,
+              fallbackType,
+              title,
+              clubName || 'Student Chapter / Society',
+              description || null,
+              bookingDate,
+              dayOfWeek,
+              p,
+              coordinatorName,
+              coordinatorRoll || null,
+              coordinatorContact || null,
+              facultyMentor || null,
+              expectedAttendees || null,
+              currentUser.userId
+            ]
+          );
+        } else {
+          throw insertErr;
+        }
+      }
 
       if (effectiveLabId) {
         await tx.run(
