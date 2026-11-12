@@ -19,7 +19,10 @@ function getConnectionString() {
 
 function isPgliteMode() {
   const conn = getConnectionString();
-  return process.env.PG_ENGINE === 'pglite' || conn.startsWith('pglite://');
+  if (conn && !conn.startsWith('pglite://')) {
+    return process.env.PG_ENGINE === 'pglite';
+  }
+  return process.env.PG_ENGINE === 'pglite' || conn.startsWith('pglite://') || !conn;
 }
 
 function normalizeSqlTimestampFields(rows) {
@@ -85,9 +88,18 @@ async function getPgClientOrPglite() {
       const { PGlite } = require('@electric-sql/pglite');
       const conn = getConnectionString();
       let dataDir;
-      if (conn.startsWith('pglite://') && conn !== 'pglite://memory') {
+      if (conn === 'pglite://memory') {
+        dataDir = undefined;
+      } else if (conn.startsWith('pglite://')) {
         dataDir = conn.slice('pglite://'.length);
-        fs.mkdirSync(path.dirname(dataDir), { recursive: true });
+      } else {
+        dataDir = path.resolve(__dirname, '../../data/gmritdu-pg');
+        if (!conn) {
+          console.warn('[Database] DATABASE_URL not set; falling back to embedded PostgreSQL (PGlite) at ./data/gmritdu-pg.');
+        }
+      }
+      if (dataDir) {
+        fs.mkdirSync(dataDir, { recursive: true });
       }
       pgliteInstance = dataDir ? new PGlite(dataDir) : new PGlite();
       await pgliteInstance.waitReady;
