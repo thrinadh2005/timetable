@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const path = require('path');
 const XLSX = require('xlsx');
-const { PDFParse } = require('pdf-parse');
 const { db } = require('../config/database');
 const { logSecurityEvent } = require('../middleware/telemetry');
 
@@ -115,10 +114,22 @@ async function resolveRoom(rawRoom, isLab, defaultRoom = 'ROOM-TBD') {
 }
 
 async function parsePdfTimetable(buffer, originalFilename, deptHint = 'CSE') {
-  const parser = new PDFParse(new Uint8Array(buffer));
-  await parser.load();
-  const res = await parser.getText();
-  const text = res.text || '';
+  let text = '';
+  try {
+    const pdf = require('pdf-parse');
+    if (typeof pdf === 'function') {
+      const data = await pdf(buffer);
+      text = (data && data.text) ? data.text : '';
+    } else if (pdf && pdf.PDFParse) {
+      const parser = new pdf.PDFParse(new Uint8Array(buffer));
+      await parser.load();
+      const res = await parser.getText();
+      text = (res && res.text) ? res.text : '';
+    }
+  } catch (parseErr) {
+    console.error('PDF extraction error in timetable ingestion:', parseErr.message);
+    throw new Error(`Failed to extract text from PDF document: ${parseErr.message}`);
+  }
 
   const deptMatch = text.match(/Department\s*:\s*([A-Za-z& ]+)/i) || text.match(/: (CSE|ECE|MECH|CIVIL|IT|AIML|AIDS)/i);
   const deptId = deptMatch ? deptMatch[1].trim().toUpperCase() : deptHint;
