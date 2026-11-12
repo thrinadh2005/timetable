@@ -98,18 +98,22 @@ async function createSubstitution(data, currentUser, ipAddress = '127.0.0.1') {
     throw new Error(`Timetable slot '${slotId}' was not found.`);
   }
 
-  const isDean = currentUser.role === 'SUPER_ADMIN';
-  const isHOD = currentUser.role === 'DEPT_ADMIN' && (!currentUser.departmentId || currentUser.departmentId === slot.sec_dept || currentUser.departmentId === 'CSE' || isDean);
+  const isSuperOrDean = currentUser.role === 'SUPER_ADMIN' || currentUser.role === 'DEAN';
+  const isHOD = currentUser.role === 'DEPT_ADMIN' && (!currentUser.departmentId || currentUser.departmentId === slot.sec_dept);
+  const isCoordinator = currentUser.role === 'COORDINATOR' && (!currentUser.departmentId || currentUser.departmentId === slot.sec_dept);
   const isSelf = currentUser.role === 'TEACHING_STAFF' && currentUser.pnrno === slot.faculty_id;
 
   let userStaffId = null;
-  const staffLink = await db.get('SELECT staff_id FROM staff WHERE user_id = $1', [currentUser.userId]);
+  const staffLink = await db.get(
+    "SELECT staff_id FROM staff WHERE user_id = $1 OR ($2 <> '' AND LOWER(official_email) = LOWER($2))",
+    [currentUser.userId, currentUser.email || '']
+  );
   if (staffLink) {
     userStaffId = staffLink.staff_id;
   }
   const isSelfStaff = userStaffId && userStaffId === slot.faculty_id;
 
-  if (!isDean && !isHOD && !isSelf && !isSelfStaff) {
+  if (!isSuperOrDean && !isHOD && !isCoordinator && !isSelf && !isSelfStaff) {
     throw new Error('Access denied: You do not have permission to reassign this class session.');
   }
 
@@ -167,7 +171,7 @@ async function createSubstitution(data, currentUser, ipAddress = '127.0.0.1') {
   const substitutionId = `SUB-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
   const effectiveDate = leaveDate || new Date().toISOString().split('T')[0];
   const leaveReason = reason ? reason.trim() : 'Faculty Leave / Duty Reassignment';
-  const initialStatus = (isDean || isHOD) ? 'APPROVED' : 'PENDING';
+  const initialStatus = (isSuperOrDean || isHOD) ? 'APPROVED' : 'PENDING';
 
   await db.transaction(async (tx) => {
     await tx.run(
@@ -288,13 +292,13 @@ async function getSubstitutions(filters = {}) {
   let query = `
     SELECT cs.substitution_id, cs.slot_id, cs.original_faculty_id, cs.substitute_faculty_id,
            cs.leave_date, cs.day_of_week, cs.period_index, cs.reason, cs.status,
-           cs.assigned_by_name, cs.created_at,
+           cs.assigned_by_user_id, cs.assigned_by_name, cs.created_at,
            orig_st.full_name as original_faculty_name, orig_st.designation as original_faculty_designation,
            orig_st.photo_url as original_faculty_photo,
            subst_st.full_name as substitute_faculty_name, subst_st.designation as substitute_faculty_designation,
            subst_st.photo_url as substitute_faculty_photo,
            sub.subject_code, sub.subject_name,
-           sec.section_name, sec.department_id as sec_dept,
+           sec.section_name, sec.department_id as sec_dept, sec.department_id as department_id,
            sem.semester_number,
            r.room_number,
            l.name as lab_name

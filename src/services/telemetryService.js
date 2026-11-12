@@ -15,6 +15,7 @@ async function getTelemetryData() {
     slotsRow,
     eventsRow,
     auditRow,
+    ledgerRow,
     telemetryRow
   ] = await Promise.all([
     db.all(`
@@ -42,6 +43,7 @@ async function getTelemetryData() {
     db.get('SELECT COUNT(*)::int as count FROM timetable_slots'),
     db.get('SELECT COUNT(*)::int as count FROM events'),
     db.get('SELECT COUNT(*)::int as count FROM audit_logs'),
+    db.get('SELECT COUNT(*)::int as count FROM blockchain_blocks'),
     db.get('SELECT COUNT(*)::int as count FROM telemetry_requests')
   ]);
 
@@ -53,6 +55,7 @@ async function getTelemetryData() {
     timetableSlotsCount: slotsRow.count,
     eventsCount: eventsRow.count,
     totalAuditLogs: auditRow.count,
+    ledgerEntriesCount: ledgerRow?.count ?? auditRow.count,
     totalTelemetryLogged: telemetryRow.count
   };
 

@@ -8,8 +8,8 @@
 
 html.dark, body.dark {
   color-scheme: dark;
-  background-color: #01191c;
-  color: #e2f0ef;
+  background-color: #111c24;
+  color: #edf5f8;
 }
 
 * {
@@ -35,8 +35,8 @@ body {
 }
 
 body.dark {
-  background-color: #01191c;
-  color: #e2f0ef;
+  background-color: #111c24;
+  color: #edf5f8;
 }
 
 button, input, textarea, select {
@@ -56,6 +56,10 @@ button:disabled {
   outline-offset: 2px;
 }
 
+html.dark :focus-visible {
+  outline-color: #38e0d2;
+}
+
 /* Institutional Inverse Panels & Hero Banners */
 .panel-inverse,
 [data-tone="inverse"],
@@ -69,70 +73,268 @@ html.dark .panel-inverse,
 html.dark [data-tone="inverse"],
 body.dark .panel-inverse,
 body.dark [data-tone="inverse"] {
-  background-color: #002226 !important;
+  background: linear-gradient(135deg, #0b4147 0%, #10323c 55%, #162835 100%) !important;
   color: #ffffff !important;
-  border-color: #084147 !important;
+  border-color: #2b6973 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 14px 32px -16px rgba(0, 0, 0, 0.6);
 }
 
-/* Dark Mode Overrides for Panels and Cards */
-body.dark .bg-white {
-  background-color: #062327 !important;
-  color: #e2f0ef !important;
+/* High-Visibility Midnight Marine Dusk Theme (Suits Institutional Teal Identity) */
+html.dark body,
+body.dark {
+  background-color: #111c24;
+  color: #edf5f8;
 }
 
+html.dark .bg-white,
+body.dark .bg-white,
+html.dark .dark\:bg-\[\#062327\],
+body.dark .dark\:bg-\[\#062327\],
+html.dark .dark\:bg-\[\#002528\],
+body.dark .dark\:bg-\[\#002528\],
+html.dark .dark\:bg-\[\#111820\],
+body.dark .dark\:bg-\[\#111820\] {
+  background-color: #182732 !important;
+  color: #edf5f8;
+}
+
+html.dark .bg-\[\#f3f6f5\],
+html.dark .bg-\[\#f5f7f6\],
+html.dark .bg-\[\#f7f9f9\],
+html.dark .bg-\[\#f8faf9\],
+html.dark .bg-\[\#f9fbfa\],
+html.dark .bg-\[\#edf2f1\],
+html.dark .bg-slate-100,
+html.dark .dark\:bg-\[\#031c1f\],
+html.dark .dark\:bg-\[\#031d21\],
+html.dark .dark\:bg-\[\#02181b\],
+html.dark .dark\:bg-\[\#072428\],
+html.dark .dark\:bg-slate-800,
 body.dark .bg-\[\#f3f6f5\],
 body.dark .bg-\[\#f5f7f6\],
 body.dark .bg-\[\#f7f9f9\],
 body.dark .bg-\[\#f8faf9\],
-body.dark .bg-\[\#f9fbfa\] {
-  background-color: #021a1d !important;
-  color: #e2f0ef !important;
+body.dark .bg-\[\#f9fbfa\],
+body.dark .bg-\[\#edf2f1\],
+body.dark .bg-slate-100,
+body.dark .dark\:bg-\[\#031c1f\],
+body.dark .dark\:bg-\[\#031d21\],
+body.dark .dark\:bg-\[\#02181b\],
+body.dark .dark\:bg-\[\#072428\],
+body.dark .dark\:bg-slate-800 {
+  background-color: #1f3240 !important;
+  color: #e6f0f5;
 }
 
+html.dark main,
+html.dark main.bg-\[\#f3f6f5\],
+body.dark main,
+body.dark main.bg-\[\#f3f6f5\] {
+  background-color: #111c24 !important;
+}
+
+html.dark .border-\[\#dce4e3\],
+html.dark .border-\[\#d6dfde\],
+html.dark .border-\[\#e0e7e6\],
+html.dark .border-\[\#e1e7e6\],
+html.dark .border-\[\#e2eae9\],
+html.dark .border-\[\#e3e9e8\],
+html.dark .border-\[\#e8efee\],
+html.dark .border-\[\#edf2f1\],
+html.dark .dark\:border-\[\#124349\],
+html.dark .dark\:border-\[\#175259\],
+html.dark .dark\:border-\[\#0e3b40\],
+html.dark .dark\:border-\[\#0a4a50\],
+html.dark .dark\:border-\[\#212f3c\],
 body.dark .border-\[\#dce4e3\],
 body.dark .border-\[\#d6dfde\],
 body.dark .border-\[\#e0e7e6\],
 body.dark .border-\[\#e1e7e6\],
+body.dark .border-\[\#e2eae9\],
 body.dark .border-\[\#e3e9e8\],
 body.dark .border-\[\#e8efee\],
-body.dark .border-\[\#edf2f1\] {
-  border-color: #124349 !important;
+body.dark .border-\[\#edf2f1\],
+body.dark .dark\:border-\[\#124349\],
+body.dark .dark\:border-\[\#175259\],
+body.dark .dark\:border-\[\#0e3b40\],
+body.dark .dark\:border-\[\#0a4a50\],
+body.dark .dark\:border-\[\#212f3c\] {
+  border-color: #2e4656 !important;
 }
 
-body.dark .text-\[\#003135\] {
-  color: #55d6dc !important;
+/* Crisp High-Visibility Typography Hierarchy */
+html.dark .text-\[\#003135\]:not([class*="dark:text-"]),
+body.dark .text-\[\#003135\]:not([class*="dark:text-"]),
+html.dark .text-\[\#172326\],
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+body.dark .text-\[\#172326\],
+body.dark .text-slate-900,
+body.dark .text-slate-800 {
+  color: #f4f9fb !important;
 }
 
-body.dark .text-\[\#172326\] {
-  color: #e2f0ef !important;
+html.dark .text-slate-700,
+html.dark .text-\[\#526164\],
+body.dark .text-slate-700,
+body.dark .text-\[\#526164\] {
+  color: #d0e0ea !important;
 }
 
-body.dark .text-\[\#526164\],
+html.dark .dark\:text-\[\#55d6dc\],
+html.dark .dark\:text-\[\#2dd4bf\],
+html.dark .dark\:text-\[\#00e5ff\],
+body.dark .dark\:text-\[\#55d6dc\],
+body.dark .dark\:text-\[\#2dd4bf\],
+body.dark .dark\:text-\[\#00e5ff\] {
+  color: #38e0d2 !important;
+}
+
+/* Preserve dark high-contrast ink on bright accent active tabs/buttons */
+html.dark .dark\:bg-\[\#55d6dc\].dark\:text-\[\#003135\],
+body.dark .dark\:bg-\[\#55d6dc\].dark\:text-\[\#003135\] {
+  background-color: #38e0d2 !important;
+  color: #062428 !important;
+}
+
+/* High-Visibility Primary Brand Action Buttons in Dark Mode */
+html.dark button.bg-\[\#003135\],
+html.dark button.bg-\[\#024950\],
+html.dark button.bg-\[\#08747c\],
+html.dark .dark\:bg-\[\#08747c\],
+html.dark .dark\:bg-\[\#0d7c82\],
+body.dark button.bg-\[\#003135\],
+body.dark button.bg-\[\#024950\],
+body.dark button.bg-\[\#08747c\],
+body.dark .dark\:bg-\[\#08747c\],
+body.dark .dark\:bg-\[\#0d7c82\] {
+  background-color: #0d8d96 !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 4px 12px -4px rgba(0, 0, 0, 0.45);
+}
+
+html.dark button.bg-\[\#003135\]:hover,
+html.dark button.bg-\[\#024950\]:hover,
+html.dark button.bg-\[\#08747c\]:hover,
+html.dark .dark\:bg-\[\#08747c\]:hover,
+html.dark .dark\:bg-\[\#0d7c82\]:hover {
+  background-color: #13a4af !important;
+}
+
+html.dark .text-\[\#647376\],
+html.dark .text-\[\#718083\],
+html.dark .text-\[\#738285\],
+html.dark .text-\[\#758386\],
+html.dark .text-\[\#7a898c\],
+html.dark .text-\[\#829093\],
+html.dark .text-\[\#8a9799\],
+html.dark .text-\[\#9ba8a9\],
+html.dark .dark\:text-\[\#8ea5a3\],
+html.dark .dark\:text-\[\#7ba09d\],
 body.dark .text-\[\#647376\],
 body.dark .text-\[\#718083\],
+body.dark .text-\[\#738285\],
+body.dark .text-\[\#758386\],
 body.dark .text-\[\#7a898c\],
-body.dark .text-\[\#8a9799\] {
-  color: #8da4a2 !important;
+body.dark .text-\[\#829093\],
+body.dark .text-\[\#8a9799\],
+body.dark .text-\[\#9ba8a9\],
+body.dark .dark\:text-\[\#8ea5a3\],
+body.dark .dark\:text-\[\#7ba09d\] {
+  color: #a6bcc9 !important;
 }
 
-body.dark select,
-body.dark input,
-body.dark textarea {
-  background-color: #072a2f !important;
-  color: #e2f0ef !important;
-  border-color: #175259 !important;
+/* Standalone form controls (never override bg-transparent inputs nested inside icon boxes!) */
+html.dark select:not(.bg-transparent),
+html.dark input:not(.bg-transparent),
+html.dark textarea:not(.bg-transparent),
+body.dark select:not(.bg-transparent),
+body.dark input:not(.bg-transparent),
+body.dark textarea:not(.bg-transparent) {
+  background-color: #101b23 !important;
+  color: #ffffff !important;
+  border-color: #395467 !important;
 }
 
+html.dark select:not(.bg-transparent):focus,
+html.dark input:not(.bg-transparent):focus,
+html.dark textarea:not(.bg-transparent):focus,
+body.dark select:not(.bg-transparent):focus,
+body.dark input:not(.bg-transparent):focus,
+body.dark textarea:not(.bg-transparent):focus {
+  border-color: #38e0d2 !important;
+  box-shadow: 0 0 0 3px rgba(56, 224, 210, 0.18);
+}
+
+html.dark select option,
 body.dark select option {
-  background-color: #072a2f;
-  color: #e2f0ef;
+  background-color: #182732;
+  color: #ffffff;
 }
 
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #8ea5b4;
+}
+
+html.dark .hover\:bg-\[\#edf2f1\]:hover,
+html.dark .hover\:bg-\[\#f3f6f5\]:hover,
+html.dark .hover\:bg-\[\#f5f7f6\]:hover,
+html.dark .hover\:bg-\[\#fafcfc\]:hover,
+html.dark .dark\:hover\:bg-\[\#072a2f\]:hover,
+html.dark .dark\:hover\:bg-\[\#072c31\]:hover,
+html.dark .dark\:hover\:bg-\[\#072d32\]:hover,
+html.dark .dark\:hover\:bg-\[\#0a353b\]:hover,
+html.dark .dark\:hover\:bg-\[\#1b2733\]:hover,
 body.dark .hover\:bg-\[\#edf2f1\]:hover,
 body.dark .hover\:bg-\[\#f3f6f5\]:hover,
 body.dark .hover\:bg-\[\#f5f7f6\]:hover,
 body.dark .hover\:bg-\[\#fafcfc\]:hover {
-  background-color: #0a363d !important;
+  background-color: #253b4a !important;
+}
+
+/* Crisp Bright Semantic Status Chips in Dark Mode */
+html.dark .bg-emerald-50,
+html.dark .dark\:bg-emerald-950\/70,
+html.dark .dark\:bg-\[\#072b22\] {
+  background-color: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+}
+html.dark .bg-amber-50,
+html.dark .dark\:bg-amber-950\/60,
+html.dark .dark\:bg-\[\#2e2007\] {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+  color: #fde68a !important;
+}
+html.dark .bg-red-50,
+html.dark .dark\:bg-red-950\/40,
+html.dark .dark\:bg-\[\#331114\] {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fecaca !important;
+}
+
+html.dark [role="dialog"] > div,
+html.dark [role="dialog"] > section,
+body.dark [role="dialog"] > div,
+body.dark [role="dialog"] > section {
+  background-color: #182732 !important;
+  border-color: #365062 !important;
+}
+
+/* Sleek High-Visibility Dark Scrollbars */
+html.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #111c24;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #344d5e;
+  border-radius: 999px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #38e0d2;
 }
 
 /* Animations & Enterprise Micro-Interactions */
@@ -143,7 +345,7 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -154,7 +356,7 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -174,7 +376,7 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -185,7 +387,7 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: none;
   }
 }
 
@@ -228,29 +430,29 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
 }
 
 .view-enter {
-  animation: view-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: view-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .view-card-enter {
-  animation: panel-rise 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: panel-rise 300ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   animation-delay: calc(var(--stagger, 0) * 35ms);
 }
 
 .row-enter {
-  animation: row-fade-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: row-fade-in 240ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
   animation-delay: calc(var(--stagger, 0) * 20ms);
 }
 
 .modal-panel {
-  animation: modal-panel-enter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: modal-panel-enter 240ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .modal-backdrop {
-  animation: backdrop-enter 180ms ease-out both;
+  animation: backdrop-enter 180ms ease-out backwards;
 }
 
 .toast-enter {
-  animation: toast-slide-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: toast-slide-in 260ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .live-pulse-dot {
@@ -259,17 +461,6 @@ body.dark .hover\:bg-\[\#fafcfc\]:hover {
 
 .ambient-float {
   animation: ambient-float 8s ease-in-out infinite;
-}
-
-.skeleton-shimmer {
-  background: linear-gradient(90deg, rgba(226, 234, 232, 0.5) 25%, rgba(240, 246, 245, 0.9) 50%, rgba(226, 234, 232, 0.5) 75%);
-  background-size: 200% 100%;
-  animation: shimmer-sweep 1.6s ease-in-out infinite;
-}
-
-body.dark .skeleton-shimmer {
-  background: linear-gradient(90deg, rgba(10, 53, 59, 0.45) 25%, rgba(16, 78, 86, 0.75) 50%, rgba(10, 53, 59, 0.45) 75%);
-  background-size: 200% 100%;
 }
 
 .card-interactive {
@@ -300,7 +491,7 @@ body.dark .card-interactive:hover {
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: none;
   }
 }
 
@@ -311,7 +502,7 @@ body.dark .card-interactive:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
@@ -322,26 +513,26 @@ body.dark .card-interactive:hover {
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
 .drawer-enter {
-  animation: drawer-slide-left 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: drawer-slide-left 0.24s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .dropdown-enter {
   transform-origin: top right;
-  animation: dropdown-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: dropdown-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .metric-pop {
-  animation: metric-pop 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: metric-pop 0.28s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 /* Automatic staggered entrance delays for multi-card grids, metrics, and table rows */
 .stagger-grid > * {
-  animation: panel-rise 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: panel-rise 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 .stagger-grid > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-grid > *:nth-child(2) { animation-delay: 45ms; }
@@ -355,7 +546,7 @@ body.dark .card-interactive:hover {
 .stagger-grid > *:nth-child(n+10) { animation-delay: 400ms; }
 
 .stagger-table tbody tr {
-  animation: row-fade-in 0.22s ease-out both;
+  animation: row-fade-in 0.22s ease-out backwards;
 }
 .stagger-table tbody tr:nth-child(1) { animation-delay: 20ms; }
 .stagger-table tbody tr:nth-child(2) { animation-delay: 45ms; }
@@ -367,10 +558,49 @@ body.dark .card-interactive:hover {
 .stagger-table tbody tr:nth-child(8) { animation-delay: 195ms; }
 .stagger-table tbody tr:nth-child(n+9) { animation-delay: 220ms; }
 
-.delay-75 { animation-delay: 75ms; animation-fill-mode: both; }
-.delay-150 { animation-delay: 150ms; animation-fill-mode: both; }
-.delay-225 { animation-delay: 225ms; animation-fill-mode: both; }
-.delay-300 { animation-delay: 300ms; animation-fill-mode: both; }
+.delay-75 { animation-delay: 75ms; animation-fill-mode: backwards; }
+.delay-150 { animation-delay: 150ms; animation-fill-mode: backwards; }
+.delay-225 { animation-delay: 225ms; animation-fill-mode: backwards; }
+.delay-300 { animation-delay: 300ms; animation-fill-mode: backwards; }
+
+/* Animated Loading Skeleton Shimmer */
+@keyframes shimmer-sweep {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #e5eceb 25%, #f2f7f6 50%, #e5eceb 75%);
+  background-size: 800px 100%;
+  animation: shimmer-sweep 1.35s infinite linear;
+}
+
+html.dark .skeleton-shimmer,
+body.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1f3240 25%, #2b4456 50%, #1f3240 75%);
+  background-size: 800px 100%;
+}
+
+/* Modal viewport safety & fixed containing-block guard across all screen heights */
+[role="dialog"] {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+[role="dialog"] section,
+[role="dialog"] .modal-panel {
+  margin-top: auto;
+  margin-bottom: auto;
+  max-height: calc(100dvh - 2rem);
+}
+
+.view-enter:has([role="dialog"]),
+.view-card-enter:has([role="dialog"]),
+.row-enter:has([role="dialog"]),
+.stagger-grid > *:has([role="dialog"]) {
+  animation: none !important;
+  transform: none !important;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

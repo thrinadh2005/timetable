@@ -124,14 +124,57 @@ router.delete('/slots/:id', requireRole(['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'C
   }
 });
 
-// User Account Administration (Super Admin / Dean only)
-router.get('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
+const USER_ADMIN_ROLES = ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR'];
+
+function getCreatableRolesForActor(actorRole) {
+  if (actorRole === 'SUPER_ADMIN') {
+    return ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
+  }
+  if (actorRole === 'DEAN') {
+    return ['DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
+  }
+  if (actorRole === 'DEPT_ADMIN') {
+    return ['COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
+  }
+  if (actorRole === 'COORDINATOR') {
+    return ['TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
+  }
+  return [];
+}
+
+async function resolveUserScopeDepts(user) {
+  if (user.role === 'SUPER_ADMIN') return null;
+  if (user.role === 'DEAN') {
+    const deanSchool = await getDeanSchoolScope(user.userId);
+    return await getSchoolDepartments(deanSchool);
+  }
+  return user.departmentId ? [String(user.departmentId).trim().toUpperCase()] : [];
+}
+
+// User Account & Faculty Registration Administration (Super Admin, Dean, HOD, Department Coordinator)
+router.get('/users', requireRole(USER_ADMIN_ROLES), async (req, res) => {
   try {
-    const users = await db.all(`
-      SELECT user_id, pnrno, email, full_name, mobile_number, role, department_id, status, created_at, last_login
-      FROM users
-      ORDER BY created_at DESC
-    `);
+    const allowedRoles = getCreatableRolesForActor(req.user.role);
+    const scopeDepts = await resolveUserScopeDepts(req.user);
+
+    let users;
+    if (req.user.role === 'SUPER_ADMIN') {
+      users = await db.all(`
+        SELECT user_id, pnrno, email, full_name, mobile_number, role, department_id, status, created_at, last_login
+        FROM users
+        ORDER BY created_at DESC
+      `);
+    } else if (scopeDepts && scopeDepts.length > 0) {
+      users = await db.all(`
+        SELECT user_id, pnrno, email, full_name, mobile_number, role, department_id, status, created_at, last_login
+        FROM users
+        WHERE UPPER(COALESCE(department_id, '')) = ANY($1)
+          AND (role = ANY($2) OR user_id = $3)
+        ORDER BY created_at DESC
+      `, [scopeDepts, allowedRoles, req.user.userId]);
+    } else {
+      users = [];
+    }
 
     res.json({
       success: true,
@@ -147,7 +190,7 @@ router.get('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
   }
 });
 
-router.patch('/users/:id/status', requireRole(['SUPER_ADMIN']), async (req, res) => {
+router.patch('/users/:id/status', requireRole(USER_ADMIN_ROLES), async (req, res) => {
   try {
     const { status } = req.body;
     const userId = req.params.id;
@@ -161,6 +204,14 @@ router.patch('/users/:id/status', requireRole(['SUPER_ADMIN']), async (req, res)
     const existing = await db.get('SELECT * FROM users WHERE user_id = $1', [userId]);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    const allowedRoles = getCreatableRolesForActor(req.user.role);
+    const scopeDepts = await resolveUserScopeDepts(req.user);
+    if (req.user.role !== 'SUPER_ADMIN') {
+      if (!allowedRoles.includes(existing.role) || (scopeDepts && !scopeDepts.includes(String(existing.department_id || '').trim().toUpperCase()))) {
+        return res.status(403).json({ success: false, message: 'Forbidden: Target user is outside your administrative authority or department scope.' });
+      }
     }
 
     await db.transaction(async (tx) => {
@@ -195,19 +246,36 @@ router.patch('/users/:id/status', requireRole(['SUPER_ADMIN']), async (req, res)
   }
 });
 
-// POST /api/v1/admin/users — Create new user account (SUPER_ADMIN only)
-router.post('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
+// POST /api/v1/admin/users — Register new user / faculty account (Super Admin, Dean, HOD, Coordinator)
+router.post('/users', requireRole(USER_ADMIN_ROLES), async (req, res) => {
   try {
     const ip = req.ip || req.connection.remoteAddress || '127.0.0.1';
     const { full_name, email, pnrno, mobile_number, role, department_id, password, status } = req.body;
 
     if (!full_name || !email || !pnrno || !role || !password) {
-      return res.status(400).json({ success: false, message: 'full_name, email, pnrno, role, and password are required.' });
+      return res.status(400).json({ success: false, message: 'full_name, email, Student No / ID, role, and password are required.' });
     }
 
-    const validRoles = ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({ success: false, message: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
+    const creatableRoles = getCreatableRolesForActor(req.user.role);
+    if (!creatableRoles.includes(role)) {
+      return res.status(403).json({
+        success: false,
+        message: `Forbidden: ${req.user.role} may only register accounts for: ${creatableRoles.join(', ')}`
+      });
+    }
+
+    const scopeDepts = await resolveUserScopeDepts(req.user);
+    const resolvedDept = (req.user.role === 'DEPT_ADMIN' || req.user.role === 'COORDINATOR')
+      ? String(req.user.departmentId || department_id || '').trim().toUpperCase()
+      : (department_id ? String(department_id).trim().toUpperCase() : null);
+
+    if (req.user.role !== 'SUPER_ADMIN' && scopeDepts) {
+      if (!resolvedDept || !scopeDepts.includes(resolvedDept)) {
+        return res.status(403).json({
+          success: false,
+          message: 'Forbidden: Cannot register accounts outside your department or school scope.'
+        });
+      }
     }
 
     const existing = await db.get(
@@ -215,7 +283,7 @@ router.post('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
       [email.trim(), pnrno.trim()]
     );
     if (existing) {
-      return res.status(409).json({ success: false, message: 'A user with this email or PNR already exists.' });
+      return res.status(409).json({ success: false, message: 'A user with this email or Student No / ID already exists.' });
     }
 
     const userId = `USR-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
@@ -224,13 +292,13 @@ router.post('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
     const cleanPnr = pnrno.trim();
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = full_name.trim();
-    const staffDept = department_id || 'CSE';
+    const staffDept = resolvedDept || 'CSE';
 
     await db.transaction(async (tx) => {
       await tx.run(`
         INSERT INTO users (user_id, pnrno, email, password_hash, full_name, mobile_number, role, department_id, status)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [userId, cleanPnr, cleanEmail, passwordHash, cleanName, mobile_number || null, role, department_id || null, userStatus]);
+      `, [userId, cleanPnr, cleanEmail, passwordHash, cleanName, mobile_number || null, role, resolvedDept, userStatus]);
 
       if (role === 'TEACHING_STAFF' || role === 'NON_TEACHING_STAFF') {
         const staffCat = role === 'TEACHING_STAFF' ? 'TEACHING' : 'NON_TEACHING';
@@ -291,8 +359,8 @@ router.post('/users', requireRole(['SUPER_ADMIN']), async (req, res) => {
   }
 });
 
-// PUT /api/v1/admin/users/:id — Update user details (SUPER_ADMIN only)
-router.put('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
+// PUT /api/v1/admin/users/:id — Update user details (Super Admin, Dean, HOD, Coordinator within scope)
+router.put('/users/:id', requireRole(USER_ADMIN_ROLES), async (req, res) => {
   try {
     const ip = req.ip || req.connection.remoteAddress || '127.0.0.1';
     const userId = req.params.id;
@@ -301,6 +369,20 @@ router.put('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
     const existing = await db.get('SELECT * FROM users WHERE user_id = $1', [userId]);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    const creatableRoles = getCreatableRolesForActor(req.user.role);
+    const scopeDepts = await resolveUserScopeDepts(req.user);
+    if (req.user.role !== 'SUPER_ADMIN') {
+      if (!creatableRoles.includes(existing.role) || (scopeDepts && !scopeDepts.includes(String(existing.department_id || '').trim().toUpperCase()))) {
+        return res.status(403).json({ success: false, message: 'Forbidden: Target user is outside your authority or department scope.' });
+      }
+      if (role && !creatableRoles.includes(role)) {
+        return res.status(403).json({ success: false, message: `Forbidden: Cannot assign privileged role ${role}.` });
+      }
+      if (department_id && scopeDepts && !scopeDepts.includes(String(department_id).trim().toUpperCase())) {
+        return res.status(403).json({ success: false, message: 'Forbidden: Cannot transfer user outside your department or school scope.' });
+      }
     }
 
     const validRoles = ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT'];
@@ -319,7 +401,7 @@ router.put('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
     }
     if (pnrno && pnrno.trim().toUpperCase() !== String(existing.pnrno || '').toUpperCase()) {
       const dupPnr = await db.get('SELECT user_id FROM users WHERE UPPER(pnrno) = UPPER($1) AND user_id != $2', [pnrno.trim(), userId]);
-      if (dupPnr) return res.status(409).json({ success: false, message: 'That PNR / ID is already in use by another account.' });
+      if (dupPnr) return res.status(409).json({ success: false, message: 'That Staff ID / Student No is already in use by another account.' });
     }
 
     if (password && String(password).length < 6) {
@@ -412,8 +494,8 @@ router.put('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
   }
 });
 
-// DELETE /api/v1/admin/users/:id — Delete user account (SUPER_ADMIN only)
-router.delete('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
+// DELETE /api/v1/admin/users/:id — Delete user account (Super Admin, Dean, HOD, Coordinator within scope)
+router.delete('/users/:id', requireRole(USER_ADMIN_ROLES), async (req, res) => {
   try {
     const ip = req.ip || req.connection.remoteAddress || '127.0.0.1';
     const userId = req.params.id;
@@ -425,6 +507,14 @@ router.delete('/users/:id', requireRole(['SUPER_ADMIN']), async (req, res) => {
     const existing = await db.get('SELECT * FROM users WHERE user_id = $1', [userId]);
     if (!existing) {
       return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    const creatableRoles = getCreatableRolesForActor(req.user.role);
+    const scopeDepts = await resolveUserScopeDepts(req.user);
+    if (req.user.role !== 'SUPER_ADMIN') {
+      if (!creatableRoles.includes(existing.role) || (scopeDepts && !scopeDepts.includes(String(existing.department_id || '').trim().toUpperCase()))) {
+        return res.status(403).json({ success: false, message: 'Forbidden: Target user is outside your authority or department scope.' });
+      }
     }
 
     // Prevent deleting the last SUPER_ADMIN

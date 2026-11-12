@@ -54,16 +54,27 @@ async function registerUser(data, ipAddress = '127.0.0.1') {
     [normPnr, normEmail]
   );
   if (existing) {
-    logSecurityEvent('DUPLICATE_REGISTRATION_ATTEMPT', 'WARNING', `PNRNO: ${pnrno} or Email: ${email} already registered.`, ipAddress, email);
-    throw new Error('An account with this PNRNO or Email is already registered in the system.');
+    logSecurityEvent('DUPLICATE_REGISTRATION_ATTEMPT', 'WARNING', `Student No / Staff ID: ${pnrno} or Email: ${email} already registered.`, ipAddress, email);
+    throw new Error('An account with this Student No / Staff ID or Email is already registered in the system.');
   }
 
   const salt = bcrypt.genSaltSync(12);
   const passwordHash = bcrypt.hashSync(password, salt);
   const userId = `USR-${crypto.randomUUID().substring(0, 8).toUpperCase()}`;
 
-  const validRoles = ['STUDENT', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'DEPT_ADMIN', 'SUPER_ADMIN'];
-  const userRole = validRoles.includes(role) ? role : 'STUDENT';
+  const requestedRole = String(role || 'STUDENT').trim().toUpperCase();
+  if (requestedRole !== 'STUDENT') {
+    logSecurityEvent(
+      'RESTRICTED_ROLE_SELF_REGISTRATION',
+      'WARNING',
+      `Blocked public self-registration attempt for non-student role: ${requestedRole}`,
+      ipAddress,
+      email
+    );
+    throw new Error('Public registration is strictly restricted to Students. Faculty and staff accounts can only be registered by an Admin or Department Coordinator.');
+  }
+
+  const userRole = 'STUDENT';
 
   await db.run(
     `
@@ -111,7 +122,7 @@ async function loginUser(identifier, password, ipAddress = '127.0.0.1') {
 
   if (!user) {
     logSecurityEvent('LOGIN_FAILED_UNKNOWN_USER', 'WARNING', `Failed login attempt for identifier: ${idClean}`, ipAddress, idClean);
-    throw new Error('Invalid institutional credentials. Please verify your PNRNO or Email.');
+    throw new Error('Invalid institutional credentials. Please verify your Student No / Staff ID or Email.');
   }
 
   if (user.status !== 'ACTIVE') {

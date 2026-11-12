@@ -174,10 +174,10 @@ export function getAcademicEndpoint(
     case 'bookings':
       return '/api/v1/laboratories/all-bookings'
     case 'approvals':
-      // Super Admin & Dean receive every school/global pending request (scoped by the backend).
+      // Super Admin & Dean receive school/global approval queues; HOD receives department requests across all statuses.
       return user.role === 'SUPER_ADMIN' || user.role === 'DEAN'
-        ? '/api/v1/laboratories/pending-requests'
-        : `/api/v1/laboratories/pending-requests${query({ department: dept })}`
+        ? '/api/v1/laboratories/pending-requests?status=ALL'
+        : `/api/v1/laboratories/pending-requests${query({ department: dept, status: 'ALL' })}`
     case 'people':
       return `/api/v1/staff${query({ school })}`
     case 'substitutions':
@@ -206,10 +206,10 @@ export const mutationContracts: Partial<Record<AcademicScreen, MutationContract>
     fields: [
       {
         name: 'section_id',
-        label: 'Section Cohort',
+        label: 'Year, Semester & Section',
         source: 'sections',
         required: true,
-        help: 'Department · Semester · Cohort — resolved live from the academic hierarchy.',
+        help: 'Select Year, Semester, and Section to resolve the class batch.',
       },
       {
         name: 'version_id',
@@ -399,10 +399,10 @@ export const mutationContracts: Partial<Record<AcademicScreen, MutationContract>
     fields: [
       {
         name: 'section_id',
-        label: 'Section Cohort',
+        label: 'Year, Semester & Section',
         source: 'sections',
         required: true,
-        help: 'Choose the cohort to load its scheduled sessions below.',
+        help: 'Choose Year, Semester, and Section to load its scheduled sessions below.',
       },
       {
         name: 'slot_id',
@@ -558,7 +558,6 @@ function toAcademicRecord(value: Record<string, unknown>, index: number): Academ
     'facilityId',
     'event_id',
     'substitution_id',
-    'notice_id',
     'feedback_id',
     'notification_id',
     'staff_id',

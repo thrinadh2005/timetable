@@ -29,7 +29,6 @@ const TABLE_TRANSFER_PLAN = [
   { name: 'lab_incidents', pk: ['incident_id'], timestamps: ['created_at'] },
   { name: 'events', pk: ['event_id'], timestamps: ['created_at'] },
   { name: 'academic_events', pk: ['event_id'], timestamps: ['created_at'] },
-  { name: 'digital_notices', pk: ['notice_id'], timestamps: ['created_at'] },
   { name: 'notifications', pk: ['notification_id'], timestamps: ['created_at'] },
   { name: 'user_feedback', pk: ['feedback_id'], timestamps: ['created_at'] },
   { name: 'password_resets', pk: ['reset_id'], timestamps: ['expires_at', 'created_at'] },

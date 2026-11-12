@@ -11,7 +11,7 @@ async function initiateRecovery(data, ipAddress = '127.0.0.1') {
   const emergencyKey = data.emergencyKey || data.masterKey;
 
   if (!identifier) {
-    throw new Error('Please provide your institutional email address or PNR / Roll number.');
+    throw new Error('Please provide your institutional email address or Student No / Staff ID.');
   }
 
   const cleanId = identifier.trim();

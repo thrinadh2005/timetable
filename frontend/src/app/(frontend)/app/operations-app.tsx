@@ -61,7 +61,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState, type ComponentType, type FormEvent } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ComponentType, type FormEvent, type ReactNode } from 'react'
 import {
   bellSchedule,
   getAcademicEndpoint,
@@ -107,7 +107,17 @@ type DepartmentSummary = {
   laboratories_count?: number
 }
 
-function useInstitutionalDirectory() {
+type InstitutionalDirectoryValue = {
+  departments: DepartmentSummary[]
+  schools: SchoolSummary[]
+  deptIds: string[]
+  loading: boolean
+  reload: () => void
+}
+
+const InstitutionalDirectoryContext = createContext<InstitutionalDirectoryValue | null>(null)
+
+function useInstitutionalDirectoryState(): InstitutionalDirectoryValue {
   const deptsRes = useLiveResource<{ status?: string; success?: boolean; data: DepartmentSummary[] }>('/api/v1/departments')
   const schoolsRes = useLiveResource<{ status?: string; success?: boolean; data: SchoolSummary[] }>('/api/v1/departments/schools')
   const departments = deptsRes.data?.data || []
@@ -126,6 +136,23 @@ function useInstitutionalDirectory() {
       schoolsRes.retry()
     },
   }
+}
+
+function InstitutionalDirectoryProvider({ children }: { children: ReactNode }) {
+  const value = useInstitutionalDirectoryState()
+  return (
+    <InstitutionalDirectoryContext.Provider value={value}>
+      {children}
+    </InstitutionalDirectoryContext.Provider>
+  )
+}
+
+function useInstitutionalDirectory() {
+  const ctx = useContext(InstitutionalDirectoryContext)
+  if (!ctx) {
+    throw new Error('useInstitutionalDirectory must be used inside InstitutionalDirectoryProvider')
+  }
+  return ctx
 }
 
 function DepartmentOptions({
@@ -162,6 +189,283 @@ function DepartmentOptions({
         </option>
       ))}
     </>
+  )
+}
+
+/* Unified Form & Modal UI Tokens (Consistent Light + Midnight Marine Dusk Dark Theme) */
+const FORM_MODAL_BACKDROP_CLASS =
+  'fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto overscroll-contain modal-backdrop'
+const FORM_MODAL_SCRIM_CLASS = 'fixed inset-0 bg-[#0b1820]/65 dark:bg-[#071016]/80 backdrop-blur-xs transition-opacity'
+const FORM_MODAL_PANEL_CLASS =
+  'relative z-10 my-auto w-full max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#182732] border border-[#dce4e3] dark:border-[#2e4656] shadow-2xl modal-panel'
+const FORM_MODAL_HEADER_CLASS =
+  'flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#2e4656] bg-[#f8fbfb] dark:bg-[#1f3240] px-5 py-3.5 shrink-0'
+const FORM_MODAL_CLOSE_CLASS =
+  'shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] dark:text-[#a6bcc9] hover:bg-[#edf2f1] dark:hover:bg-[#294050] cursor-pointer transition'
+const FORM_LABEL_CLASS = 'block text-xs font-semibold text-[#1e3539] dark:text-[#d0e0ea] mb-1.5'
+const FORM_INPUT_CLASS =
+  'h-9 w-full rounded-lg border border-[#cfdada] dark:border-[#2e4656] bg-white dark:bg-[#111c24] px-3 text-xs text-[#172326] dark:text-[#f4f9fb] placeholder:text-[#88989b] dark:placeholder:text-[#7e9aa8] outline-none transition focus:border-[#08747c] dark:focus:border-[#38e0d2] focus:ring-2 focus:ring-[#08747c]/15 dark:focus:ring-[#38e0d2]/20 [color-scheme:light] dark:[color-scheme:dark] disabled:opacity-60'
+const FORM_TEXTAREA_CLASS =
+  'w-full rounded-lg border border-[#cfdada] dark:border-[#2e4656] bg-white dark:bg-[#111c24] p-3 text-xs text-[#172326] dark:text-[#f4f9fb] placeholder:text-[#88989b] dark:placeholder:text-[#7e9aa8] outline-none transition focus:border-[#08747c] dark:focus:border-[#38e0d2] focus:ring-2 focus:ring-[#08747c]/15 dark:focus:ring-[#38e0d2]/20 disabled:opacity-60'
+const FORM_CANCEL_BTN_CLASS =
+  'inline-flex h-9 items-center justify-center rounded-lg border border-[#cfdada] dark:border-[#2e4656] bg-white dark:bg-[#1f3240] px-4 text-xs font-semibold text-[#526164] dark:text-[#d0e0ea] hover:bg-[#f0f4f4] dark:hover:bg-[#294050] transition cursor-pointer'
+const FORM_SUBMIT_BTN_CLASS =
+  'inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#08747c] dark:bg-[#0d8d96] px-4 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] dark:hover:bg-[#13a4af] transition disabled:opacity-50 btn-interactive cursor-pointer'
+
+const ACADEMIC_YEAR_META: Record<number, { label: string; semesters: string[] }> = {
+  1: { label: '1st Year', semesters: ['SEM_1', 'SEM_2'] },
+  2: { label: '2nd Year', semesters: ['SEM_3', 'SEM_4'] },
+  3: { label: '3rd Year', semesters: ['SEM_5', 'SEM_6'] },
+  4: { label: '4th Year', semesters: ['SEM_7', 'SEM_8'] },
+}
+
+function getYearNumberForSem(semId: string): number {
+  const num = Number(String(semId || '').replace(/[^0-9]/g, '')) || 1
+  return Math.min(4, Math.max(1, Math.ceil(num / 2)))
+}
+
+function SectionCohortCascadePicker({
+  sections,
+  value,
+  onChange,
+  lockedDept,
+  allowedDepts,
+  loading,
+  fieldName = 'section_id',
+  required = false,
+}: {
+  sections: Array<{ section_id: string; department_id: string; semester_id: string; section_name: string; student_count?: number }>
+  value: string
+  onChange: (sectionId: string) => void
+  lockedDept?: string | null
+  allowedDepts?: Set<string> | null
+  loading?: boolean
+  fieldName?: string
+  required?: boolean
+}) {
+  const scopedSections = useMemo(
+    () =>
+      sections.filter((s) => {
+        if (lockedDept && s.department_id !== lockedDept) return false
+        if (allowedDepts && !allowedDepts.has(s.department_id)) return false
+        return true
+      }),
+    [sections, lockedDept, allowedDepts],
+  )
+
+  const currentMatch = useMemo(
+    () => scopedSections.find((s) => s.section_id === value) ?? null,
+    [scopedSections, value],
+  )
+
+  const departments = useMemo(
+    () => Array.from(new Set(scopedSections.map((s) => s.department_id))).sort(),
+    [scopedSections],
+  )
+
+  const [pickedDept, setPickedDept] = useState<string>(lockedDept || '')
+  const [pickedYear, setPickedYear] = useState<number>(3)
+  const [pickedSem, setPickedSem] = useState<string>('SEM_5')
+  const [pickedSec, setPickedSec] = useState<string>('A')
+
+  useEffect(() => {
+    if (currentMatch) {
+      setPickedDept(currentMatch.department_id)
+      setPickedYear(getYearNumberForSem(currentMatch.semester_id))
+      setPickedSem(currentMatch.semester_id)
+      setPickedSec(currentMatch.section_name)
+    } else if (lockedDept) {
+      setPickedDept(lockedDept)
+    } else if (!pickedDept && departments.length > 0) {
+      setPickedDept(departments[0])
+    }
+  }, [currentMatch, lockedDept, departments, pickedDept])
+
+  const activeDept = lockedDept || pickedDept || departments[0] || ''
+
+  const deptRows = useMemo(
+    () => scopedSections.filter((s) => !activeDept || s.department_id === activeDept),
+    [scopedSections, activeDept],
+  )
+
+  const availableYears = useMemo(() => {
+    const yrs = new Set<number>()
+    deptRows.forEach((r) => yrs.add(getYearNumberForSem(r.semester_id)))
+    const list = Array.from(yrs).sort((a, b) => a - b)
+    return list.length > 0 ? list : [1, 2, 3, 4]
+  }, [deptRows])
+
+  const activeYear = availableYears.includes(pickedYear) ? pickedYear : availableYears[0]
+
+  const availableSemesters = useMemo(() => {
+    const sems = new Set<string>()
+    deptRows
+      .filter((r) => getYearNumberForSem(r.semester_id) === activeYear)
+      .forEach((r) => sems.add(r.semester_id))
+    const list = Array.from(sems).sort()
+    return list.length > 0 ? list : ACADEMIC_YEAR_META[activeYear]?.semesters || ['SEM_1', 'SEM_2']
+  }, [deptRows, activeYear])
+
+  const activeSem = availableSemesters.includes(pickedSem) ? pickedSem : availableSemesters[0]
+
+  const activeSemRows = useMemo(() => {
+    return deptRows
+      .filter((r) => r.semester_id === activeSem)
+      .sort((a, b) => a.section_name.localeCompare(b.section_name))
+  }, [deptRows, activeSem])
+
+  const emitResolution = (d: string, sem: string, sec: string) => {
+    const exact = scopedSections.find(
+      (r) => r.department_id === d && r.semester_id === sem && r.section_name === sec,
+    )
+    if (exact) {
+      onChange(exact.section_id)
+      return
+    }
+    const fallback = scopedSections.find((r) => r.department_id === d && r.semester_id === sem)
+      || scopedSections.find((r) => r.department_id === d)
+    if (fallback) {
+      onChange(fallback.section_id)
+    }
+  }
+
+  return (
+    <div className="space-y-2 rounded-xl border border-[#dce4e3] dark:border-[#2e4656] bg-[#f8fbfb] dark:bg-[#1f3240]/60 p-3">
+      <div className={`grid grid-cols-2 ${lockedDept ? 'sm:grid-cols-3' : 'sm:grid-cols-4'} gap-2.5`}>
+        {!lockedDept && (
+          <div>
+            <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#526164] dark:text-[#a6bcc9] mb-1">
+              Department
+            </span>
+            <select
+              data-cascade-field="department"
+              value={activeDept}
+              disabled={loading || departments.length === 0}
+              onChange={(e) => {
+                const nextDept = e.target.value
+                setPickedDept(nextDept)
+                emitResolution(nextDept, activeSem, pickedSec)
+              }}
+              className={FORM_INPUT_CLASS}
+            >
+              {departments.length === 0 ? (
+                <option value="">{loading ? 'Loading...' : 'No depts'}</option>
+              ) : (
+                departments.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))
+              )}
+            </select>
+          </div>
+        )}
+
+        <div>
+          <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#526164] dark:text-[#a6bcc9] mb-1">
+            Year
+          </span>
+          <select
+            data-cascade-field="year"
+            value={String(activeYear)}
+            disabled={loading || scopedSections.length === 0}
+            onChange={(e) => {
+              const nextYr = Number(e.target.value)
+              const yrSems = Array.from(
+                new Set(
+                  deptRows
+                    .filter((r) => getYearNumberForSem(r.semester_id) === nextYr)
+                    .map((r) => r.semester_id),
+                ),
+              ).sort()
+              const nextSem = yrSems[0] || ACADEMIC_YEAR_META[nextYr]?.semesters[0] || 'SEM_1'
+              const semSecs = deptRows.filter((r) => r.semester_id === nextSem).map((r) => r.section_name).sort()
+              const nextSec = semSecs.includes(pickedSec) ? pickedSec : (semSecs[0] || 'A')
+              setPickedYear(nextYr)
+              setPickedSem(nextSem)
+              setPickedSec(nextSec)
+              emitResolution(activeDept, nextSem, nextSec)
+            }}
+            className={FORM_INPUT_CLASS}
+          >
+            {availableYears.map((yr) => (
+              <option key={yr} value={String(yr)}>
+                {ACADEMIC_YEAR_META[yr]?.label || `Year ${yr}`}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#526164] dark:text-[#a6bcc9] mb-1">
+            Semester
+          </span>
+          <select
+            data-cascade-field="semester"
+            value={activeSem}
+            disabled={loading || scopedSections.length === 0}
+            onChange={(e) => {
+              const nextSem = e.target.value
+              const semSecs = deptRows.filter((r) => r.semester_id === nextSem).map((r) => r.section_name).sort()
+              const nextSec = semSecs.includes(pickedSec) ? pickedSec : (semSecs[0] || 'A')
+              setPickedSem(nextSem)
+              setPickedSec(nextSec)
+              emitResolution(activeDept, nextSem, nextSec)
+            }}
+            className={FORM_INPUT_CLASS}
+          >
+            {availableSemesters.map((sem) => (
+              <option key={sem} value={sem}>
+                {sem.replace('SEM_', 'Semester ')}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <span className="block text-[10px] font-semibold uppercase tracking-wide text-[#526164] dark:text-[#a6bcc9] mb-1">
+            Section
+          </span>
+          <select
+            name={fieldName}
+            required={required}
+            value={currentMatch ? currentMatch.section_id : ''}
+            disabled={loading || activeSemRows.length === 0}
+            onChange={(e) => {
+              const nextId = e.target.value
+              const matched = scopedSections.find((r) => r.section_id === nextId)
+              if (matched) {
+                setPickedSec(matched.section_name)
+                onChange(matched.section_id)
+              } else {
+                onChange('')
+              }
+            }}
+            className={FORM_INPUT_CLASS}
+          >
+            <option value="">
+              {loading ? 'Loading...' : activeSemRows.length === 0 ? 'No sections available' : 'Select Section...'}
+            </option>
+            {activeSemRows.map((row) => (
+              <option key={row.section_id} value={row.section_id}>
+                Sec {row.section_name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {currentMatch && (
+        <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#08747c] dark:text-[#38e0d2] font-semibold pt-1">
+          <span>
+            Active Batch: {currentMatch.department_id} · {ACADEMIC_YEAR_META[getYearNumberForSem(currentMatch.semester_id)]?.label} · {currentMatch.semester_id.replace('SEM_', 'Sem ')} · Section {currentMatch.section_name}
+          </span>
+          {typeof currentMatch.student_count === 'number' && (
+            <span className="text-[#526164] dark:text-[#a6bcc9] font-normal">
+              {currentMatch.student_count} Enrolled
+            </span>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -219,6 +523,7 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'approvals',
     'people',
     'substitutions',
+    'users',
     'feedback',
     'telemetry',
   ],
@@ -233,6 +538,7 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'approvals',
     'people',
     'substitutions',
+    'users',
     'feedback',
   ],
   COORDINATOR: [
@@ -244,6 +550,7 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'availability',
     'people',
     'substitutions',
+    'users',
   ],
   TEACHING_STAFF: [
     'overview',
@@ -403,7 +710,7 @@ const mutateRoles: Partial<Record<AcademicScreen, BackendRole[]>> = {
   ],
   approvals: ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN'],
   substitutions: ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF'],
-  users: ['SUPER_ADMIN'],
+  users: ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR'],
   ingestion: ['SUPER_ADMIN', 'DEPT_ADMIN', 'COORDINATOR'],
   feedback: [
     'SUPER_ADMIN',
@@ -498,11 +805,10 @@ function Panel({
     <section
       data-tone={tone}
       style={isInverse ? { backgroundColor: '#003135', color: '#ffffff', borderColor: '#084147' } : undefined}
-      className={`rounded-xl border shadow-xs transition-all duration-200 ${
-        isInverse
+      className={`rounded-xl border shadow-xs transition-all duration-200 ${isInverse
           ? 'panel-inverse border-[#084147] bg-[#003135] text-white dark:border-[#084147] dark:bg-[#002226]'
           : 'border-[#dce4e3] bg-white dark:border-[#124349] dark:bg-[#062327]'
-      } ${className}`}
+        } ${className}`}
     >
       {children}
     </section>
@@ -553,17 +859,18 @@ function ConfirmActionModal({
   onConfirm: () => void
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="bg-white dark:bg-[#062327] rounded-2xl border border-[#dce4e3] dark:border-[#124349] shadow-2xl w-full max-w-sm modal-panel">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-sm`}>
         <div className="px-5 py-5 text-center">
-          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/50 flex items-center justify-center mx-auto mb-3">
             <AlertTriangle size={22} className="text-red-500 dark:text-red-400" />
           </div>
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">{title}</h3>
-          <p className="text-xs font-semibold text-[#003135] dark:text-[#55d6dc] break-words">{subject}</p>
-          <p className="text-[11px] text-red-500 dark:text-red-400 font-semibold mt-2 mb-4">{description}</p>
+          <p className="text-xs font-semibold text-[#003135] dark:text-[#38e0d2] break-words">{subject}</p>
+          <p className="text-[11px] text-red-500 dark:text-red-300 font-semibold mt-2 mb-4">{description}</p>
           {error && (
-            <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+            <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-300">
               {error}
             </div>
           )}
@@ -571,7 +878,7 @@ function ConfirmActionModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] text-xs font-semibold text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f0f4f4] dark:hover:bg-[#072a2f] btn-interactive"
+              className={`${FORM_CANCEL_BTN_CLASS} flex-1`}
             >
               Cancel
             </button>
@@ -579,7 +886,7 @@ function ConfirmActionModal({
               type="button"
               onClick={onConfirm}
               disabled={loading}
-              className="flex-1 h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold btn-interactive disabled:opacity-60 flex items-center justify-center gap-1.5"
+              className="flex-1 h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold btn-interactive disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -623,9 +930,8 @@ function ConnectionStatusBanner({
 
   return (
     <div
-      className={`mb-5 flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center view-enter ${
-        offline ? 'border-[#e6c8c0] bg-[#faefec] dark:border-[#54251e] dark:bg-[#2b100d]' : 'border-[#ead9b9] bg-[#fdf6e7] dark:border-[#52411e] dark:bg-[#2b200b]'
-      }`}
+      className={`mb-5 flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center view-enter ${offline ? 'border-[#e6c8c0] bg-[#faefec] dark:border-[#54251e] dark:bg-[#2b100d]' : 'border-[#ead9b9] bg-[#fdf6e7] dark:border-[#52411e] dark:bg-[#2b200b]'
+        }`}
     >
       {offline ? (
         <WifiOff size={20} className="shrink-0 text-[#913b2c] dark:text-[#f08575]" />
@@ -786,22 +1092,20 @@ function TimetableMasterView({
           <div className="flex items-center gap-0.5 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-0.5">
             <button
               onClick={() => setViewMode('matrix')}
-              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition ${
-                viewMode === 'matrix'
+              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition ${viewMode === 'matrix'
                   ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                   : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-              }`}
+                }`}
             >
               <LayoutGrid size={13} />
               Grid
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition ${
-                viewMode === 'list'
+              className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition ${viewMode === 'list'
                   ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                   : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-              }`}
+                }`}
             >
               <List size={13} />
               List
@@ -845,17 +1149,15 @@ function WeeklyMatrixGrid({
                 Day / Period
               </th>
               <th
-                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${
-                  activePeriod === 1 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${activePeriod === 1 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 1</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">09:00 - 10:00</span>
               </th>
               <th
-                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${
-                  activePeriod === 2 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${activePeriod === 2 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 2</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">10:00 - 11:00</span>
@@ -864,17 +1166,15 @@ function WeeklyMatrixGrid({
                 TEA
               </th>
               <th
-                className={`w-[13%] px-2 py-1.5 text-center ${
-                  activePeriod === 3 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] px-2 py-1.5 text-center ${activePeriod === 3 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 3</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">11:10 - 12:10</span>
               </th>
               <th
-                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${
-                  activePeriod === 4 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${activePeriod === 4 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 4</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">12:10 - 13:10</span>
@@ -883,25 +1183,22 @@ function WeeklyMatrixGrid({
                 LUNCH
               </th>
               <th
-                className={`w-[13%] px-2 py-1.5 text-center ${
-                  activePeriod === 5 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] px-2 py-1.5 text-center ${activePeriod === 5 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 5</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">14:00 - 15:00</span>
               </th>
               <th
-                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${
-                  activePeriod === 6 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${activePeriod === 6 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 6</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">15:00 - 16:00</span>
               </th>
               <th
-                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${
-                  activePeriod === 7 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
-                }`}
+                className={`w-[13%] border-l border-[#e8efee] dark:border-[#124349] px-2 py-1.5 text-center ${activePeriod === 7 ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc]' : ''
+                  }`}
               >
                 <span className="block text-[11px] font-semibold">Period 7</span>
                 <span className="text-[9px] text-[#7a898c] dark:text-[#7ba09d]">16:00 - 17:00</span>
@@ -963,9 +1260,8 @@ function GridCell({
   if (!slot) {
     return (
       <td
-        className={`border-l border-[#e8efee] dark:border-[#124349] p-1 text-center text-[10px] text-[#9ba8a9] ${
-          isLive ? 'bg-[#f4faf9] dark:bg-[#063137]' : ''
-        }`}
+        className={`border-l border-[#e8efee] dark:border-[#124349] p-1 text-center text-[10px] text-[#9ba8a9] ${isLive ? 'bg-[#f4faf9] dark:bg-[#063137]' : ''
+          }`}
       >
         <span className="inline-block py-1 text-[#b9cac7] dark:text-[#426466]">—</span>
       </td>
@@ -978,18 +1274,16 @@ function GridCell({
 
   return (
     <td
-      className={`border-l border-[#e8efee] dark:border-[#124349] p-1 align-top transition-colors ${
-        isLive ? 'bg-[#f0faf9] dark:bg-[#08383e]' : ''
-      }`}
+      className={`border-l border-[#e8efee] dark:border-[#124349] p-1 align-top transition-colors ${isLive ? 'bg-[#f0faf9] dark:bg-[#08383e]' : ''
+        }`}
     >
       <div
-        className={`flex flex-col justify-between rounded-md border p-1.5 text-left h-full min-h-[58px] ${
-          isContinuous
+        className={`flex flex-col justify-between rounded-md border p-1.5 text-left h-full min-h-[58px] ${isContinuous
             ? 'border-[#08747c]/30 dark:border-[#0fa4af]/40 bg-[#ebf7f6] dark:bg-[#06343a]'
             : isLab
               ? 'border-[#c9e3d9] dark:border-[#13493b] bg-[#f2f9f6] dark:bg-[#052924]'
               : 'border-[#e0e7e6] dark:border-[#124349] bg-white dark:bg-[#082a2f]'
-        }`}
+          }`}
       >
         <div>
           <div className="flex items-center justify-between gap-1">
@@ -1071,13 +1365,12 @@ function DayByDayListView({
                 return (
                   <div
                     key={slot.id}
-                    className={`rounded-lg border p-3.5 transition ${
-                      isContinuous
+                    className={`rounded-lg border p-3.5 transition ${isContinuous
                         ? 'border-[#08747c]/30 dark:border-[#0fa4af]/40 bg-[#ebf7f6] dark:bg-[#06343a]'
                         : isLab
                           ? 'border-[#c9e3d9] dark:border-[#13493b] bg-[#f2f9f6] dark:bg-[#052924]'
                           : 'border-[#e0e7e6] dark:border-[#124349] bg-white dark:bg-[#082a2f]'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-mono text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc]">
@@ -1195,21 +1488,21 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={() => setOpen(false)} />
-          <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-            <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 py-4 shrink-0">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setOpen(false)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div className="min-w-0 flex-1 pr-3">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#55d6dc]">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
                   Timetable Slot Modification
                 </span>
-                <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc] truncate">{slot.title}</h2>
+                <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb] truncate">{slot.title}</h2>
               </div>
               <button
                 type="button"
                 aria-label="Close slot editor"
                 onClick={() => setOpen(false)}
-                className="shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
@@ -1222,21 +1515,21 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
               )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Day</label>
+                  <label className={FORM_LABEL_CLASS}>Day</label>
                   <select
                     value={dayOfWeek}
                     onChange={(e) => setDayOfWeek(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={FORM_INPUT_CLASS}
                   >
                     {ACADEMIC_DAYS.map((d) => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Period</label>
+                  <label className={FORM_LABEL_CLASS}>Period</label>
                   <select
                     value={periodIndex}
                     onChange={(e) => setPeriodIndex(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={FORM_INPUT_CLASS}
                   >
                     {['1', '2', '3', '4', '5', '6', '7'].map((p) => <option key={p} value={p}>Period {p}</option>)}
                   </select>
@@ -1244,11 +1537,11 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
               </div>
               {subjectList.length > 0 && (
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Subject</label>
+                  <label className={FORM_LABEL_CLASS}>Subject</label>
                   <select
                     value={subjectId}
                     onChange={(e) => setSubjectId(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={FORM_INPUT_CLASS}
                   >
                     {subjectList.map((sub) => (
                       <option key={sub.subject_id} value={sub.subject_id}>{sub.subject_code} — {sub.subject_name}</option>
@@ -1258,11 +1551,11 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
               )}
               {staffList.length > 0 && (
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Assigned Faculty</label>
+                  <label className={FORM_LABEL_CLASS}>Assigned Faculty</label>
                   <select
                     value={facultyId}
                     onChange={(e) => setFacultyId(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={FORM_INPUT_CLASS}
                   >
                     {staffList.map((st) => (
                       <option key={st.staff_id} value={st.staff_id}>{st.full_name} ({st.department_id || ''})</option>
@@ -1272,11 +1565,11 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
               )}
               {roomList.length > 0 && (
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Room / Facility</label>
+                  <label className={FORM_LABEL_CLASS}>Room / Facility</label>
                   <select
                     value={roomId}
                     onChange={(e) => setRoomId(e.target.value)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={FORM_INPUT_CLASS}
                   >
                     {roomList.map((rm) => {
                       const rid = rm.room_id || rm.id || ''
@@ -1285,11 +1578,11 @@ function EditSlotButton({ slot }: { slot: AcademicRecord }) {
                   </select>
                 </div>
               )}
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#e3e9e8] dark:border-[#124349]">
-                <button type="button" onClick={() => setOpen(false)} className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[#526164] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
+                <button type="button" onClick={() => setOpen(false)} className={FORM_CANCEL_BTN_CLASS}>
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 rounded-lg bg-[#08747c] px-4 py-2 text-xs font-semibold text-white hover:bg-[#003135] disabled:opacity-50 btn-interactive">
+                <button type="submit" disabled={saving} className={FORM_SUBMIT_BTN_CLASS}>
                   {saving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
                   Save Slot
                 </button>
@@ -1417,17 +1710,16 @@ function GenericRecordGrid({
                   <button
                     key={cat}
                     onClick={() => setStaffCategoryFilter(cat)}
-                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                      staffCategoryFilter === cat
+                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${staffCategoryFilter === cat
                         ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                         : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-                    }`}
+                      }`}
                   >
                     {cat === 'ALL'
                       ? `All Staff (${records.length})`
                       : cat === 'TEACHING'
-                      ? `Faculty (${records.filter((r) => String(r.meta?.category || '').toUpperCase() === 'TEACHING').length})`
-                      : `Technical Staff (${records.filter((r) => String(r.meta?.category || '').toUpperCase() === 'NON_TEACHING').length})`}
+                        ? `Faculty (${records.filter((r) => String(r.meta?.category || '').toUpperCase() === 'TEACHING').length})`
+                        : `Technical Staff (${records.filter((r) => String(r.meta?.category || '').toUpperCase() === 'NON_TEACHING').length})`}
                   </button>
                 ))}
               </div>
@@ -1460,11 +1752,10 @@ function GenericRecordGrid({
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                    statusFilter === st
+                  className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${statusFilter === st
                       ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-                  }`}
+                    }`}
                 >
                   {st === 'ALL' ? 'All' : st === 'APPROVED' ? (screen === 'bookings' ? 'Confirmed' : 'Approved') : st}
                 </button>
@@ -1479,11 +1770,10 @@ function GenericRecordGrid({
                   <button
                     key={t}
                     onClick={() => setFacilityTypeFilter(t)}
-                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                      facilityTypeFilter === t
+                    className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${facilityTypeFilter === t
                         ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                         : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-                    }`}
+                      }`}
                   >
                     {t === 'ALL' ? 'All Types' : t === 'CLASSROOM' ? 'Classrooms' : 'Labs'}
                   </button>
@@ -1600,22 +1890,20 @@ function FacultyAvatar({
         src={photo}
         alt={name}
         onError={() => setImgError(true)}
-        className={`${sizeClasses} shrink-0 rounded-full object-cover border ${
-          isSubstitute
+        className={`${sizeClasses} shrink-0 rounded-full object-cover border ${isSubstitute
             ? 'border-[#08747c] dark:border-[#55d6dc]'
             : 'border-[#dce4e3] dark:border-[#124349]'
-        }`}
+          }`}
       />
     )
   }
 
   return (
     <div
-      className={`${sizeClasses} shrink-0 rounded-full flex items-center justify-center font-bold select-none ${
-        isSubstitute
+      className={`${sizeClasses} shrink-0 rounded-full flex items-center justify-center font-bold select-none ${isSubstitute
           ? 'bg-[#e2f1f0] dark:bg-[#063b41] text-[#076970] dark:text-[#55d6dc] border border-[#08747c]/30'
           : 'bg-[#edf2f1] dark:bg-[#052b30] text-[#003135] dark:text-[#cbd5e1] border border-[#dce4e3] dark:border-[#124349]'
-      }`}
+        }`}
     >
       {initials}
     </div>
@@ -1794,13 +2082,12 @@ function FacultyWorkloadCard({
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-1.5">
               <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
-                PNR #{record.id}
+                Staff ID #{record.id}
               </span>
-              <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
-                isNonTeaching
+              <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${isNonTeaching
                   ? 'bg-[#eaf5f0] dark:bg-[#072b22] text-[#1b6d53] dark:text-[#45c39c]'
                   : 'bg-[#e8efee] dark:bg-[#07363d] text-[#076970] dark:text-[#55d6dc]'
-              }`}>
+                }`}>
                 {dept} · {isNonTeaching ? 'Tech Staff' : 'Faculty'}
               </span>
             </div>
@@ -1838,11 +2125,10 @@ function FacultyWorkloadCard({
                 Status
               </span>
               <span
-                className={`mt-0.5 inline-block text-[11px] font-bold ${
-                  isOverloaded
+                className={`mt-0.5 inline-block text-[11px] font-bold ${isOverloaded
                     ? 'text-[#b45309] dark:text-[#fbbf24]'
                     : 'text-[#15803d] dark:text-[#4ade80]'
-                }`}
+                  }`}
               >
                 {isOverloaded ? 'OVERLOADED' : 'NORMAL LOAD'}
               </span>
@@ -1908,16 +2194,14 @@ function FacilityAvailabilityCard({ record }: { record: AcademicRecord }) {
             </h3>
           </div>
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${
-              isVacant
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${isVacant
                 ? 'bg-[#dcfce7] dark:bg-[#052e16] text-[#166534] dark:text-[#4ade80] border border-[#86efac]/40'
                 : 'bg-[#fee2e2] dark:bg-[#450a0a] text-[#991b1b] dark:text-[#f87171] border border-[#fca5a5]/40'
-            }`}
+              }`}
           >
             <span
-              className={`h-2 w-2 rounded-full ${
-                isVacant ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ef4444]'
-              }`}
+              className={`h-2 w-2 rounded-full ${isVacant ? 'bg-[#22c55e] animate-pulse' : 'bg-[#ef4444]'
+                }`}
             />
             {isVacant ? 'VACANT NOW' : 'OCCUPIED'}
           </span>
@@ -2123,7 +2407,7 @@ function RecommendationStaffCard({
             <FacultyAvatar name={record.title} photo={photo} size="md" />
             <div className="min-w-0">
               <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
-                PNR #{record.id} · {dept}
+                ID #{record.id} · {dept}
               </span>
               <h3 className="mt-0.5 truncate text-sm font-bold text-[#003135] dark:text-[#e0f2fe]">
                 {record.title}
@@ -2179,13 +2463,12 @@ function CalendarEventItemCard({ record }: { record: AcademicRecord }) {
       <div>
         <div className="flex items-start justify-between gap-2">
           <span
-            className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-              eventType === 'HOLIDAY'
+            className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${eventType === 'HOLIDAY'
                 ? 'bg-[#fae8ff] dark:bg-[#3b0764] text-[#86198f] dark:text-[#f0abfc]'
                 : eventType === 'EXAMINATION'
-                ? 'bg-[#fef3c7] dark:bg-[#451a03] text-[#b45309] dark:text-[#fcd34d]'
-                : 'bg-[#e0f2fe] dark:bg-[#082f49] text-[#0369a1] dark:text-[#38bdf8]'
-            }`}
+                  ? 'bg-[#fef3c7] dark:bg-[#451a03] text-[#b45309] dark:text-[#fcd34d]'
+                  : 'bg-[#e0f2fe] dark:bg-[#082f49] text-[#0369a1] dark:text-[#38bdf8]'
+              }`}
           >
             {eventType}
           </span>
@@ -2208,11 +2491,10 @@ function CalendarEventItemCard({ record }: { record: AcademicRecord }) {
 
       <div className="mt-4 pt-3 border-t border-[#edf2f1] dark:border-[#124349] flex items-center justify-between text-[11px]">
         <span
-          className={`font-semibold ${
-            affectsSchedule
+          className={`font-semibold ${affectsSchedule
               ? 'text-[#b45309] dark:text-[#fbbf24]'
               : 'text-[#166534] dark:text-[#4ade80]'
-          }`}
+            }`}
         >
           {affectsSchedule ? '\u26A0 Timetable Suspended' : '\u2713 Normal Operations'}
         </span>
@@ -2457,6 +2739,22 @@ function IngestionStagedCard({
   const [showSlotsModal, setShowSlotsModal] = useState(false)
   const [slotsData, setSlotsData] = useState<any[] | null>(null)
   const [loadingSlots, setLoadingSlots] = useState(false)
+  const [editingSlots, setEditingSlots] = useState<any[] | null>(null)
+  const [isSavingSlots, setIsSavingSlots] = useState(false)
+  const [slotsError, setSlotsError] = useState<string | null>(null)
+  const [slotsDirty, setSlotsDirty] = useState(false)
+
+  // Only the roles that may ingest/publish timetables may edit staged slots.
+  const canEditSlots = ['SUPER_ADMIN', 'DEPT_ADMIN', 'COORDINATOR'].includes(user.role)
+
+  const slotStaffRes = useLiveResource<{ data?: Array<{ staff_id: string; full_name: string }> }>(
+    showSlotsModal && canEditSlots ? '/api/v1/staff' : null,
+  )
+  const slotRoomsRes = useLiveResource<{
+    data?: { facilities?: Array<{ room_id?: string; id?: string; room_number?: string }> }
+  }>(showSlotsModal && canEditSlots ? '/api/v1/availability' : null)
+  const slotStaff = Array.isArray(slotStaffRes.data?.data) ? slotStaffRes.data!.data : []
+  const slotRooms = Array.isArray(slotRoomsRes.data?.data?.facilities) ? slotRoomsRes.data!.data!.facilities : []
 
   const handleCommit = async () => {
     if (
@@ -2503,12 +2801,47 @@ function IngestionStagedCard({
           typeof data.data.parsed_data_json === 'string'
             ? JSON.parse(data.data.parsed_data_json)
             : data.data.parsed_data_json
-        setSlotsData(parsed?.allSlots || [])
+        const list = parsed?.allSlots || []
+        setSlotsData(list)
+        setEditingSlots(list.map((s: any) => ({ ...s })))
+        setSlotsDirty(false)
+        setSlotsError(null)
       }
     } catch (e) {
       console.error(e)
     } finally {
       setLoadingSlots(false)
+    }
+  }
+
+  const updateSlotRow = (index: number, patch: Record<string, any>) => {
+    setEditingSlots((prev) => (prev ? prev.map((s, i) => (i === index ? { ...s, ...patch } : s)) : prev))
+    setSlotsDirty(true)
+  }
+
+  const handleSaveSlots = async () => {
+    if (!editingSlots) return
+    setIsSavingSlots(true)
+    setSlotsError(null)
+    try {
+      const res = await backendFetch(`/api/v1/timetables/ingest/staged/${encodeURIComponent(docId)}/slots`, {
+        method: 'PUT',
+        body: JSON.stringify({ slots: editingSlots }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to save staged slots.')
+      setSlotsData(editingSlots.map((s) => ({ ...s })))
+      setSlotsDirty(false)
+      window.dispatchEvent(
+        new CustomEvent('gmritdu:toast', {
+          detail: { message: data.message || 'Staged timetable updated successfully.', type: 'success' },
+        })
+      )
+      window.dispatchEvent(new Event('gmritdu:data-change'))
+    } catch (err: any) {
+      setSlotsError(err?.message || 'Error saving staged slots')
+    } finally {
+      setIsSavingSlots(false)
     }
   }
 
@@ -2604,32 +2937,39 @@ function IngestionStagedCard({
       </div>
 
       {showSlotsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-xl bg-white dark:bg-[#002528] border border-[#dce4e3] dark:border-[#0a4a50] shadow-2xl overflow-hidden modal-panel">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#dce4e3] dark:border-[#0a4a50] bg-[#f8fafc] dark:bg-[#04363a]">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setShowSlotsModal(false)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-2xl`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div>
-                <h3 className="text-sm font-bold text-[#003135] dark:text-[#e0f2fe]">
+                <h3 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
                   Extracted Schedule Slots ({filename})
                 </h3>
-                <p className="text-xs text-[#647376] dark:text-[#94a3b8]">
+                <p className="text-xs text-[#647376] dark:text-[#a6bcc9]">
                   {docId} · {deptId} · {totalSlots} Total Slots Ready
                 </p>
               </div>
               <button
                 type="button"
+                aria-label="Close extracted schedule slots"
                 onClick={() => setShowSlotsModal(false)}
-                className="p-1 rounded-lg text-[#647376] hover:bg-[#e2eae9] dark:hover:bg-[#083b40] cursor-pointer"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
-            </div>
+            </header>
             <div className="p-5 overflow-y-auto flex-1 text-xs">
               {loadingSlots ? (
                 <div className="flex items-center justify-center py-8 gap-2 text-[#08747c] dark:text-[#55d6dc]">
                   <LoaderCircle size={18} className="animate-spin" /> Loading schedule slot matrix...
                 </div>
-              ) : slotsData && slotsData.length > 0 ? (
+              ) : editingSlots && editingSlots.length > 0 ? (
                 <div className="space-y-2">
+                  <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
+                    {canEditSlots
+                      ? 'Review and correct any extracted slot before publishing. All slots are saved together.'
+                      : 'Read-only preview of the extracted schedule slots.'}
+                  </p>
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-[#dce4e3] dark:border-[#0a4a50] text-[#7a898c]">
@@ -2641,37 +2981,138 @@ function IngestionStagedCard({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#e8efee] dark:divide-[#0e3b40]">
-                      {slotsData.slice(0, 35).map((s: any, idx: number) => (
+                      {editingSlots.map((s: any, idx: number) => (
                         <tr key={idx} className="hover:bg-[#f8faf9] dark:hover:bg-[#062c31]">
-                          <td className="py-1 px-2 font-medium">{s.day_of_week}</td>
-                          <td className="py-1 px-2 font-mono">P{s.period_index}</td>
+                          <td className="py-1 px-2 font-medium">
+                            {canEditSlots ? (
+                              <select
+                                aria-label={`Day for slot ${idx + 1}`}
+                                value={String(s.day_of_week || 'MONDAY')}
+                                onChange={(e) => updateSlotRow(idx, { day_of_week: e.target.value })}
+                                className="rounded border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] px-1 py-0.5 text-[11px] cursor-pointer"
+                              >
+                                {['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'].map((d) => (
+                                  <option key={d} value={d}>{d.slice(0, 3)}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              s.day_of_week
+                            )}
+                          </td>
+                          <td className="py-1 px-2 font-mono">
+                            {canEditSlots ? (
+                              <select
+                                aria-label={`Period for slot ${idx + 1}`}
+                                value={String(s.period_index || 1)}
+                                onChange={(e) => {
+                                  const p = Number(e.target.value)
+                                  const bell = bellSchedule.find((b) => b.period === p && b.type === 'period')
+                                  updateSlotRow(idx, { period_index: p, start_time: bell?.startsAt, end_time: bell?.endsAt })
+                                }}
+                                className="rounded border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] px-1 py-0.5 text-[11px] cursor-pointer"
+                              >
+                                {[1, 2, 3, 4, 5, 6, 7].map((p) => (
+                                  <option key={p} value={p}>P{p}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              `P${s.period_index}`
+                            )}
+                          </td>
                           <td className="py-1 px-2 font-bold text-[#08747c] dark:text-[#55d6dc]">
                             {s.subject_code || s.subject_id}
                           </td>
-                          <td className="py-1 px-2">{s.faculty_name || s.faculty_id}</td>
-                          <td className="py-1 px-2">{s.room_id}</td>
+                          <td className="py-1 px-2">
+                            {canEditSlots ? (
+                              <select
+                                aria-label={`Faculty for slot ${idx + 1}`}
+                                value={String(s.faculty_id || '')}
+                                onChange={(e) => {
+                                  const id = e.target.value
+                                  const member = slotStaff.find((x) => x.staff_id === id)
+                                  updateSlotRow(idx, { faculty_id: id, faculty_name: member?.full_name || id })
+                                }}
+                                className="max-w-[9rem] rounded border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] px-1 py-0.5 text-[11px] cursor-pointer"
+                              >
+                                <option value="">-- Unassigned --</option>
+                                {!!s.faculty_id && !slotStaff.some((x) => x.staff_id === s.faculty_id) && (
+                                  <option value={s.faculty_id}>{s.faculty_name || s.faculty_id}</option>
+                                )}
+                                {slotStaff.map((member) => (
+                                  <option key={member.staff_id} value={member.staff_id}>{member.full_name}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              s.faculty_name || s.faculty_id
+                            )}
+                          </td>
+                          <td className="py-1 px-2">
+                            {canEditSlots ? (
+                              <select
+                                aria-label={`Room for slot ${idx + 1}`}
+                                value={String(s.room_id || '')}
+                                onChange={(e) => updateSlotRow(idx, { room_id: e.target.value })}
+                                className="max-w-[8rem] rounded border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] px-1 py-0.5 text-[11px] cursor-pointer"
+                              >
+                                <option value="">-- Unassigned --</option>
+                                {!!s.room_id && !slotRooms.some((r) => String(r.room_id || r.id || '') === s.room_id) && (
+                                  <option value={s.room_id}>{s.room_id}</option>
+                                )}
+                                {slotRooms.map((room) => {
+                                  const rid = String(room.room_id || room.id || '')
+                                  if (!rid) return null
+                                  return <option key={rid} value={rid}>{room.room_number || rid}</option>
+                                })}
+                              </select>
+                            ) : (
+                              s.room_id
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  {slotsData.length > 35 && (
-                    <p className="text-[11px] text-[#7a898c] text-center pt-2 italic">
-                      Showing first 35 slots of {slotsData.length} total. All slots will be committed.
-                    </p>
-                  )}
                 </div>
               ) : (
                 <p className="text-center py-6 text-[#7a898c]">No individual slot details available.</p>
               )}
+              {slotsError && (
+                <p className="mt-3 text-[11px] text-[#b91c1c] dark:text-[#f87171] bg-[#fef2f2] dark:bg-[#450a0a] p-2 rounded-lg border border-[#fecaca] dark:border-[#7f1d1d]">
+                  {slotsError}
+                </p>
+              )}
             </div>
-            <div className="px-5 py-3 border-t border-[#dce4e3] dark:border-[#0a4a50] flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowSlotsModal(false)}
-                className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-[#edf2f1] dark:bg-[#07363d] text-[#003135] dark:text-[#e0f2fe] cursor-pointer"
-              >
-                Close Preview
-              </button>
+            <div className="px-5 py-3 border-t border-[#dce4e3] dark:border-[#0a4a50] flex items-center justify-between gap-2">
+              <span className="text-[11px] text-[#7a898c]">
+                {canEditSlots && slotsDirty ? 'Unsaved changes' : `${editingSlots?.length ?? totalSlots} slots`}
+              </span>
+              <div className="flex items-center gap-2">
+                {canEditSlots && (
+                  <button
+                    type="button"
+                    disabled={isSavingSlots || !slotsDirty}
+                    onClick={handleSaveSlots}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#08747c] text-white disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSavingSlots ? (
+                      <>
+                        <LoaderCircle size={13} className="animate-spin" /> Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={13} /> Save Changes
+                      </>
+                    )}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowSlotsModal(false)}
+                  className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-[#edf2f1] dark:bg-[#07363d] text-[#003135] dark:text-[#e0f2fe] cursor-pointer"
+                >
+                  Close Preview
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2687,7 +3128,6 @@ function GenericCuratedCard({ record }: { record: AcademicRecord }) {
     'id',
     'slot_id',
     'booking_id',
-    'notice_id',
     'event_id',
     'user_id',
     'facility_id',
@@ -2929,18 +3369,18 @@ function FacultyScheduleModal({
   })
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
 
-      <section className="relative z-10 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-6 py-4">
+      <section className={`${FORM_MODAL_PANEL_CLASS} max-w-4xl`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc] uppercase">
+            <span className="font-mono text-[10px] font-semibold text-[#08747c] dark:text-[#38e0d2] uppercase">
               Staff ID: {staffId} · Weekly Teaching Roster
             </span>
-            <h2 className="text-lg font-bold text-[#003135] dark:text-[#55d6dc]">{facultyName}</h2>
+            <h2 className="text-lg font-bold text-[#003135] dark:text-[#f4f9fb]">{facultyName}</h2>
           </div>
-          <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-lg text-[#647376] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button onClick={onClose} aria-label="Close schedule" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={18} />
           </button>
         </header>
@@ -3066,35 +3506,35 @@ function FacilityScheduleModal({
   const grid = data?.grid || {}
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
 
-      <section className="relative z-10 w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="shrink-0 flex items-center justify-between gap-2 border-b border-[#e3e9e8] dark:border-[#124349] px-4 py-3 sm:px-5 sm:py-3.5">
+      <section className={`${FORM_MODAL_PANEL_CLASS} max-w-6xl`}>
+        <header className={`${FORM_MODAL_HEADER_CLASS} gap-2`}>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#e8efee] dark:bg-[#07363d] text-[#076970] dark:text-[#55d6dc] uppercase">
+              <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#e8efee] dark:bg-[#111c24] text-[#076970] dark:text-[#38e0d2] uppercase">
                 {facility?.facility_type || 'FACILITY'} · {facility?.room_number || facilityId}
               </span>
-              <span className="text-xs text-[#647376] dark:text-[#8ea5a3]">
+              <span className="text-xs text-[#647376] dark:text-[#a6bcc9]">
                 Capacity: {facility?.capacity || 70} seats
               </span>
-              {facility?.incharge && (
-                <span className="text-xs text-[#08747c] dark:text-[#55d6dc]">
-                  Custodian: {facility.incharge.name} ({facility.incharge.designation})
+              {facility?.incharge?.name && (
+                <span className="text-xs text-[#08747c] dark:text-[#38e0d2]">
+                  Custodian: {facility.incharge.name}{facility.incharge.designation ? ` (${facility.incharge.designation})` : ''}
                 </span>
               )}
             </div>
-            <h2 className="mt-1 text-base sm:text-lg font-bold text-[#003135] dark:text-[#55d6dc] truncate">
+            <h2 className="mt-1 text-base sm:text-lg font-bold text-[#003135] dark:text-[#f4f9fb] truncate">
               {facility?.name || facilityName} — Master Weekly Schedule
             </h2>
             {facility?.equipment_details && (
-              <p className="mt-0.5 text-xs text-[#647376] dark:text-[#8ea5a3] truncate max-w-3xl">
+              <p className="mt-0.5 text-xs text-[#647376] dark:text-[#a6bcc9] truncate max-w-3xl">
                 Equipment & Setup: {facility.equipment_details}
               </p>
             )}
           </div>
-          <button onClick={onClose} aria-label="Close schedule" className="shrink-0 grid h-9 w-9 place-items-center rounded-lg text-[#647376] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button onClick={onClose} aria-label="Close schedule" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={18} />
           </button>
         </header>
@@ -3448,22 +3888,20 @@ function FacilityAvailabilityHub({
                 <button
                   type="button"
                   onClick={() => setHubMode('facilities')}
-                  className={`rounded-md px-2.5 py-0.5 text-[10px] font-bold transition cursor-pointer ${
-                    hubMode === 'facilities'
+                  className={`rounded-md px-2.5 py-0.5 text-[10px] font-bold transition cursor-pointer ${hubMode === 'facilities'
                       ? 'bg-[#024950] text-white shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3]'
-                  }`}
+                    }`}
                 >
                   Labs & Rooms ({counts.available} Free)
                 </button>
                 <button
                   type="button"
                   onClick={() => setHubMode('faculty')}
-                  className={`rounded-md px-2.5 py-0.5 text-[10px] font-bold transition cursor-pointer ${
-                    hubMode === 'faculty'
+                  className={`rounded-md px-2.5 py-0.5 text-[10px] font-bold transition cursor-pointer ${hubMode === 'faculty'
                       ? 'bg-[#024950] text-white shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3]'
-                  }`}
+                    }`}
                 >
                   Free Faculty Finder
                 </button>
@@ -3501,11 +3939,10 @@ function FacilityAvailabilityHub({
               <button
                 key={d.val}
                 onClick={() => setSelectedDuration(d.val)}
-                className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition ${
-                  selectedDuration === d.val
+                className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition ${selectedDuration === d.val
                     ? 'bg-[#024950] text-white shadow-xs'
                     : 'bg-[#f0f4f3] dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] hover:text-[#003135]'
-                }`}
+                  }`}
               >
                 {d.label}
               </button>
@@ -3525,11 +3962,10 @@ function FacilityAvailabilityHub({
                 <button
                   key={d}
                   onClick={() => setSelectedDay(d)}
-                  className={`relative rounded-lg px-2.5 py-1 text-[11px] font-semibold transition flex items-center gap-1.5 ${
-                    isSelected
+                  className={`relative rounded-lg px-2.5 py-1 text-[11px] font-semibold transition flex items-center gap-1.5 ${isSelected
                       ? 'bg-[#003135] dark:bg-[#55d6dc] text-white dark:text-[#003135] shadow-xs'
                       : 'bg-[#f4f7f6] dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] hover:bg-[#e8efee] dark:hover:bg-[#0a353b]'
-                  }`}
+                    }`}
                 >
                   {isToday && (
                     <span className={`h-1.5 w-1.5 rounded-full ${isSelected ? 'bg-amber-300 dark:bg-amber-600' : 'bg-[#08747c]'}`} />
@@ -3552,11 +3988,10 @@ function FacilityAvailabilityHub({
                 <button
                   key={p}
                   onClick={() => setSelectedPeriod(p)}
-                  className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition flex flex-col items-center leading-tight ${
-                    isSelected
+                  className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold transition flex flex-col items-center leading-tight ${isSelected
                       ? 'bg-[#08747c] text-white shadow-xs'
                       : 'bg-[#f4f7f6] dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] hover:bg-[#e8efee] dark:hover:bg-[#0a353b]'
-                  }`}
+                    }`}
                 >
                   <span className="flex items-center gap-1">
                     {isNow && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
@@ -3582,17 +4017,16 @@ function FacilityAvailabilityHub({
                 <button
                   key={t}
                   onClick={() => setFacilityType(t)}
-                  className={`flex-1 rounded-md py-0.5 text-[10px] font-semibold transition ${
-                    facilityType === t
+                  className={`flex-1 rounded-md py-0.5 text-[10px] font-semibold transition ${facilityType === t
                       ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3]'
-                  }`}
+                    }`}
                 >
                   {t === 'ALL'
                     ? `All (${facilities.length})`
                     : t === 'LABORATORY'
-                    ? `Labs (${labFacilitiesCount})`
-                    : `Classes (${classFacilitiesCount})`}
+                      ? `Labs (${labFacilitiesCount})`
+                      : `Classes (${classFacilitiesCount})`}
                 </button>
               ))}
             </div>
@@ -3620,11 +4054,10 @@ function FacilityAvailabilityHub({
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition ${
-                    statusFilter === st
+                  className={`flex-1 rounded-md py-1 text-[11px] font-semibold transition ${statusFilter === st
                       ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3]'
-                  }`}
+                    }`}
                 >
                   {st === 'ALL' ? 'All' : st === 'AVAILABLE' ? 'Vacant Only' : 'Occupied'}
                 </button>
@@ -3743,12 +4176,12 @@ function FacilityAvailabilityHub({
           const q = searchQuery.trim().toLowerCase()
           const rows = q
             ? combined.filter(
-                (f: any) =>
-                  String(f.full_name || '').toLowerCase().includes(q) ||
-                  String(f.staff_id || '').toLowerCase().includes(q) ||
-                  String(f.designation || '').toLowerCase().includes(q) ||
-                  String(f.department_id || '').toLowerCase().includes(q)
-              )
+              (f: any) =>
+                String(f.full_name || '').toLowerCase().includes(q) ||
+                String(f.staff_id || '').toLowerCase().includes(q) ||
+                String(f.designation || '').toLowerCase().includes(q) ||
+                String(f.department_id || '').toLowerCase().includes(q)
+            )
             : combined
 
           return (
@@ -3764,11 +4197,10 @@ function FacilityAvailabilityHub({
                         key={mode}
                         type="button"
                         onClick={() => setFacultyFilter(mode)}
-                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition cursor-pointer ${
-                          facultyFilter === mode
+                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition cursor-pointer ${facultyFilter === mode
                             ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                             : 'text-[#647376] dark:text-[#8ea5a3]'
-                        }`}
+                          }`}
                       >
                         {mode === 'FREE'
                           ? `Free Now (${ff?.availableFacultyCount ?? freeList.length})`
@@ -3902,11 +4334,10 @@ function FacilityAvailabilityHub({
                         <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc]">
                           {fac.room_number}
                         </span>
-                        <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                          fac.facility_type === 'LABORATORY'
+                        <span className={`font-mono text-[9px] font-bold px-1.5 py-0.5 rounded ${fac.facility_type === 'LABORATORY'
                             ? 'bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                        }`}>
+                          }`}>
                           {fac.facility_type === 'LABORATORY' ? 'LAB' : 'CLASS'}
                         </span>
                       </div>
@@ -4071,9 +4502,9 @@ function FacilityAvailabilityHub({
           onBookSlot={
             onOpenBooking
               ? (fid, day, p, lid) => {
-                  setInspectedFacility(null)
-                  onOpenBooking(fid, day, p, 1, lid)
-                }
+                setInspectedFacility(null)
+                onOpenBooking(fid, day, p, 1, lid)
+              }
               : undefined
           }
         />
@@ -4192,22 +4623,23 @@ function AddClassroomModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc] uppercase">
+            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2] uppercase">
               Infrastructure Registry
             </span>
-            <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc]">
+            <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
               {isEdit ? `Edit Facility · ${initialFacility!.room_number}` : 'Add Classroom / Lecture Hall'}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+            aria-label="Close classroom modal"
+            className={FORM_MODAL_CLOSE_CLASS}
           >
             <X size={16} />
           </button>
@@ -4218,22 +4650,22 @@ function AddClassroomModal({
               {error}
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Department *
               </label>
               <select
                 value={departmentId}
                 disabled={restrictDept}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 <DepartmentOptions includeValue={departmentId} />
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Seating Capacity *
               </label>
               <input
@@ -4242,12 +4674,12 @@ function AddClassroomModal({
                 required
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Room Number / Name *
             </label>
             <input
@@ -4255,32 +4687,32 @@ function AddClassroomModal({
               value={roomNumber}
               onChange={(e) => setRoomNumber(e.target.value)}
               placeholder="e.g. 5-S-01 or Block 5 Hall A"
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_INPUT_CLASS}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Facilities & Equipment
             </label>
             <textarea
               rows={2}
               value={facilitiesDesc}
               onChange={(e) => setFacilitiesDesc(e.target.value)}
-              className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-2.5 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_TEXTAREA_CLASS}
             />
           </div>
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#08747c] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Classroom'}
             </button>
@@ -4350,17 +4782,17 @@ function LabIncidentReportModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-amber-500 shrink-0" size={20} />
-            <h2 className="text-sm sm:text-base font-bold text-[#003135] dark:text-[#55d6dc]">
+            <h2 className="text-sm sm:text-base font-bold text-[#003135] dark:text-[#f4f9fb]">
               Report Laboratory Incident / Equipment Fault
             </h2>
           </div>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button type="button" onClick={onClose} aria-label="Close modal" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={16} />
           </button>
         </header>
@@ -4373,13 +4805,13 @@ function LabIncidentReportModal({
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Laboratory Facility
             </label>
             <select
               value={labId}
               onChange={(e) => setLabId(e.target.value)}
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none focus:border-[#08747c]"
+              className={`${FORM_INPUT_CLASS} font-semibold`}
             >
               {labs.map((l) => {
                 const targetId = String(l.meta?.lab_id || l.id)
@@ -4392,15 +4824,15 @@ function LabIncidentReportModal({
             </select>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Severity Level
               </label>
               <select
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value as any)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 <option value="LOW">Low (Cosmetic / Non-critical)</option>
                 <option value="MEDIUM">Medium (Single Workstation / Peripheral)</option>
@@ -4409,7 +4841,7 @@ function LabIncidentReportModal({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Equipment Affected
               </label>
               <input
@@ -4417,13 +4849,13 @@ function LabIncidentReportModal({
                 value={equipmentAffected}
                 onChange={(e) => setEquipmentAffected(e.target.value)}
                 placeholder="e.g. Workstation #14, Switch Port 12"
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Incident Description *
             </label>
             <textarea
@@ -4432,12 +4864,12 @@ function LabIncidentReportModal({
               placeholder="Provide technical diagnosis, error codes, and symptoms..."
               rows={3}
               required
-              className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_TEXTAREA_CLASS}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Photo / Asset Tag URL (Optional)
             </label>
             <input
@@ -4445,22 +4877,22 @@ function LabIncidentReportModal({
               value={photoUrl}
               onChange={(e) => setPhotoUrl(e.target.value)}
               placeholder="https://... or equipment serial identifier"
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_INPUT_CLASS}
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#08747c] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Registering...' : 'Log Incident Report'}
             </button>
@@ -4515,19 +4947,19 @@ function LabIncidentResolutionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
+            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2]">
               {incident.incident_id} · {incident.lab_name || incident.lab_id}
             </span>
-            <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc]">
+            <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
               Update Incident Status
             </h2>
           </div>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button type="button" onClick={onClose} aria-label="Close modal" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={16} />
           </button>
         </header>
@@ -4540,13 +4972,13 @@ function LabIncidentResolutionModal({
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Workflow Status
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none focus:border-[#08747c]"
+              className={`${FORM_INPUT_CLASS} font-semibold`}
             >
               <option value="UNDER_INVESTIGATION">Under Investigation</option>
               <option value="RESOLVED">Resolved (Restored to Service)</option>
@@ -4555,7 +4987,7 @@ function LabIncidentResolutionModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Resolution Notes & Technician Actions
             </label>
             <textarea
@@ -4563,22 +4995,22 @@ function LabIncidentResolutionModal({
               onChange={(e) => setResolutionNotes(e.target.value)}
               placeholder="Detail hardware replacement, technician intervention, or vendor ticket..."
               rows={3}
-              className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_TEXTAREA_CLASS}
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#08747c] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Saving...' : 'Update Status'}
             </button>
@@ -4613,6 +5045,7 @@ function LaboratoriesRegisterView({
   const [checkPeriod, setCheckPeriod] = useState<number | null>(clockState?.period ?? null)
   const [freeLabsOnly, setFreeLabsOnly] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [inspectedLab, setInspectedLab] = useState<{ id: string; name: string } | null>(null)
 
   useEffect(() => {
@@ -4714,7 +5147,7 @@ function LaboratoriesRegisterView({
       const meta = r.meta || {}
       const dept = String(meta.department_id || '').toUpperCase()
       if (deptFilter !== 'ALL' && dept !== deptFilter) return false
-      
+
       // Category filter
       const titleLower = r.title.toLowerCase()
       const equipLower = String(meta.equipment_details || '').toLowerCase()
@@ -4728,7 +5161,7 @@ function LaboratoriesRegisterView({
         const isCore =
           !dept.includes('CS') && !dept.includes('AI') && !dept.includes('IT') &&
           (titleLower.includes('lab') || titleLower.includes('workshop') || titleLower.includes('circuit') ||
-           titleLower.includes('power') || titleLower.includes('machine') || titleLower.includes('thermal'))
+            titleLower.includes('power') || titleLower.includes('machine') || titleLower.includes('thermal'))
         if (!isCore) return false
       } else if (categoryFilter === 'AI_DATA') {
         const isAI =
@@ -4825,21 +5258,19 @@ function LaboratoriesRegisterView({
         <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1 w-fit">
           <button
             onClick={() => setActiveTab('labs')}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-              activeTab === 'labs'
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${activeTab === 'labs'
                 ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                 : 'text-[#647376] dark:text-[#8ea5a3]'
-            }`}
+              }`}
           >
             Laboratory Infrastructure ({records.length})
           </button>
           <button
             onClick={() => setActiveTab('incidents')}
-            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition flex items-center gap-1.5 ${
-              activeTab === 'incidents'
+            className={`rounded-md px-3 py-1.5 text-xs font-semibold transition flex items-center gap-1.5 ${activeTab === 'incidents'
                 ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                 : 'text-[#647376] dark:text-[#8ea5a3]'
-            }`}
+              }`}
           >
             <span>Hardware Faults & Incidents</span>
             {openIncidentsCount > 0 && (
@@ -4923,15 +5354,25 @@ function LaboratoriesRegisterView({
         <>
           {/* Filter and Search Bar for Laboratories */}
           <Panel className="p-2.5 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl space-y-2 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="relative w-full sm:w-80">
-                <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386]" />
-                <input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search laboratory name, code, specs..."
-                  className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] pl-9 pr-3 text-xs outline-none focus:border-[#08747c]"
-                />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+              <div className="flex items-center gap-2 w-full sm:w-80">
+                <div className="relative flex-1">
+                  <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386]" />
+                  <input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search laboratory name, code, specs..."
+                    className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] pl-9 pr-3 text-xs outline-none focus:border-[#08747c]"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen((v) => !v)}
+                  className="md:hidden inline-flex h-9 items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] shrink-0 cursor-pointer"
+                >
+                  <Filter size={13} />
+                  <span>{mobileFiltersOpen ? 'Hide' : 'Filters'}</span>
+                </button>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -4939,21 +5380,19 @@ function LaboratoriesRegisterView({
                   <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
                     <button
                       onClick={() => setScopeFilter('ALL')}
-                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                        scopeFilter === 'ALL'
+                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${scopeFilter === 'ALL'
                           ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                           : 'text-[#647376] dark:text-[#8ea5a3]'
-                      }`}
+                        }`}
                     >
                       All Labs
                     </button>
                     <button
                       onClick={() => setScopeFilter('MY_LABS')}
-                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                        scopeFilter === 'MY_LABS'
+                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${scopeFilter === 'MY_LABS'
                           ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                           : 'text-[#647376] dark:text-[#8ea5a3]'
-                      }`}
+                        }`}
                     >
                       My Custody Labs
                     </button>
@@ -4971,18 +5410,17 @@ function LaboratoriesRegisterView({
             </div>
 
             {/* Secondary Category, Capacity & Sorting Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-[#edf2f1] dark:border-[#124349]">
+            <div className={`${mobileFiltersOpen ? 'flex' : 'hidden md:flex'} flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-[#edf2f1] dark:border-[#124349]`}>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
                   {(['ALL', 'COMPUTING', 'CORE_ENG', 'AI_DATA'] as const).map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setCategoryFilter(cat)}
-                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                        categoryFilter === cat
+                      className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${categoryFilter === cat
                           ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                           : 'text-[#647376] dark:text-[#8ea5a3]'
-                      }`}
+                        }`}
                     >
                       {cat === 'ALL' ? 'All Specializations' : cat === 'COMPUTING' ? 'Computing' : cat === 'CORE_ENG' ? 'Core Engineering' : 'AI & Data'}
                     </button>
@@ -5030,11 +5468,10 @@ function LaboratoriesRegisterView({
                   <button
                     type="button"
                     onClick={() => setFreeLabsOnly((v) => !v)}
-                    className={`h-8 rounded-lg border px-2.5 text-[11px] font-bold transition cursor-pointer ${
-                      freeLabsOnly
+                    className={`h-8 rounded-lg border px-2.5 text-[11px] font-bold transition cursor-pointer ${freeLabsOnly
                         ? 'border-emerald-600 bg-emerald-600 text-white'
                         : 'border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] text-[#003135] dark:text-[#55d6dc]'
-                    }`}
+                      }`}
                   >
                     Free Labs Only
                   </button>
@@ -5056,8 +5493,100 @@ function LaboratoriesRegisterView({
             </div>
           </Panel>
 
-          {/* High-Density Laboratory Registry Table */}
-          <div className="overflow-auto max-h-[calc(100vh-450px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+          {/* Mobile Cards (< md) */}
+          <div className="md:hidden space-y-2.5 stagger-grid">
+            {filtered
+              .filter((record) => {
+                if (checkPeriod === null || !freeLabsOnly) return true
+                const meta = record.meta || {}
+                const labId = String(meta.lab_id || record.id)
+                const roomId = String(meta.room_id || '')
+                const live = labSlotMap.get(labId) || labSlotMap.get(roomId)
+                return !live || live.status === 'AVAILABLE'
+              })
+              .map((record) => {
+                const meta = record.meta || {}
+                const labId = String(meta.lab_id || record.id)
+                const roomNumber = String(meta.room_number || meta.room_id || 'Room')
+                const dept = String(meta.department_id || 'CSE')
+                const capacity = Number(meta.capacity || 70)
+                const equipment = meta.equipment_details ? String(meta.equipment_details) : 'Standard Configuration'
+                const liveStatus = checkPeriod !== null ? (labSlotMap.get(labId) || labSlotMap.get(String(meta.room_id || ''))) : null
+
+                return (
+                  <Panel key={`card-${record.id}`} className="p-3.5 space-y-2.5 border border-[#dce4e3] dark:border-[#124349]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
+                          {labId} · {dept} · {capacity} seats
+                        </span>
+                        <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">{record.title}</h4>
+                        <span className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">Room {roomNumber}</span>
+                      </div>
+                      {checkPeriod !== null && (!liveStatus || liveStatus.status === 'AVAILABLE') ? (
+                        <span className="shrink-0 rounded-md bg-emerald-50 dark:bg-[#062c1e] border border-emerald-200 dark:border-emerald-800/40 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                          FREE P{checkPeriod}
+                        </span>
+                      ) : checkPeriod !== null && liveStatus ? (
+                        <span className="shrink-0 rounded-md bg-red-50 dark:bg-[#331114] border border-red-200 dark:border-red-900/40 px-2 py-0.5 text-[10px] font-bold text-red-700 dark:text-red-400">
+                          {liveStatus.status}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2">{equipment}</p>
+                    <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                      <button
+                        onClick={() => setInspectedLab({ id: labId, name: record.title })}
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] px-2.5 py-1 text-[11px] font-semibold text-[#003135] dark:text-[#55d6dc]"
+                      >
+                        <Eye size={11} /> Matrix
+                      </button>
+                      {onOpenBooking && (
+                        <button
+                          onClick={() => onOpenBooking(labId, checkDay, checkPeriod ?? 1, 1)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-[#024950] px-2.5 py-1 text-[11px] font-semibold text-white"
+                        >
+                          <Plus size={11} /> Book
+                        </button>
+                      )}
+                      {canCreateLab && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setEditingLab({
+                              lab_id: labId,
+                              name: record.title,
+                              department_id: dept,
+                              room_number: roomNumber,
+                              capacity,
+                              equipment_details: equipment,
+                            })}
+                            className="inline-flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#124349] p-1.5 text-[#003135] dark:text-[#55d6dc]"
+                            aria-label="Edit lab"
+                          >
+                            <Pencil size={11} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeletingLabError(null)
+                              setDeletingLab({ id: labId, name: record.title })
+                            }}
+                            className="inline-flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 p-1.5 text-red-600"
+                            aria-label="Delete lab"
+                          >
+                            <Trash2 size={11} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </Panel>
+                )
+              })}
+          </div>
+
+          {/* High-Density Laboratory Registry Table (Desktop md+) */}
+          <div className="hidden md:block overflow-auto max-h-[calc(100vh-450px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
             <table className="w-full min-w-[960px] border-collapse text-left text-xs">
               <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
                 <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
@@ -5085,156 +5614,156 @@ function LaboratoriesRegisterView({
                     return !live || live.status === 'AVAILABLE'
                   })
                   .map((record) => {
-                  const meta = record.meta || {}
-                  const labId = String(meta.lab_id || record.id)
-                  const roomNumber = String(meta.room_number || meta.room_id || 'Room')
-                  const dept = String(meta.department_id || 'CSE')
-                  const capacity = Number(meta.capacity || 70)
-                  const equipment = meta.equipment_details ? String(meta.equipment_details) : 'Institutional Standard Configuration'
-                  const inchargeName = meta.incharge_name ? String(meta.incharge_name) : null
-                  const inchargeDesignation = meta.incharge_designation ? String(meta.incharge_designation) : null
-                  const coInchargeName = meta.co_incharge_name ? String(meta.co_incharge_name) : null
-                  const liveStatus = checkPeriod !== null ? (labSlotMap.get(labId) || labSlotMap.get(String(meta.room_id || ''))) : null
+                    const meta = record.meta || {}
+                    const labId = String(meta.lab_id || record.id)
+                    const roomNumber = String(meta.room_number || meta.room_id || 'Room')
+                    const dept = String(meta.department_id || 'CSE')
+                    const capacity = Number(meta.capacity || 70)
+                    const equipment = meta.equipment_details ? String(meta.equipment_details) : 'Institutional Standard Configuration'
+                    const inchargeName = meta.incharge_name ? String(meta.incharge_name) : null
+                    const inchargeDesignation = meta.incharge_designation ? String(meta.incharge_designation) : null
+                    const coInchargeName = meta.co_incharge_name ? String(meta.co_incharge_name) : null
+                    const liveStatus = checkPeriod !== null ? (labSlotMap.get(labId) || labSlotMap.get(String(meta.room_id || ''))) : null
 
-                  return (
-                    <tr
-                      key={record.id}
-                      className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors"
-                    >
-                      <td className="p-3">
-                        <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
-                          {labId}
-                        </span>
-                        <span className="font-mono text-[11px] text-[#647376] dark:text-[#8ea5a3] block mt-0.5">
-                          Room {roomNumber}
-                        </span>
-                      </td>
-
-                      <td className="p-3">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">
-                          {record.title}
-                        </span>
-                        {record.subtitle && (
-                          <span className="text-[11px] text-[#647376] dark:text-[#8ea5a3] block mt-0.5">
-                            {record.subtitle}
+                    return (
+                      <tr
+                        key={record.id}
+                        className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors"
+                      >
+                        <td className="p-3">
+                          <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
+                            {labId}
                           </span>
-                        )}
-                      </td>
+                          <span className="font-mono text-[11px] text-[#647376] dark:text-[#8ea5a3] block mt-0.5">
+                            Room {roomNumber}
+                          </span>
+                        </td>
 
-                      <td className="p-3">
-                        <span className="inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
-                          {dept}
-                        </span>
-                      </td>
-
-                      <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
-                        {capacity} Workstations
-                      </td>
-
-                      <td className="p-3 max-w-sm">
-                        <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2" title={equipment}>
-                          {equipment}
-                        </p>
-                      </td>
-
-                      <td className="p-3">
-                        {checkPeriod !== null ? (
-                          !liveStatus || liveStatus.status === 'AVAILABLE' ? (
-                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 dark:bg-[#062c1e] border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 font-bold text-[11px]">
-                              <CheckCircle2 size={12} />
-                              FREE AT P{checkPeriod}
+                        <td className="p-3">
+                          <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">
+                            {record.title}
+                          </span>
+                          {record.subtitle && (
+                            <span className="text-[11px] text-[#647376] dark:text-[#8ea5a3] block mt-0.5">
+                              {record.subtitle}
                             </span>
-                          ) : liveStatus.status === 'OCCUPIED' && liveStatus.session ? (
-                            <div className="rounded bg-red-50 dark:bg-[#331114] p-1.5 border border-red-200 dark:border-red-900/40 text-[10px]">
-                              <span className="font-bold text-red-700 dark:text-red-400 block">
-                                IN SESSION ({liveStatus.session.subject_code})
+                          )}
+                        </td>
+
+                        <td className="p-3">
+                          <span className="inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
+                            {dept}
+                          </span>
+                        </td>
+
+                        <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
+                          {capacity} Workstations
+                        </td>
+
+                        <td className="p-3 max-w-sm">
+                          <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2" title={equipment}>
+                            {equipment}
+                          </p>
+                        </td>
+
+                        <td className="p-3">
+                          {checkPeriod !== null ? (
+                            !liveStatus || liveStatus.status === 'AVAILABLE' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 dark:bg-[#062c1e] border border-emerald-200 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 font-bold text-[11px]">
+                                <CheckCircle2 size={12} />
+                                FREE AT P{checkPeriod}
                               </span>
-                              <span className="text-slate-700 dark:text-slate-300 truncate block">
-                                {liveStatus.session.cohort_label} · {liveStatus.session.faculty_name}
+                            ) : liveStatus.status === 'OCCUPIED' && liveStatus.session ? (
+                              <div className="rounded bg-red-50 dark:bg-[#331114] p-1.5 border border-red-200 dark:border-red-900/40 text-[10px]">
+                                <span className="font-bold text-red-700 dark:text-red-400 block">
+                                  IN SESSION ({liveStatus.session.subject_code})
+                                </span>
+                                <span className="text-slate-700 dark:text-slate-300 truncate block">
+                                  {liveStatus.session.cohort_label} · {liveStatus.session.faculty_name}
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="rounded bg-amber-50 dark:bg-[#38260a] p-1.5 border border-amber-200 dark:border-amber-900/40 text-[10px]">
+                                <span className="font-bold text-amber-700 dark:text-amber-400 block">RESERVED</span>
+                                <span className="truncate block">{liveStatus.event?.title || 'Lab Event'}</span>
+                              </div>
+                            )
+                          ) : inchargeName ? (
+                            <div>
+                              <span className="font-semibold text-slate-900 dark:text-slate-100 block">
+                                {inchargeName}
                               </span>
+                              {inchargeDesignation && (
+                                <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block truncate">
+                                  {inchargeDesignation}
+                                </span>
+                              )}
+                              {coInchargeName && (
+                                <span className="text-[10px] text-[#08747c] dark:text-[#55d6dc] block truncate mt-0.5">
+                                  Asst: {coInchargeName}
+                                </span>
+                              )}
                             </div>
                           ) : (
-                            <div className="rounded bg-amber-50 dark:bg-[#38260a] p-1.5 border border-amber-200 dark:border-amber-900/40 text-[10px]">
-                              <span className="font-bold text-amber-700 dark:text-amber-400 block">RESERVED</span>
-                              <span className="truncate block">{liveStatus.event?.title || 'Lab Event'}</span>
-                            </div>
-                          )
-                        ) : inchargeName ? (
-                          <div>
-                            <span className="font-semibold text-slate-900 dark:text-slate-100 block">
-                              {inchargeName}
-                            </span>
-                            {inchargeDesignation && (
-                              <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block truncate">
-                                {inchargeDesignation}
-                              </span>
+                            <span className="text-[#a0afac] text-xs">—</span>
+                          )}
+                        </td>
+
+                        <td className="p-3 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setInspectedLab({ id: labId, name: record.title })}
+                              className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] dark:hover:bg-[#0a353b] btn-interactive"
+                            >
+                              <Eye size={12} />
+                              Weekly Matrix
+                            </button>
+                            {onOpenBooking && (
+                              <button
+                                onClick={() =>
+                                  onOpenBooking(labId, checkDay, checkPeriod ?? 1, 1)
+                                }
+                                className="inline-flex items-center gap-1 rounded-lg bg-[#024950] px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] btn-interactive cursor-pointer"
+                              >
+                                <Plus size={12} />
+                                Book
+                              </button>
                             )}
-                            {coInchargeName && (
-                              <span className="text-[10px] text-[#08747c] dark:text-[#55d6dc] block truncate mt-0.5">
-                                Asst: {coInchargeName}
-                              </span>
+                            {canCreateLab && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingLab({
+                                    lab_id: labId,
+                                    name: record.title,
+                                    department_id: dept,
+                                    room_number: roomNumber,
+                                    capacity,
+                                    equipment_details: equipment,
+                                  })}
+                                  title="Edit laboratory details"
+                                  className="inline-flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] p-1.5 text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] dark:hover:bg-[#0a353b] btn-interactive"
+                                >
+                                  <Pencil size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDeletingLabError(null)
+                                    setDeletingLab({ id: labId, name: record.title })
+                                  }}
+                                  title="Delete laboratory"
+                                  className="inline-flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-[#331114]/70 p-1.5 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-[#41171b] btn-interactive"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </>
                             )}
                           </div>
-                        ) : (
-                          <span className="text-[#a0afac] text-xs">—</span>
-                        )}
-                      </td>
-
-                      <td className="p-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => setInspectedLab({ id: labId, name: record.title })}
-                            className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] dark:hover:bg-[#0a353b] btn-interactive"
-                          >
-                            <Eye size={12} />
-                            Weekly Matrix
-                          </button>
-                          {onOpenBooking && (
-                            <button
-                              onClick={() =>
-                                onOpenBooking(labId, checkDay, checkPeriod ?? 1, 1)
-                              }
-                              className="inline-flex items-center gap-1 rounded-lg bg-[#024950] px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] btn-interactive cursor-pointer"
-                            >
-                              <Plus size={12} />
-                              Book
-                            </button>
-                          )}
-                          {canCreateLab && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => setEditingLab({
-                                  lab_id: labId,
-                                  name: record.title,
-                                  department_id: dept,
-                                  room_number: roomNumber,
-                                  capacity,
-                                  equipment_details: equipment,
-                                })}
-                                title="Edit laboratory details"
-                                className="inline-flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] p-1.5 text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] dark:hover:bg-[#0a353b] btn-interactive"
-                              >
-                                <Pencil size={12} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setDeletingLabError(null)
-                                  setDeletingLab({ id: labId, name: record.title })
-                                }}
-                                title="Delete laboratory"
-                                className="inline-flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-[#331114]/70 p-1.5 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-[#41171b] btn-interactive"
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
+                        </td>
+                      </tr>
+                    )
+                  })}
               </tbody>
             </table>
           </div>
@@ -5355,15 +5884,14 @@ function LaboratoriesRegisterView({
 
                         <td className="p-3">
                           <span
-                            className={`inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
-                              inc.severity === 'CRITICAL'
+                            className={`inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded ${inc.severity === 'CRITICAL'
                                 ? 'bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-300'
                                 : inc.severity === 'HIGH'
-                                ? 'bg-orange-100 dark:bg-orange-950/40 text-orange-800 dark:text-orange-300'
-                                : inc.severity === 'MEDIUM'
-                                ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                            }`}
+                                  ? 'bg-orange-100 dark:bg-orange-950/40 text-orange-800 dark:text-orange-300'
+                                  : inc.severity === 'MEDIUM'
+                                    ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                              }`}
                           >
                             {inc.severity}
                           </span>
@@ -5377,11 +5905,10 @@ function LaboratoriesRegisterView({
 
                         <td className="p-3">
                           <span
-                            className={`inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
-                              isClosed
+                            className={`inline-block font-mono text-[10px] font-bold px-2 py-0.5 rounded ${isClosed
                                 ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300'
                                 : 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 animate-pulse'
-                            }`}
+                              }`}
                           >
                             {inc.status}
                           </span>
@@ -5416,10 +5943,10 @@ function LaboratoriesRegisterView({
           onBookSlot={
             onOpenBooking
               ? (_fid, day, p, lid) => {
-                  const targetId = lid || inspectedLab.id
-                  setInspectedLab(null)
-                  onOpenBooking(targetId, day, p, 1)
-                }
+                const targetId = lid || inspectedLab.id
+                setInspectedLab(null)
+                onOpenBooking(targetId, day, p, 1)
+              }
               : undefined
           }
         />
@@ -5547,22 +6074,23 @@ function AddLaboratoryModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc] uppercase">
+            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2] uppercase">
               Laboratory Infrastructure
             </span>
-            <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc]">
+            <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
               {isEdit ? `Edit Laboratory · ${initialLab!.lab_id}` : 'Add Institutional Laboratory'}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+            aria-label="Close laboratory modal"
+            className={FORM_MODAL_CLOSE_CLASS}
           >
             <X size={16} />
           </button>
@@ -5573,9 +6101,9 @@ function AddLaboratoryModal({
               {error}
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Department *
               </label>
               <select
@@ -5583,13 +6111,13 @@ function AddLaboratoryModal({
                 value={departmentId}
                 disabled={restrictDept}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 <DepartmentOptions includeValue={departmentId} />
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Workstation Capacity *
               </label>
               <input
@@ -5599,12 +6127,12 @@ function AddLaboratoryModal({
                 required
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Laboratory Name *
             </label>
             <input
@@ -5613,11 +6141,11 @@ function AddLaboratoryModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Laboratory Title (e.g. Networks & Systems Lab)"
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_INPUT_CLASS}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Room Number / Venue
             </label>
             <input
@@ -5625,32 +6153,32 @@ function AddLaboratoryModal({
               value={roomNumber}
               onChange={(e) => setRoomNumber(e.target.value)}
               placeholder="e.g. 5-L-02"
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_INPUT_CLASS}
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Hardware & Equipment Details
             </label>
             <textarea
               rows={2}
               value={equipmentDetails}
               onChange={(e) => setEquipmentDetails(e.target.value)}
-              className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-2.5 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_TEXTAREA_CLASS}
             />
           </div>
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#024950] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Laboratory'}
             </button>
@@ -5678,6 +6206,7 @@ function FacultyDirectoryTableView({
   const [sortBy, setSortBy] = useState<'workload_desc' | 'workload_asc' | 'name_asc' | 'dept_asc' | 'pnr_asc'>('workload_desc')
   const [deptFilter, setDeptFilter] = useState<string>('ALL')
   const [searchTerm, setSearchTerm] = useState('')
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [availDay, setAvailDay] = useState<string>(
     clockState?.day && clockState.day !== 'SUNDAY' ? clockState.day : 'MONDAY'
   )
@@ -5781,10 +6310,10 @@ function FacultyDirectoryTableView({
     const bMap: Record<string, string> = {}
     const payload = freeFacResource.data?.data
     if (payload) {
-      ;(payload.availableFaculty || []).forEach((f) => fSet.add(String(f.staff_id)))
-      ;(payload.busyFaculty || []).forEach((f) => {
-        bMap[String(f.staff_id)] = f.conflict_details || 'Scheduled in class'
-      })
+      ; (payload.availableFaculty || []).forEach((f) => fSet.add(String(f.staff_id)))
+        ; (payload.busyFaculty || []).forEach((f) => {
+          bMap[String(f.staff_id)] = f.conflict_details || 'Scheduled in class'
+        })
     }
     return { freeSet: fSet, busyMap: bMap }
   }, [freeFacResource.data])
@@ -5861,46 +6390,53 @@ function FacultyDirectoryTableView({
     <div className="space-y-4">
       {/* Category Pills & Filters */}
       <Panel className="p-3.5 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl space-y-3 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="relative w-full sm:w-80">
-            <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386]" />
-            <input
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by faculty name, PNR, email..."
-              className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] pl-9 pr-3 text-xs outline-none focus:border-[#08747c]"
-            />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+          <div className="flex items-center gap-2 w-full sm:w-80">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386]" />
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by faculty name, Staff ID, email..."
+                className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] pl-9 pr-3 text-xs outline-none focus:border-[#08747c]"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setMobileFiltersOpen((v) => !v)}
+              className="md:hidden inline-flex h-9 items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] shrink-0 cursor-pointer"
+            >
+              <Filter size={13} />
+              <span>{mobileFiltersOpen ? 'Hide' : 'Filters'}</span>
+            </button>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
               <button
                 onClick={() => setCategoryFilter('ALL')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  categoryFilter === 'ALL'
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${categoryFilter === 'ALL'
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 All Staff ({records.length})
               </button>
               <button
                 onClick={() => setCategoryFilter('TEACHING')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  categoryFilter === 'TEACHING'
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${categoryFilter === 'TEACHING'
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 Faculty ({teachingCount})
               </button>
               <button
                 onClick={() => setCategoryFilter('NON_TEACHING')}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  categoryFilter === 'NON_TEACHING'
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${categoryFilter === 'NON_TEACHING'
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 Technical Staff ({nonTeachingCount})
               </button>
@@ -5917,7 +6453,7 @@ function FacultyDirectoryTableView({
         </div>
 
         {/* Workload, Cadre, and Sorting Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-[#edf2f1] dark:border-[#124349]">
+        <div className={`${mobileFiltersOpen ? 'flex' : 'hidden md:flex'} flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-[#edf2f1] dark:border-[#124349]`}>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-semibold text-[#647376] dark:text-[#8ea5a3]">Workload Status:</span>
             <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
@@ -5925,11 +6461,10 @@ function FacultyDirectoryTableView({
                 <button
                   key={w}
                   onClick={() => setWorkloadFilter(w)}
-                  className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition ${
-                    workloadFilter === w
+                  className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition ${workloadFilter === w
                       ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                       : 'text-[#647376] dark:text-[#8ea5a3]'
-                  }`}
+                    }`}
                 >
                   {w === 'ALL' ? 'All' : w === 'OVERLOADED' ? '>18 hrs' : w === 'OPTIMAL' ? '14-18 hrs' : '<14 hrs'}
                 </button>
@@ -5961,7 +6496,7 @@ function FacultyDirectoryTableView({
               <option value="workload_asc">Teaching Load (Lowest First)</option>
               <option value="name_asc">Faculty Name (A → Z)</option>
               <option value="dept_asc">Department (A → Z)</option>
-              <option value="pnr_asc">PNR / Staff ID (A → Z)</option>
+              <option value="pnr_asc">Staff ID (A → Z)</option>
             </select>
           </div>
         </div>
@@ -5998,31 +6533,28 @@ function FacultyDirectoryTableView({
             <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-0.5">
               <button
                 onClick={() => setAvailFilter('ALL')}
-                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${
-                  availFilter === 'ALL'
+                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${availFilter === 'ALL'
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 All ({records.length})
               </button>
               <button
                 onClick={() => setAvailFilter('FREE')}
-                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${
-                  availFilter === 'FREE'
+                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${availFilter === 'FREE'
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'text-emerald-700 dark:text-emerald-400'
-                }`}
+                  }`}
               >
                 Free ({freeMatchedCount})
               </button>
               <button
                 onClick={() => setAvailFilter('BUSY')}
-                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${
-                  availFilter === 'BUSY'
+                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition ${availFilter === 'BUSY'
                     ? 'bg-amber-600 text-white shadow-xs'
                     : 'text-amber-700 dark:text-amber-400'
-                }`}
+                  }`}
               >
                 Busy ({busyMatchedCount})
               </button>
@@ -6058,12 +6590,99 @@ function FacultyDirectoryTableView({
         </div>
       </Panel>
 
-      {/* High-Density Staff Roster Table */}
-      <div className="overflow-auto max-h-[calc(100vh-405px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+      {/* Mobile Cards (< md) */}
+      <div className="md:hidden space-y-2.5 stagger-grid">
+        {filtered.length === 0 ? (
+          <Panel className="p-6 text-center text-xs text-[#7a898c]">
+            No staff members matched the active filters for {availDay} P{availPeriod}.
+          </Panel>
+        ) : (
+          filtered.map((record) => {
+            const meta = record.meta || {}
+            const staffId = String(meta.staff_id || record.id)
+            const pnr = String(meta.pnr || staffId)
+            const isNonTeaching = String(meta.category || '').toUpperCase() === 'NON_TEACHING'
+            const dept = String(meta.department_id || 'CSE')
+            const designation = String(meta.designation || 'Faculty')
+            const email = String(meta.official_email || meta.email || '')
+            const totalPeriods = Number(meta.total_periods_per_week ?? 16)
+            const isFreeNow = !isNonTeaching && freeSet.has(staffId)
+
+            return (
+              <Panel key={`card-${record.id}`} className="p-3.5 space-y-2.5 border border-[#dce4e3] dark:border-[#124349]">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <FacultyAvatar name={record.title} photo={meta.photo_url ? String(meta.photo_url) : null} size="sm" />
+                    <div className="min-w-0">
+                      <span className="font-semibold text-[#003135] dark:text-[#e0f2fe] text-xs block truncate">{record.title}</span>
+                      <span className="font-mono text-[10px] text-[#08747c] dark:text-[#55d6dc] font-bold">{pnr} · {dept}</span>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full ${isFreeNow ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]'
+                    }`}>
+                    {isNonTeaching ? 'Technical' : isFreeNow ? `Free P${availPeriod}` : `${totalPeriods} hrs/wk`}
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
+                  <span>{designation}</span>
+                  {email && <span className="block font-mono text-[10px] truncate mt-0.5">{email}</span>}
+                </div>
+                <div className="flex flex-wrap items-center justify-end gap-1.5 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                  {!isNonTeaching && (
+                    <button
+                      type="button"
+                      onClick={() => onInspectFaculty(staffId, record.title)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] px-2.5 py-1 text-[11px] font-semibold text-[#003135] dark:text-[#55d6dc]"
+                    >
+                      <CalendarDays size={11} /> Timetable
+                    </button>
+                  )}
+                  {canManageStaff && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStaffModalError(null)
+                        setStaffModal({
+                          mode: 'edit',
+                          staff_id: staffId,
+                          full_name: record.title,
+                          department_id: dept,
+                          category: isNonTeaching ? 'NON_TEACHING' : 'TEACHING',
+                          designation,
+                          official_email: email,
+                          lab_responsibility: String(meta.lab_responsibility || ''),
+                        })
+                      }}
+                      className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] px-2 py-1 text-[11px] font-semibold text-[#08747c] dark:text-[#55d6dc]"
+                    >
+                      <Pencil size={11} /> Edit
+                    </button>
+                  )}
+                  {canDeleteStaff && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStaffModalError(null)
+                        setDeletingStaff({ id: staffId, name: record.title })
+                      }}
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-200 dark:border-red-900/40 px-2 py-1 text-[11px] font-semibold text-red-600"
+                    >
+                      <Trash2 size={11} /> Delete
+                    </button>
+                  )}
+                </div>
+              </Panel>
+            )
+          })
+        )}
+      </div>
+
+      {/* High-Density Staff Roster Table (Desktop md+) */}
+      <div className="hidden md:block overflow-auto max-h-[calc(100vh-405px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
         <table className="w-full min-w-[960px] border-collapse text-left text-xs stagger-table">
           <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
             <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
-              <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">Staff Member & PNR</th>
+              <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">Staff Member &amp; ID</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Cadre & Designation</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Department</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Academic Workload / Custody</th>
@@ -6112,11 +6731,10 @@ function FacultyDirectoryTableView({
                     <span className="text-slate-800 dark:text-slate-200 font-medium block">
                       {designation}
                     </span>
-                    <span className={`inline-block font-mono text-[9px] font-bold px-1.5 py-0.5 rounded mt-0.5 ${
-                      isNonTeaching
+                    <span className={`inline-block font-mono text-[9px] font-bold px-1.5 py-0.5 rounded mt-0.5 ${isNonTeaching
                         ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
                         : 'bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]'
-                    }`}>
+                      }`}>
                       {isNonTeaching ? 'TECHNICAL' : 'TEACHING'}
                     </span>
                   </td>
@@ -6144,13 +6762,12 @@ function FacultyDirectoryTableView({
                           <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {totalPeriods} / 18 hrs/week
                           </span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                            isOverloaded
+                          <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${isOverloaded
                               ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
                               : isOptimal
-                              ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                          }`}>
+                                ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                            }`}>
                             {isOverloaded ? 'Overloaded' : isOptimal ? 'Optimal' : 'Normal Load'}
                           </span>
                         </div>
@@ -6278,15 +6895,15 @@ function FacultyDirectoryTableView({
       </div>
 
       {staffModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={() => setStaffModal(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-            <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 py-4 shrink-0">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setStaffModal(null)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div className="min-w-0 flex-1 pr-3">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#55d6dc]">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
                   Departmental Staff Directory
                 </span>
-                <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc] truncate">
+                <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb] truncate">
                   {staffModal.mode === 'create' ? 'Register Staff Member' : `Edit Staff · ${staffModal.full_name}`}
                 </h2>
               </div>
@@ -6294,95 +6911,95 @@ function FacultyDirectoryTableView({
                 type="button"
                 aria-label="Close staff form"
                 onClick={() => setStaffModal(null)}
-                className="shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
             </header>
-            <form onSubmit={handleSaveStaff} className="p-5 space-y-3 overflow-y-auto flex-1">
+            <form onSubmit={handleSaveStaff} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {staffModalError && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-2.5 text-xs text-red-700 dark:text-red-300">
                   {staffModalError}
                 </div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Full Name *</label>
+                  <label className={FORM_LABEL_CLASS}>Full Name *</label>
                   <input
                     required
                     value={staffModal.full_name}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, full_name: e.target.value } : s)}
                     placeholder="Faculty or Technical Staff Name"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                    className={FORM_INPUT_CLASS}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Staff / PNR ID</label>
+                  <label className={FORM_LABEL_CLASS}>Staff ID</label>
                   <input
                     disabled={staffModal.mode === 'edit'}
                     value={staffModal.staff_id}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, staff_id: e.target.value } : s)}
                     placeholder="Optional (auto-generated)"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none disabled:opacity-60"
+                    className={`${FORM_INPUT_CLASS} font-mono`}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Department *</label>
+                  <label className={FORM_LABEL_CLASS}>Department *</label>
                   <select
                     value={staffModal.department_id}
                     disabled={!['SUPER_ADMIN', 'DEAN'].includes(user.role)}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, department_id: e.target.value } : s)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none disabled:opacity-60"
+                    className={`${FORM_INPUT_CLASS} font-semibold`}
                   >
                     <DepartmentOptions includeValue={staffModal.department_id} />
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Category</label>
+                  <label className={FORM_LABEL_CLASS}>Category</label>
                   <select
                     value={staffModal.category}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, category: e.target.value as 'TEACHING' | 'NON_TEACHING' } : s)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={`${FORM_INPUT_CLASS} font-semibold`}
                   >
                     <option value="TEACHING">Teaching Faculty</option>
                     <option value="NON_TEACHING">Non-Teaching / Lab Technical</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Designation *</label>
+                  <label className={FORM_LABEL_CLASS}>Designation *</label>
                   <input
                     required
                     value={staffModal.designation}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, designation: e.target.value } : s)}
                     placeholder="e.g. Associate Professor"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                    className={FORM_INPUT_CLASS}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Official Email</label>
+                  <label className={FORM_LABEL_CLASS}>Official Email</label>
                   <input
                     type="email"
                     value={staffModal.official_email}
                     onChange={(e) => setStaffModal((s) => s ? { ...s, official_email: e.target.value } : s)}
                     placeholder="staff@gmrit.edu.in"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none"
+                    className={`${FORM_INPUT_CLASS} font-mono`}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Laboratory Responsibility (Optional)</label>
+                <label className={FORM_LABEL_CLASS}>Laboratory Responsibility (Optional)</label>
                 <input
                   value={staffModal.lab_responsibility}
                   onChange={(e) => setStaffModal((s) => s ? { ...s, lab_responsibility: e.target.value } : s)}
                   placeholder="Lab custody or coordination assignment"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#e3e9e8] dark:border-[#124349]">
-                <button type="button" onClick={() => setStaffModal(null)} className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[#526164] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
+                <button type="button" onClick={() => setStaffModal(null)} className={FORM_CANCEL_BTN_CLASS}>
                   Cancel
                 </button>
-                <button type="submit" disabled={staffSaving} className="inline-flex items-center gap-1.5 rounded-lg bg-[#08747c] px-4 py-2 text-xs font-semibold text-white hover:bg-[#003135] disabled:opacity-50 btn-interactive">
+                <button type="submit" disabled={staffSaving} className={FORM_SUBMIT_BTN_CLASS}>
                   {staffSaving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
                   Save Staff
                 </button>
@@ -6435,7 +7052,12 @@ function PeerSubstitutionModal({
         if (raw.ok) {
           const res = (await raw.json()) as any
           if (res.success && Array.isArray(res.data)) {
-            const available = res.data.filter((f: any) => f.staff_id !== user.pnr && f.staff_id !== user.userId)
+            const available = res.data.filter(
+              (f: any) =>
+                f.staff_id !== user.pnr &&
+                f.staff_id !== user.userId &&
+                (!user.email || String(f.official_email || '').toLowerCase() !== user.email.toLowerCase())
+            )
             setFacultyList(available)
             if (available.length > 0) {
               setSubstituteFacultyId(available[0].staff_id)
@@ -6496,17 +7118,17 @@ function PeerSubstitutionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div className="flex items-center gap-2">
-            <UserCheck className="text-[#08747c] dark:text-[#55d6dc]" size={20} />
-            <h2 className="text-sm sm:text-base font-bold text-[#003135] dark:text-[#55d6dc]">
+            <UserCheck className="text-[#08747c] dark:text-[#38e0d2]" size={20} />
+            <h2 className="text-sm sm:text-base font-bold text-[#003135] dark:text-[#f4f9fb]">
               Request Peer Class Substitution
             </h2>
           </div>
-          <button onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button type="button" onClick={onClose} aria-label="Close modal" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={16} />
           </button>
         </header>
@@ -6519,26 +7141,26 @@ function PeerSubstitutionModal({
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Faculty on Leave
             </label>
             <input
               type="text"
               value={`${user.fullName} (${user.pnr || user.userId || 'Self'})`}
               disabled
-              className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-[#f5f7f6] dark:bg-[#031d21] px-3 text-xs text-[#647376] dark:text-[#8ea5a3] cursor-not-allowed"
+              className={`${FORM_INPUT_CLASS} cursor-not-allowed`}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Day of Week
               </label>
               <select
                 value={dayOfWeek}
                 onChange={(e) => setDayOfWeek(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2 text-xs outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 {['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'].map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -6547,44 +7169,60 @@ function PeerSubstitutionModal({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Period Index
               </label>
               <select
                 value={periodIndex}
                 onChange={(e) => setPeriodIndex(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2 text-xs outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
-                {[1, 2, 3, 4, 5, 6, 7].map((p) => (
-                  <option key={p} value={p}>Period {p}</option>
-                ))}
+                {[1, 2, 3, 4, 5, 6, 7].map((p) => {
+                  const bell = bellSchedule.find((b) => b.period === p && b.type === 'period')
+                  return (
+                    <option key={p} value={p}>
+                      Period {p}{bell ? ` (${bell.startsAt}–${bell.endsAt})` : ''}
+                    </option>
+                  )
+                })}
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Leave Date
               </label>
               <input
                 type="date"
                 value={leaveDate}
-                onChange={(e) => setLeaveDate(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2 text-xs outline-none focus:border-[#08747c]"
+                onChange={(e) => {
+                  const v = e.target.value
+                  setLeaveDate(v)
+                  if (v) {
+                    const dt = new Date(`${v}T12:00:00`)
+                    if (!Number.isNaN(dt.getTime())) {
+                      const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+                      const derived = days[dt.getDay()]
+                      if (derived && derived !== 'SUNDAY') setDayOfWeek(derived)
+                    }
+                  }
+                }}
+                className={FORM_INPUT_CLASS}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Proposed Substitute Faculty Member *
             </label>
             {loadingFaculty ? (
-              <div className="h-9 flex items-center text-xs text-[#758386]">Loading faculty roster...</div>
+              <div className="h-9 flex items-center text-xs text-[#758386] dark:text-[#a6bcc9]">Loading faculty roster...</div>
             ) : (
               <select
                 value={substituteFacultyId}
                 onChange={(e) => setSubstituteFacultyId(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 {facultyList.map((f) => (
                   <option key={f.staff_id} value={f.staff_id}>
@@ -6593,13 +7231,13 @@ function PeerSubstitutionModal({
                 ))}
               </select>
             )}
-            <p className="mt-1 text-[11px] text-[#647376] dark:text-[#8ea5a3]">
+            <p className="mt-1 text-[11px] text-[#647376] dark:text-[#a6bcc9]">
               The chosen peer faculty will be notified directly and can accept or decline this class coverage without requiring HOD approval.
             </p>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+            <label className={FORM_LABEL_CLASS}>
               Reason for Substitution *
             </label>
             <textarea
@@ -6608,22 +7246,22 @@ function PeerSubstitutionModal({
               placeholder="e.g., University Research Committee Meeting, Urgent Medical Leave..."
               rows={3}
               required
-              className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-3 text-xs outline-none focus:border-[#08747c]"
+              className={FORM_TEXTAREA_CLASS}
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting || loadingFaculty}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#08747c] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Submitting...' : 'Send Direct Request'}
             </button>
@@ -6682,12 +7320,37 @@ function SubstitutionsWorkflowView({
     }
   }
 
+  const handleCancelSubstitution = async (subId: string) => {
+    setActioningId(subId)
+    try {
+      const raw = await backendFetch(`/api/v1/substitutions/${encodeURIComponent(subId)}`, {
+        method: 'DELETE',
+      })
+      const res = (await raw.json().catch(() => ({}))) as any
+      if (!raw.ok || res?.success === false) throw new Error(res?.message || 'Cancellation failed')
+      window.dispatchEvent(new CustomEvent('gmritdu:toast', {
+        detail: {
+          message: res?.message || 'Substitution cancelled and regular faculty reinstated.',
+          type: 'info',
+        },
+      }))
+      window.dispatchEvent(new Event('gmritdu:data-change'))
+      if (onRefresh) onRefresh()
+    } catch (e) {
+      window.dispatchEvent(new CustomEvent('gmritdu:toast', {
+        detail: { message: `Cancellation failed: ${e instanceof Error ? e.message : 'Unknown error'}`, type: 'error' },
+      }))
+    } finally {
+      setActioningId(null)
+    }
+  }
+
   const filtered = useMemo(() => {
     let list = records.filter((r) => {
       const meta = r.meta || {}
       const st = String(meta.status || r.status || 'PENDING').toUpperCase()
       if (statusFilter !== 'ALL' && st !== statusFilter) return false
-      const dept = String(meta.department_id || 'CSE').toUpperCase()
+      const dept = String(meta.department_id || meta.sec_dept || 'CSE').toUpperCase()
       if (deptFilter !== 'ALL' && dept !== deptFilter) return false
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase()
@@ -6763,11 +7426,10 @@ function SubstitutionsWorkflowView({
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  statusFilter === st
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${statusFilter === st
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 {st === 'ALL' ? 'All' : st === 'APPROVED' ? 'Approved' : st}
               </button>
@@ -6806,8 +7468,83 @@ function SubstitutionsWorkflowView({
         </div>
       </Panel>
 
-      {/* High-Density Substitutions Table */}
-      <div className="overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+      {/* Mobile Cards (< md) */}
+      <div className="md:hidden space-y-2.5 stagger-grid">
+        {filtered.length === 0 ? (
+          <Panel className="p-6 text-center text-xs text-[#7a898c]">
+            No substitution requests found matching filters.
+          </Panel>
+        ) : (
+          filtered.map((record) => {
+            const meta = record.meta || {}
+            const subId = String(meta.substitution_id || record.id)
+            const status = String(meta.status || record.status || 'PENDING').toUpperCase()
+            const origFaculty = String(meta.original_faculty_name || 'Faculty Member')
+            const substFaculty = String(meta.substitute_faculty_name || 'Covering Faculty')
+            const leaveDate = String(meta.leave_date || meta.day_of_week || 'Scheduled Day')
+            const periodIndex = meta.period_index ? `P${meta.period_index}` : 'Period'
+            const subjectName = meta.subject_name ? String(meta.subject_name) : record.title
+            const isPending = status === 'PENDING'
+            const isApproved = status === 'APPROVED'
+            const isRecipient = user.pnr && (meta.substitute_faculty_id === user.pnr || String(meta.substitute_faculty_name || '').toLowerCase().includes(user.fullName.toLowerCase()))
+            const isRequester = String(meta.assigned_by_user_id || '') === user.userId
+
+            return (
+              <Panel key={`card-${record.id}`} className="p-3.5 space-y-2 border border-[#dce4e3] dark:border-[#124349]">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
+                      {leaveDate} · {periodIndex}
+                    </span>
+                    <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">{subjectName}</h4>
+                    <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
+                      {origFaculty} → <strong className="text-[#08747c] dark:text-[#55d6dc]">{substFaculty}</strong>
+                    </p>
+                  </div>
+                  <span className={`shrink-0 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isApproved ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' : isPending ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}>
+                    {status}
+                  </span>
+                </div>
+                {isPending && (isHodOrAdmin || isRecipient || isRequester) && (
+                  <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                    {(isHodOrAdmin || isRecipient) && (
+                      <>
+                        <button
+                          disabled={actioningId === subId}
+                          onClick={() => handleAction(subId, 'APPROVE')}
+                          className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white cursor-pointer"
+                        >
+                          {isRecipient ? 'Accept Class' : 'Approve'}
+                        </button>
+                        <button
+                          disabled={actioningId === subId}
+                          onClick={() => handleAction(subId, 'REJECT')}
+                          className="rounded-lg border border-red-200 dark:border-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-600 cursor-pointer"
+                        >
+                          {isRecipient ? 'Decline' : 'Reject'}
+                        </button>
+                      </>
+                    )}
+                    {(isHodOrAdmin || isRequester) && (
+                      <button
+                        disabled={actioningId === subId}
+                        onClick={() => handleCancelSubstitution(subId)}
+                        className="rounded-lg border border-[#d6dfde] dark:border-[#175259] px-2.5 py-1 text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f2f6f5] dark:hover:bg-[#07363d] cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                )}
+              </Panel>
+            )
+          })
+        )}
+      </div>
+
+      {/* High-Density Substitutions Table (Desktop md+) */}
+      <div className="hidden md:block overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
         <table className="w-full min-w-[900px] border-collapse text-left text-xs">
           <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
             <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
@@ -6840,6 +7577,7 @@ function SubstitutionsWorkflowView({
                 const subjectName = meta.subject_name ? String(meta.subject_name) : record.title
                 const isPending = status === 'PENDING'
                 const isApproved = status === 'APPROVED'
+                const isRequester = String(meta.assigned_by_user_id || '') === user.userId
 
                 return (
                   <tr
@@ -6891,13 +7629,12 @@ function SubstitutionsWorkflowView({
                     </td>
 
                     <td className="p-3">
-                      <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
-                        isApproved
+                      <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded ${isApproved
                           ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
                           : isPending
-                          ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                      }`}>
+                            ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        }`}>
                         {isApproved ? '\u25CF APPROVED' : isPending ? '\u25B2 PENDING' : '\u25A0 REJECTED'}
                       </span>
                     </td>
@@ -6906,30 +7643,45 @@ function SubstitutionsWorkflowView({
                       {isPending ? (
                         (() => {
                           const isRecipient = user.pnr && (meta.substitute_faculty_id === user.pnr || String(meta.substitute_faculty_name || '').toLowerCase().includes(user.fullName.toLowerCase()))
-                          if (isHodOrAdmin || isRecipient) {
+                          const canDecide = isHodOrAdmin || isRecipient
+                          const canCancel = isHodOrAdmin || isRequester
+                          if (!canDecide && !canCancel) {
                             return (
-                              <div className="flex items-center justify-end gap-1.5">
-                                <button
-                                  disabled={actioningId === subId}
-                                  onClick={() => handleAction(subId, 'APPROVE')}
-                                  className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
-                                >
-                                  {isRecipient ? 'Accept Class' : 'Approve'}
-                                </button>
-                                <button
-                                  disabled={actioningId === subId}
-                                  onClick={() => handleAction(subId, 'REJECT')}
-                                  className="rounded-lg border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition cursor-pointer"
-                                >
-                                  {isRecipient ? 'Decline' : 'Reject'}
-                                </button>
-                              </div>
+                              <span className="font-mono text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
+                                Pending Peer Response
+                              </span>
                             )
                           }
                           return (
-                            <span className="font-mono text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
-                              Pending Peer Response
-                            </span>
+                            <div className="flex items-center justify-end gap-1.5">
+                              {canDecide && (
+                                <>
+                                  <button
+                                    disabled={actioningId === subId}
+                                    onClick={() => handleAction(subId, 'APPROVE')}
+                                    className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+                                  >
+                                    {isRecipient ? 'Accept Class' : 'Approve'}
+                                  </button>
+                                  <button
+                                    disabled={actioningId === subId}
+                                    onClick={() => handleAction(subId, 'REJECT')}
+                                    className="rounded-lg border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition cursor-pointer"
+                                  >
+                                    {isRecipient ? 'Decline' : 'Reject'}
+                                  </button>
+                                </>
+                              )}
+                              {canCancel && (
+                                <button
+                                  disabled={actioningId === subId}
+                                  onClick={() => handleCancelSubstitution(subId)}
+                                  className="rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f2f6f5] dark:hover:bg-[#07363d] transition cursor-pointer"
+                                >
+                                  Cancel
+                                </button>
+                              )}
+                            </div>
                           )
                         })()
                       ) : (
@@ -6969,14 +7721,29 @@ function HODApprovalsCenterView({
   const [activeTab, setActiveTab] = useState<'lab_requests' | 'substitutions_overview'>('lab_requests')
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
+  const [subStatusFilter, setSubStatusFilter] = useState<string>('ALL')
   const [deptFilter, setDeptFilter] = useState<string>('ALL')
   const [actioningId, setActioningId] = useState<string | null>(null)
 
   const subQuery = user.role === 'SUPER_ADMIN' || user.role === 'DEAN'
     ? '?status=ALL'
     : `?status=ALL&department=${encodeURIComponent(user.departmentId || 'CSE')}`
-  const subsResource = useLiveResource<unknown>(activeTab === 'substitutions_overview' ? `/api/v1/substitutions${subQuery}` : null)
+  const subsResource = useLiveResource<unknown>(`/api/v1/substitutions${subQuery}`)
   const normalizedSubs = useMemo(() => (subsResource.data ? normalizeAcademicResponse(subsResource.data) : null), [subsResource.data])
+
+  const allSubsList = useMemo(() => normalizedSubs?.data || [], [normalizedSubs])
+  const pendingSubsCount = useMemo(
+    () => allSubsList.filter((s) => String(s.meta?.status || s.status || 'PENDING').toUpperCase() === 'PENDING').length,
+    [allSubsList],
+  )
+  const filteredSubs = useMemo(() => {
+    if (subStatusFilter === 'ALL') return allSubsList
+    return allSubsList.filter((s) => {
+      const st = String(s.meta?.status || s.status || 'PENDING').toUpperCase()
+      if (subStatusFilter === 'REJECTED') return st === 'REJECTED' || st === 'CANCELLED'
+      return st === subStatusFilter
+    })
+  }, [allSubsList, subStatusFilter])
 
   const handleSubstitutionDecision = async (subId: string, action: 'APPROVE' | 'REJECT') => {
     setActioningId(subId)
@@ -6996,6 +7763,7 @@ function HODApprovalsCenterView({
         }
       }))
       window.dispatchEvent(new Event('gmritdu:data-change'))
+      subsResource.retry()
       if (onRefresh) onRefresh()
     } catch (e) {
       window.dispatchEvent(new CustomEvent('gmritdu:toast', {
@@ -7034,8 +7802,13 @@ function HODApprovalsCenterView({
     }
   }
 
+  const primaryRecords = useMemo(
+    () => records.filter((r) => !/-P\d+$/i.test(String(r.meta?.booking_id || r.id || ''))),
+    [records],
+  )
+
   const filteredBookings = useMemo(() => {
-    let list = records.filter((r) => {
+    let list = primaryRecords.filter((r) => {
       const meta = r.meta || {}
       const st = String(meta.status || r.status || 'PENDING').toUpperCase()
       if (statusFilter !== 'ALL' && st !== statusFilter) return false
@@ -7051,14 +7824,14 @@ function HODApprovalsCenterView({
       return true
     })
     return list
-  }, [records, statusFilter, deptFilter, searchTerm])
+  }, [primaryRecords, statusFilter, deptFilter, searchTerm])
 
-  const pendingCount = records.filter((r) => {
+  const pendingCount = primaryRecords.filter((r) => {
     const st = String(r.meta?.status || r.status || 'PENDING').toUpperCase()
     return st === 'PENDING' || st === 'PENDING_HOD'
   }).length
 
-  const confirmedCount = records.filter((r) => {
+  const confirmedCount = primaryRecords.filter((r) => {
     const st = String(r.meta?.status || r.status || '').toUpperCase()
     return st === 'CONFIRMED' || st === 'APPROVED'
   }).length
@@ -7071,11 +7844,10 @@ function HODApprovalsCenterView({
           <button
             type="button"
             onClick={() => setActiveTab('lab_requests')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
-              activeTab === 'lab_requests'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${activeTab === 'lab_requests'
                 ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                 : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-            }`}
+              }`}
           >
             <FlaskConical size={14} />
             Pending Lab Bookings
@@ -7088,27 +7860,32 @@ function HODApprovalsCenterView({
           <button
             type="button"
             onClick={() => setActiveTab('substitutions_overview')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
-              activeTab === 'substitutions_overview'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${activeTab === 'substitutions_overview'
                 ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                 : 'text-[#647376] dark:text-[#8ea5a3] hover:text-[#172326]'
-            }`}
+              }`}
           >
             <UserCheck size={14} />
             Faculty Peer Substitutions
+            {pendingSubsCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+                {pendingSubsCount}
+              </span>
+            )}
           </button>
         </div>
 
-        {onRefresh && (
-          <button
-            type="button"
-            onClick={onRefresh}
-            className="self-end sm:self-auto px-3 py-1.5 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#062327] text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] transition flex items-center gap-1.5 cursor-pointer"
-          >
-            <RefreshCw size={13} />
-            Refresh Queue
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => {
+            subsResource.retry()
+            if (onRefresh) onRefresh()
+          }}
+          className="self-end sm:self-auto px-3 py-1.5 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#062327] text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] transition flex items-center gap-1.5 cursor-pointer"
+        >
+          <RefreshCw size={13} />
+          Refresh Queue
+        </button>
       </div>
 
       {activeTab === 'lab_requests' ? (
@@ -7132,7 +7909,7 @@ function HODApprovalsCenterView({
             <Panel className="p-3 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl flex items-center justify-between col-span-2 sm:col-span-1">
               <div>
                 <span className="block text-[11px] font-semibold text-[#647376] dark:text-[#8ea5a3]">Total Submissions</span>
-                <span className="mt-0.5 text-xl font-bold text-[#003135] dark:text-[#55d6dc]">{records.length}</span>
+                <span className="mt-0.5 text-xl font-bold text-[#003135] dark:text-[#55d6dc]">{primaryRecords.length}</span>
               </div>
               <FlaskConical size={22} className="text-[#08747c]/40" />
             </Panel>
@@ -7145,7 +7922,7 @@ function HODApprovalsCenterView({
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7a898c]" />
                 <input
                   type="text"
-                  placeholder="Search requester name, PNR, lab venue, or event purpose..."
+                  placeholder="Search requester name, ID / Student No, lab venue, or event purpose..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f9fbfb] dark:bg-[#042024] text-[#003135] dark:text-[#cbd5e1] outline-none focus:border-[#08747c]"
@@ -7175,8 +7952,68 @@ function HODApprovalsCenterView({
             </div>
           </Panel>
 
-          {/* High-Density Requests Table with max-h viewport container */}
-          <div className="overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+          {/* Mobile Requests Cards (< md) */}
+          <div className="md:hidden space-y-2.5 stagger-grid">
+            {filteredBookings.length === 0 ? (
+              <Panel className="p-6 text-center text-xs text-[#7a898c]">
+                No laboratory booking requests matching current filters.
+              </Panel>
+            ) : (
+              filteredBookings.map((rec) => {
+                const meta = rec.meta || {}
+                const bookingId = String(meta.booking_id || rec.id)
+                const status = String(meta.status || rec.status || 'PENDING').toUpperCase()
+                const isPending = status === 'PENDING' || status === 'PENDING_HOD'
+                const isConfirmed = status === 'CONFIRMED' || status === 'APPROVED'
+                const requesterName = String(meta.requester_name || meta.booked_by_user_id || 'Student / Staff')
+                const labName = String(meta.lab_name || rec.title || 'Laboratory')
+                const day = String(meta.day_of_week || meta.booking_date || '')
+                const period = meta.period_index ? `Period ${meta.period_index}` : String(meta.time_slot || '')
+                const purpose = String(meta.purpose || meta.title || rec.title || meta.description || 'Academic Practice')
+
+                return (
+                  <Panel key={`card-${rec.id}`} className="p-3.5 space-y-2 border border-[#dce4e3] dark:border-[#124349]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
+                          {day}{period ? ` · ${period}` : ''}
+                        </span>
+                        <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">{labName}</h4>
+                        <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5 truncate">{purpose}</p>
+                        <span className="text-[10px] text-[#7a898c] block mt-0.5">By {requesterName}</span>
+                      </div>
+                      <span className={`shrink-0 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isConfirmed ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' : isPending ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300' : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
+                        }`}>
+                        {isConfirmed ? 'CONFIRMED' : isPending ? 'PENDING' : status}
+                      </span>
+                    </div>
+                    {isPending && (
+                      <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                        <button
+                          type="button"
+                          disabled={actioningId === bookingId}
+                          onClick={() => handleBookingDecision(bookingId, 'APPROVE')}
+                          className="inline-flex items-center gap-1 rounded-md bg-[#024950] px-2.5 py-1 text-[11px] font-semibold text-white cursor-pointer"
+                        >
+                          <CheckCircle2 size={11} /> Confirm
+                        </button>
+                        <button
+                          type="button"
+                          disabled={actioningId === bookingId}
+                          onClick={() => handleBookingDecision(bookingId, 'REJECT')}
+                          className="inline-flex items-center gap-1 rounded-md border border-red-200 dark:border-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-600 cursor-pointer"
+                        >
+                          <XCircle size={11} /> Reject
+                        </button>
+                      </div>
+                    )}
+                  </Panel>
+                )
+              })
+            )}
+          </div>
+
+          <div className="hidden md:block overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
             <table className="w-full min-w-[900px] border-collapse text-left text-xs">
               <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
                 <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
@@ -7260,13 +8097,12 @@ function HODApprovalsCenterView({
                           {createdAt}
                         </td>
                         <td className="p-2.5">
-                          <span className={`inline-flex items-center gap-1 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
-                            isConfirmed
+                          <span className={`inline-flex items-center gap-1 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isConfirmed
                               ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
                               : isPending
-                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
-                              : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
-                          }`}>
+                                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
+                                : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
+                            }`}>
                             {isConfirmed ? 'CONFIRMED' : isPending ? 'PENDING HOD' : 'CANCELLED'}
                           </span>
                         </td>
@@ -7307,18 +8143,92 @@ function HODApprovalsCenterView({
       ) : (
         /* Department Peer Faculty Substitutions Oversight & HOD Approval */
         <div className="space-y-3">
-          <Panel className="p-3 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <Panel className="p-3 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold text-xs text-[#003135] dark:text-[#55d6dc]">
                 Department Faculty Substitution Oversight
               </span>
               <span className="text-[11px] text-[#7a898c]">
-                (Peer arrangements & HOD approval queue for department class substitutions)
+                ({pendingSubsCount} pending · {allSubsList.length} total requests)
               </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  onClick={() => setSubStatusFilter(st)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer ${
+                    subStatusFilter === st
+                      ? 'bg-[#024950] text-white'
+                      : 'border border-[#dce4e3] dark:border-[#2e4656] text-[#526164] dark:text-[#a6bcc9] hover:bg-[#edf2f1] dark:hover:bg-[#1f3240]'
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
             </div>
           </Panel>
 
-          <div className="overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+          {/* Mobile Substitutions Oversight Cards (< md) */}
+          <div className="md:hidden space-y-2.5 stagger-grid">
+            {filteredSubs.length === 0 ? (
+              <Panel className="p-6 text-center text-xs text-[#7a898c]">
+                No faculty substitution requests matching current filter.
+              </Panel>
+            ) : (
+              filteredSubs.map((sub) => {
+                const meta = sub.meta || {}
+                const subId = String(meta.substitution_id || sub.id)
+                const statusStr = String(meta.status || sub.status || 'PENDING').toUpperCase()
+                const isApproved = statusStr === 'APPROVED'
+                const isRejected = statusStr === 'REJECTED' || statusStr === 'CANCELLED'
+                const isPending = !isApproved && !isRejected
+
+                return (
+                  <Panel key={`card-${sub.id}`} className="p-3.5 space-y-2 border border-[#dce4e3] dark:border-[#124349]">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">
+                          {String(meta.date || meta.day_of_week || 'Scheduled')} · Period {meta.period_index || 1}
+                        </span>
+                        <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">{sub.title}</h4>
+                        <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
+                          {String(meta.original_faculty_name || 'Faculty')} → <strong className="text-[#08747c] dark:text-[#55d6dc]">{String(meta.substitute_faculty_name || 'Peer')}</strong>
+                        </p>
+                      </div>
+                      <span className={`shrink-0 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isApproved ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300' : isPending ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300' : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
+                        }`}>
+                        {statusStr}
+                      </span>
+                    </div>
+                    {isPending && (
+                      <div className="flex items-center justify-end gap-1.5 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                        <button
+                          type="button"
+                          disabled={actioningId === subId}
+                          onClick={() => handleSubstitutionDecision(subId, 'APPROVE')}
+                          className="inline-flex items-center gap-1 rounded-md bg-[#024950] px-2.5 py-1 text-[11px] font-semibold text-white cursor-pointer"
+                        >
+                          <CheckCircle2 size={11} /> Confirm
+                        </button>
+                        <button
+                          type="button"
+                          disabled={actioningId === subId}
+                          onClick={() => handleSubstitutionDecision(subId, 'REJECT')}
+                          className="inline-flex items-center gap-1 rounded-md border border-red-200 dark:border-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-600 cursor-pointer"
+                        >
+                          <XCircle size={11} /> Reject
+                        </button>
+                      </div>
+                    )}
+                  </Panel>
+                )
+              })
+            )}
+          </div>
+
+          <div className="hidden md:block overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
             <table className="w-full min-w-[960px] border-collapse text-left text-xs">
               <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
                 <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
@@ -7332,14 +8242,14 @@ function HODApprovalsCenterView({
                 </tr>
               </thead>
               <tbody>
-                {(normalizedSubs?.data || []).length === 0 ? (
+                {filteredSubs.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="p-8 text-center text-xs text-[#7a898c]">
-                      No faculty substitution requests recorded in this department.
+                      No faculty substitution requests matching current filter.
                     </td>
                   </tr>
                 ) : (
-                  (normalizedSubs?.data || []).map((sub) => {
+                  filteredSubs.map((sub) => {
                     const meta = sub.meta || {}
                     const subId = String(meta.substitution_id || sub.id)
                     const statusStr = String(meta.status || sub.status || 'PENDING').toUpperCase()
@@ -7372,13 +8282,12 @@ function HODApprovalsCenterView({
                           {String(meta.reason || 'Official academic substitution')}
                         </td>
                         <td className="p-2.5">
-                          <span className={`inline-flex items-center gap-1 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
-                            isApproved
+                          <span className={`inline-flex items-center gap-1 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isApproved
                               ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
                               : isPending
-                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
-                              : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
-                          }`}>
+                                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
+                                : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300'
+                            }`}>
                             {isApproved ? '\u25CF APPROVED' : isPending ? '\u25B2 PENDING' : `\u25A0 ${statusStr}`}
                           </span>
                         </td>
@@ -7438,13 +8347,30 @@ function DepartmentsDirectoryView({
   const [sortBy, setSortBy] = useState<'code_asc' | 'faculty_desc' | 'lab_desc'>('code_asc')
 
   const role = user?.role || 'STUDENT'
+  const deanSchool = useMemo(
+    () =>
+      role === 'DEAN'
+        ? schools.find(
+          (sc) =>
+            (user?.schoolId && sc.school_id === user.schoolId) ||
+            (user?.email && sc.dean_email?.toLowerCase() === user.email.toLowerCase())
+        ) || null
+        : null,
+    [role, schools, user?.schoolId, user?.email]
+  )
+  const visibleSchools = useMemo(
+    () => (deanSchool ? [deanSchool] : schools),
+    [deanSchool, schools]
+  )
   const canCreateSchool = role === 'SUPER_ADMIN'
   const canEditAnySchool = role === 'SUPER_ADMIN'
   const canEditOwnSchool = role === 'DEAN'
   const canCreateDept = role === 'SUPER_ADMIN' || role === 'DEAN'
-  const canDeleteDept = role === 'SUPER_ADMIN' || role === 'DEAN'
-  const canEditDept = (deptId: string) =>
-    role === 'SUPER_ADMIN' || role === 'DEAN' || (role === 'DEPT_ADMIN' && String(user?.departmentId || '').toUpperCase() === deptId)
+  const canDeleteDept = role === 'SUPER_ADMIN'
+  const canEditDept = (deptId: string, deptSchool?: string) =>
+    role === 'SUPER_ADMIN' ||
+    (role === 'DEAN' && (!deanSchool || deanSchool.school_id === deptSchool)) ||
+    (role === 'DEPT_ADMIN' && String(user?.departmentId || '').toUpperCase() === deptId)
 
   const [schoolModal, setSchoolModal] = useState<{
     mode: 'create' | 'edit'
@@ -7475,15 +8401,17 @@ function DepartmentsDirectoryView({
       const deptId = String(meta.department_id || r.id).toUpperCase()
       const rowSchool = String(meta.school_id || '').toUpperCase()
 
+      if (deanSchool && rowSchool !== deanSchool.school_id) return false
       if (schoolFilter !== 'ALL' && rowSchool !== schoolFilter) return false
 
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase()
         const titleMatch = r.title.toLowerCase().includes(q)
         const codeMatch = deptId.toLowerCase().includes(q)
-        const hodMatch = String(meta.hod_name || '').toLowerCase().includes(q)
+        const hodMatch = String(meta.hod_name || meta.assigned_hod_name || '').toLowerCase().includes(q)
+        const coordMatch = String(meta.coordinator_name || meta.coordinator_email || '').toLowerCase().includes(q)
         const schoolMatch = rowSchool.toLowerCase().includes(q)
-        if (!titleMatch && !codeMatch && !hodMatch && !schoolMatch) return false
+        if (!titleMatch && !codeMatch && !hodMatch && !coordMatch && !schoolMatch) return false
       }
       return true
     })
@@ -7498,7 +8426,7 @@ function DepartmentsDirectoryView({
     })
 
     return list
-  }, [records, schoolFilter, sortBy, searchTerm])
+  }, [records, deanSchool, schoolFilter, sortBy, searchTerm])
 
   const handleSaveSchool = async (e: FormEvent) => {
     e.preventDefault()
@@ -7665,19 +8593,18 @@ function DepartmentsDirectoryView({
             </div>
           </div>
 
-          {schools.length > 0 && (
+          {visibleSchools.length > 0 && (
             <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 stagger-grid">
-              {schools.map((sc) => {
+              {visibleSchools.map((sc) => {
                 const isThisDeansSchool = canEditOwnSchool && String(sc.dean_email || '').toLowerCase() === String(user?.email || '').toLowerCase()
                 const allowSchoolEdit = canEditAnySchool || isThisDeansSchool
                 return (
                   <div
                     key={sc.school_id}
-                    className={`rounded-xl border p-3 transition card-interactive ${
-                      schoolFilter === sc.school_id
+                    className={`rounded-xl border p-3 transition card-interactive ${schoolFilter === sc.school_id
                         ? 'border-[#08747c] bg-[#ebf7f6]/70 dark:bg-[#07363d]'
                         : 'border-[#dce4e3] dark:border-[#124349] bg-[#fafcfb] dark:bg-[#072a2f]'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <button
@@ -7753,24 +8680,22 @@ function DepartmentsDirectoryView({
             <button
               type="button"
               onClick={() => setSchoolFilter('ALL')}
-              className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                schoolFilter === 'ALL'
+              className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${schoolFilter === 'ALL'
                   ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                   : 'text-[#647376] dark:text-[#8ea5a3]'
-              }`}
+                }`}
             >
               All ({records.length})
             </button>
-            {schools.map((sc) => (
+            {visibleSchools.map((sc) => (
               <button
                 key={sc.school_id}
                 type="button"
                 onClick={() => setSchoolFilter(sc.school_id)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  schoolFilter === sc.school_id
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${schoolFilter === sc.school_id
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 {sc.school_id}
               </button>
@@ -7795,7 +8720,7 @@ function DepartmentsDirectoryView({
             <tr className="border-b border-[#dce4e3] dark:border-[#124349] bg-[#f7f9f9] dark:bg-[#031d21]">
               <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">Code &amp; School</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Academic Department Name</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Head of Department (HOD)</th>
+              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Branch HOD &amp; Coordinator</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Faculty Count</th>
               <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Laboratories</th>
               <th className="p-3 text-right font-semibold text-[#526164] dark:text-[#8ea5a3]">Actions</th>
@@ -7813,7 +8738,15 @@ function DepartmentsDirectoryView({
                 const meta = r.meta || {}
                 const deptId = String(meta.department_id || r.id).toUpperCase()
                 const schoolId = String(meta.school_id || '')
-                const hodName = meta.hod_name ? String(meta.hod_name) : 'Department Head'
+                const rawHod = String(meta.hod_name || '')
+                const hodName =
+                  rawHod && rawHod !== 'Department Head (Editable)'
+                    ? rawHod
+                    : meta.assigned_hod_name
+                      ? String(meta.assigned_hod_name)
+                      : `Department Head (${deptId})`
+                const coordName = meta.coordinator_name ? String(meta.coordinator_name) : `Timetable Coordinator (${deptId})`
+                const coordEmail = meta.coordinator_email ? String(meta.coordinator_email) : ''
                 const facultyCount = Number(meta.faculty_count ?? 0)
                 const labCount = Number(meta.laboratory_count ?? meta.laboratories_count ?? 0)
 
@@ -7845,12 +8778,20 @@ function DepartmentsDirectoryView({
                     </td>
 
                     <td className="p-3">
-                      <span className="font-semibold text-slate-800 dark:text-slate-200 block">
+                      <span className="font-semibold text-slate-800 dark:text-slate-100 block">
                         {hodName}
                       </span>
-                      <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d]">
-                        {meta.contact_email ? String(meta.contact_email) : 'Head of Department'}
+                      <span className="text-[10px] text-[#7a898c] dark:text-[#a6bcc9] block">
+                        HOD{meta.contact_email || meta.assigned_hod_email ? ` · ${String(meta.contact_email || meta.assigned_hod_email)}` : ''}
                       </span>
+                      <span className="mt-1 inline-flex items-center gap-1 rounded bg-[#ebf7f6] dark:bg-[#1f3240] px-1.5 py-0.5 text-[10px] font-semibold text-[#08747c] dark:text-[#38e0d2]">
+                        Timetable Coord: {coordName}
+                      </span>
+                      {coordEmail && (
+                        <span className="block font-mono text-[10px] text-[#7a898c] dark:text-[#a6bcc9]">
+                          {coordEmail}
+                        </span>
+                      )}
                     </td>
 
                     <td className="p-3 font-semibold text-[#08747c] dark:text-[#55d6dc]">
@@ -7879,7 +8820,7 @@ function DepartmentsDirectoryView({
                           <FlaskConical size={12} />
                           Labs
                         </button>
-                        {canEditDept(deptId) && (
+                        {canEditDept(deptId, schoolId) && (
                           <button
                             type="button"
                             onClick={() => {
@@ -7926,15 +8867,15 @@ function DepartmentsDirectoryView({
 
       {/* Create / Edit School Modal */}
       {schoolModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={() => setSchoolModal(null)} />
-          <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-            <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 py-4 shrink-0">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setSchoolModal(null)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div className="min-w-0 flex-1 pr-3">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#55d6dc]">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
                   Institutional School Governance
                 </span>
-                <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc] truncate">
+                <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb] truncate">
                   {schoolModal.mode === 'create' ? 'Create Academic School' : `Update School · ${schoolModal.school_id}`}
                 </h2>
               </div>
@@ -7942,62 +8883,62 @@ function DepartmentsDirectoryView({
                 type="button"
                 aria-label="Close school form"
                 onClick={() => setSchoolModal(null)}
-                className="shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
             </header>
-            <form onSubmit={handleSaveSchool} className="p-5 space-y-3 overflow-y-auto flex-1">
+            <form onSubmit={handleSaveSchool} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {modalError && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-2.5 text-xs text-red-700 dark:text-red-300">
                   {modalError}
                 </div>
               )}
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">School Code *</label>
+                <label className={FORM_LABEL_CLASS}>School Code *</label>
                 <input
                   required
                   disabled={schoolModal.mode === 'edit'}
                   value={schoolModal.school_id}
                   onChange={(e) => setSchoolModal((s) => s ? { ...s, school_id: e.target.value.toUpperCase() } : s)}
                   placeholder="e.g. SOC"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none disabled:opacity-60"
+                  className={`${FORM_INPUT_CLASS} font-mono`}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">School Name *</label>
+                <label className={FORM_LABEL_CLASS}>School Name *</label>
                 <input
                   required
                   value={schoolModal.name}
                   onChange={(e) => setSchoolModal((s) => s ? { ...s, name: e.target.value } : s)}
                   placeholder="School Name"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Dean Name</label>
+                <label className={FORM_LABEL_CLASS}>Dean Name</label>
                 <input
                   value={schoolModal.dean_name}
                   onChange={(e) => setSchoolModal((s) => s ? { ...s, dean_name: e.target.value } : s)}
                   placeholder="Assigned School Dean"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Dean Official Email</label>
+                <label className={FORM_LABEL_CLASS}>Dean Official Email</label>
                 <input
                   type="email"
                   value={schoolModal.dean_email}
                   onChange={(e) => setSchoolModal((s) => s ? { ...s, dean_email: e.target.value } : s)}
                   placeholder="dean@gmrit.edu.in"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none"
+                  className={`${FORM_INPUT_CLASS} font-mono`}
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#e3e9e8] dark:border-[#124349]">
-                <button type="button" onClick={() => setSchoolModal(null)} className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[#526164] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
+                <button type="button" onClick={() => setSchoolModal(null)} className={FORM_CANCEL_BTN_CLASS}>
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 rounded-lg bg-[#08747c] px-4 py-2 text-xs font-semibold text-white hover:bg-[#003135] disabled:opacity-50 btn-interactive">
+                <button type="submit" disabled={saving} className={FORM_SUBMIT_BTN_CLASS}>
                   {saving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
                   Save School
                 </button>
@@ -8009,15 +8950,15 @@ function DepartmentsDirectoryView({
 
       {/* Create / Edit Department Modal */}
       {deptModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={() => setDeptModal(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-            <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 py-4 shrink-0">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setDeptModal(null)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div className="min-w-0 flex-1 pr-3">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#55d6dc]">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
                   Academic Department Setup
                 </span>
-                <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc] truncate">
+                <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb] truncate">
                   {deptModal.mode === 'create' ? 'Create Academic Department' : `Edit Department · ${deptModal.department_id}`}
                 </h2>
               </div>
@@ -8025,36 +8966,36 @@ function DepartmentsDirectoryView({
                 type="button"
                 aria-label="Close department form"
                 onClick={() => setDeptModal(null)}
-                className="shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
             </header>
-            <form onSubmit={handleSaveDept} className="p-5 space-y-3 overflow-y-auto flex-1">
+            <form onSubmit={handleSaveDept} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {modalError && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-2.5 text-xs text-red-700 dark:text-red-300">
                   {modalError}
                 </div>
               )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Department Code *</label>
+                  <label className={FORM_LABEL_CLASS}>Department Code *</label>
                   <input
                     required
                     disabled={deptModal.mode === 'edit'}
                     value={deptModal.department_id}
                     onChange={(e) => setDeptModal((d) => d ? { ...d, department_id: e.target.value.toUpperCase() } : d)}
                     placeholder="e.g. CSE"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none disabled:opacity-60"
+                    className={`${FORM_INPUT_CLASS} font-mono`}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Affiliated School</label>
+                  <label className={FORM_LABEL_CLASS}>Affiliated School</label>
                   <select
                     value={deptModal.school_id}
                     disabled={role !== 'SUPER_ADMIN'}
                     onChange={(e) => setDeptModal((d) => d ? { ...d, school_id: e.target.value } : d)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none disabled:opacity-60"
+                    className={`${FORM_INPUT_CLASS} font-semibold`}
                   >
                     <option value="">Independent / Unassigned</option>
                     {schools.map((sc) => (
@@ -8066,51 +9007,51 @@ function DepartmentsDirectoryView({
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Department Name *</label>
+                <label className={FORM_LABEL_CLASS}>Department Name *</label>
                 <input
                   required
                   value={deptModal.name}
                   onChange={(e) => setDeptModal((d) => d ? { ...d, name: e.target.value } : d)}
                   placeholder="Full Academic Department Name"
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Head of Department</label>
+                  <label className={FORM_LABEL_CLASS}>Head of Department</label>
                   <input
                     value={deptModal.hod_name}
                     onChange={(e) => setDeptModal((d) => d ? { ...d, hod_name: e.target.value } : d)}
                     placeholder="Department Head Name"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                    className={FORM_INPUT_CLASS}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Department Email</label>
+                  <label className={FORM_LABEL_CLASS}>Department Email</label>
                   <input
                     type="email"
                     value={deptModal.contact_email}
                     onChange={(e) => setDeptModal((d) => d ? { ...d, contact_email: e.target.value } : d)}
                     placeholder="hod@gmrit.edu.in"
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none"
+                    className={`${FORM_INPUT_CLASS} font-mono`}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Description</label>
+                <label className={FORM_LABEL_CLASS}>Description</label>
                 <textarea
                   rows={2}
                   value={deptModal.description}
                   onChange={(e) => setDeptModal((d) => d ? { ...d, description: e.target.value } : d)}
                   placeholder="Program focus and laboratory overview"
-                  className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-2.5 text-xs outline-none"
+                  className={FORM_TEXTAREA_CLASS}
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#e3e9e8] dark:border-[#124349]">
-                <button type="button" onClick={() => setDeptModal(null)} className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[#526164] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
+                <button type="button" onClick={() => setDeptModal(null)} className={FORM_CANCEL_BTN_CLASS}>
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 rounded-lg bg-[#08747c] px-4 py-2 text-xs font-semibold text-white hover:bg-[#003135] disabled:opacity-50 btn-interactive">
+                <button type="submit" disabled={saving} className={FORM_SUBMIT_BTN_CLASS}>
                   {saving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
                   Save Department
                 </button>
@@ -8166,18 +9107,23 @@ function LabBookingsTableView({
 
   const canApprove = ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN'].includes(user.role)
 
-  const handleAction = async (bookingId: string, action: 'APPROVE' | 'REJECT') => {
-    setActioningId(bookingId)
+  const handleAction = async (bookingIds: string[], action: 'APPROVE' | 'REJECT') => {
+    const primaryId = bookingIds[0]
+    setActioningId(primaryId)
     try {
-      const raw = await backendFetch(`/api/v1/laboratories/bookings/${encodeURIComponent(bookingId)}/approval`, {
-        method: 'PUT',
-        body: JSON.stringify({ action }),
-      })
-      const res = (await raw.json().catch(() => ({}))) as any
-      if (!raw.ok || res?.success === false) throw new Error(res?.message || 'Approval action failed')
+      let lastRes: any = null
+      for (const bid of bookingIds) {
+        const raw = await backendFetch(`/api/v1/laboratories/bookings/${encodeURIComponent(bid)}/approval`, {
+          method: 'PUT',
+          body: JSON.stringify({ action }),
+        })
+        const res = (await raw.json().catch(() => ({}))) as any
+        if (!raw.ok || res?.success === false) throw new Error(res?.message || 'Approval action failed')
+        lastRes = res
+      }
       window.dispatchEvent(new CustomEvent('gmritdu:toast', {
         detail: {
-          message: res?.message || (action === 'APPROVE' ? 'Laboratory booking confirmed.' : 'Laboratory booking declined.'),
+          message: lastRes?.message || (action === 'APPROVE' ? 'Laboratory booking confirmed.' : 'Laboratory booking declined.'),
           type: action === 'APPROVE' ? 'success' : 'info',
         },
       }))
@@ -8195,16 +9141,21 @@ function LabBookingsTableView({
     }
   }
 
-  const handleCancel = async (bookingId: string) => {
-    setActioningId(bookingId)
+  const handleCancel = async (bookingIds: string[]) => {
+    const primaryId = bookingIds[0]
+    setActioningId(primaryId)
     try {
-      const raw = await backendFetch(`/api/v1/laboratories/bookings/${encodeURIComponent(bookingId)}`, {
-        method: 'DELETE',
-      })
-      const res = (await raw.json().catch(() => ({}))) as any
-      if (!raw.ok || res?.success === false) throw new Error(res?.message || 'Cancellation failed')
+      let lastRes: any = null
+      for (const bid of bookingIds) {
+        const raw = await backendFetch(`/api/v1/laboratories/bookings/${encodeURIComponent(bid)}`, {
+          method: 'DELETE',
+        })
+        const res = (await raw.json().catch(() => ({}))) as any
+        if (!raw.ok || res?.success === false) throw new Error(res?.message || 'Cancellation failed')
+        lastRes = res
+      }
       window.dispatchEvent(new CustomEvent('gmritdu:toast', {
-        detail: { message: res?.message || 'Laboratory booking cancelled.', type: 'info' },
+        detail: { message: lastRes?.message || 'Laboratory booking cancelled.', type: 'info' },
       }))
       window.dispatchEvent(new Event('gmritdu:data-change'))
       if (onRefresh) onRefresh()
@@ -8250,6 +9201,40 @@ function LabBookingsTableView({
 
     return list
   }, [records, statusFilter, deptFilter, searchTerm, sortBy])
+
+  const groupedBookings = useMemo(() => {
+    const groups: Array<{
+      primaryId: string
+      bookingIds: string[]
+      periods: number[]
+      record: AcademicRecord
+    }> = []
+    const byKey = new Map<string, (typeof groups)[number]>()
+    for (const r of filtered) {
+      const meta = r.meta || {}
+      const rawId = String(meta.booking_id || r.id)
+      const baseRef = rawId.replace(/-P\d+$/i, '')
+      const status = String(meta.status || r.status || 'PENDING').toUpperCase()
+      const key = `${baseRef}::${String(meta.lab_id || meta.lab_name || '')}::${String(meta.booking_date || '')}::${status}`
+      const pNum = Number(meta.period_index || meta.period || 1)
+      const existing = byKey.get(key)
+      if (existing) {
+        existing.bookingIds.push(rawId)
+        if (!Number.isNaN(pNum) && !existing.periods.includes(pNum)) existing.periods.push(pNum)
+      } else {
+        const entry = {
+          primaryId: rawId,
+          bookingIds: [rawId],
+          periods: Number.isNaN(pNum) ? [1] : [pNum],
+          record: r,
+        }
+        byKey.set(key, entry)
+        groups.push(entry)
+      }
+    }
+    groups.forEach((g) => g.periods.sort((a, b) => a - b))
+    return groups
+  }, [filtered])
 
   const pendingCount = records.filter((r) => String(r.meta?.status || r.status || '').toUpperCase() === 'PENDING').length
   const confirmedCount = records.filter((r) => ['APPROVED', 'CONFIRMED'].includes(String(r.meta?.status || r.status || '').toUpperCase())).length
@@ -8301,11 +9286,10 @@ function LabBookingsTableView({
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  statusFilter === st
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${statusFilter === st
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
                 {st === 'ALL' ? 'All' : st === 'APPROVED' ? 'Confirmed' : st}
               </button>
@@ -8332,8 +9316,95 @@ function LabBookingsTableView({
         </div>
       </Panel>
 
-      {/* Table */}
-      <div className="overflow-auto max-h-[calc(100vh-350px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+      {/* Mobile Cards (< md) */}
+      <div className="md:hidden space-y-2.5 stagger-grid">
+        {groupedBookings.length === 0 ? (
+          <Panel className="p-6 text-center text-xs text-[#7a898c]">
+            No laboratory bookings found matching current filters.
+          </Panel>
+        ) : (
+          groupedBookings.map((grp) => {
+            const r = grp.record
+            const meta = r.meta || {}
+            const bookingId = grp.primaryId.replace(/-P\d+$/i, '')
+            const labName = String(meta.lab_name || r.title || 'Lab Venue')
+            const roomNum = String(meta.room_number || meta.room_id || '')
+            const date = String(meta.booking_date || '')
+            const day = String(meta.day_of_week || meta.day || '')
+            const periodLabel =
+              grp.periods.length > 1
+                ? `Periods P${grp.periods[0]}–P${grp.periods[grp.periods.length - 1]}`
+                : `Period ${grp.periods[0] || 1}`
+            const bookedBy = String(meta.coordinator_name || meta.booked_by_name || 'Staff / Student')
+            const purpose = String(meta.purpose || meta.title || r.title)
+            const status = String(meta.status || r.status || 'PENDING').toUpperCase()
+            const isPending = status === 'PENDING'
+            const isApproved = status === 'APPROVED' || status === 'CONFIRMED'
+            const isOwner = String(meta.booked_by_user_id || '') === user.userId
+            const isTerminal = ['CANCELLED', 'REJECTED', 'COMPLETED'].includes(status)
+            const canCancel = (isOwner || canApprove) && !isTerminal
+
+            return (
+              <Panel key={grp.primaryId} className="p-3.5 space-y-2.5 border border-[#dce4e3] dark:border-[#124349]">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc] block">
+                      {bookingId} · {periodLabel}
+                    </span>
+                    <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">{purpose}</h4>
+                    <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
+                      {labName}{roomNum ? ` · ${roomNum}` : ''}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 font-mono text-[9px] font-bold px-2 py-0.5 rounded ${isApproved
+                      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+                      : isPending
+                        ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}>
+                    {isApproved ? 'CONFIRMED' : isPending ? 'PENDING' : 'REJECTED'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-[#647376] dark:text-[#8ea5a3] pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                  <span>{date}{day ? ` (${day.slice(0, 3)})` : ''} · {bookedBy}</span>
+                  <div className="flex items-center gap-1.5">
+                    {canApprove && isPending && (
+                      <>
+                        <button
+                          disabled={actioningId === grp.primaryId}
+                          onClick={() => handleAction(grp.bookingIds, 'APPROVE')}
+                          className="rounded-lg bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white cursor-pointer"
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          disabled={actioningId === grp.primaryId}
+                          onClick={() => handleAction(grp.bookingIds, 'REJECT')}
+                          className="rounded-lg border border-red-200 dark:border-red-900/40 px-2.5 py-1 text-[11px] font-semibold text-red-600 cursor-pointer"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    {canCancel && (
+                      <button
+                        disabled={actioningId === grp.primaryId}
+                        onClick={() => handleCancel(grp.bookingIds)}
+                        className="rounded-lg border border-[#d6dfde] dark:border-[#175259] px-2.5 py-1 text-[11px] font-semibold text-[#647376] dark:text-[#8ea5a3] cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </Panel>
+            )
+          })
+        )}
+      </div>
+
+      {/* Desktop Table (md+) */}
+      <div className="hidden md:block overflow-auto max-h-[calc(100vh-350px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
         <table className="w-full min-w-[950px] border-collapse text-left text-xs">
           <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
             <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
@@ -8347,21 +9418,25 @@ function LabBookingsTableView({
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {groupedBookings.length === 0 ? (
               <tr>
                 <td colSpan={7} className="p-8 text-center text-[#7a898c]">
                   No laboratory bookings found matching current filters.
                 </td>
               </tr>
             ) : (
-              filtered.map((r) => {
+              groupedBookings.map((grp) => {
+                const r = grp.record
                 const meta = r.meta || {}
-                const bookingId = String(meta.booking_id || r.id)
+                const bookingId = grp.primaryId.replace(/-P\d+$/i, '')
                 const labName = String(meta.lab_name || r.title || 'Lab Venue')
                 const roomNum = String(meta.room_number || meta.room_id || '')
                 const date = String(meta.booking_date || '')
                 const day = String(meta.day_of_week || meta.day || '')
-                const period = String(meta.period_index || meta.period || '1')
+                const periodLabel =
+                  grp.periods.length > 1
+                    ? `Periods P${grp.periods[0]}–P${grp.periods[grp.periods.length - 1]}`
+                    : `Period ${grp.periods[0] || 1}`
                 const bookedBy = String(meta.coordinator_name || meta.booked_by_name || 'Staff / Student')
                 const purpose = String(meta.purpose || meta.title || r.title)
                 const status = String(meta.status || r.status || 'PENDING').toUpperCase()
@@ -8372,7 +9447,7 @@ function LabBookingsTableView({
                 const canCancel = (isOwner || canApprove) && !isTerminal
 
                 return (
-                  <tr key={r.id} className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors">
+                  <tr key={grp.primaryId} className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors">
                     <td className="p-3">
                       <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
                         {bookingId}
@@ -8387,7 +9462,7 @@ function LabBookingsTableView({
                       </span>
                       {roomNum && (
                         <span className="font-mono text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">
-                          Room {roomNum}
+                          {roomNum}
                         </span>
                       )}
                     </td>
@@ -8398,7 +9473,7 @@ function LabBookingsTableView({
                     </td>
                     <td className="p-3">
                       <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
-                        Period {period}
+                        {periodLabel}
                       </span>
                     </td>
                     <td className="p-3">
@@ -8407,13 +9482,12 @@ function LabBookingsTableView({
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
-                        isApproved
+                      <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded ${isApproved
                           ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
                           : isPending
-                          ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                      }`}>
+                            ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 animate-pulse'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        }`}>
                         {isApproved ? '\u25CF CONFIRMED' : isPending ? '\u25B2 PENDING' : '\u25A0 REJECTED'}
                       </span>
                     </td>
@@ -8422,16 +9496,16 @@ function LabBookingsTableView({
                         {canApprove && isPending && (
                           <>
                             <button
-                              disabled={actioningId === bookingId}
-                              onClick={() => handleAction(bookingId, 'APPROVE')}
-                              className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
+                              disabled={actioningId === grp.primaryId}
+                              onClick={() => handleAction(grp.bookingIds, 'APPROVE')}
+                              className="rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition cursor-pointer"
                             >
                               Confirm
                             </button>
                             <button
-                              disabled={actioningId === bookingId}
-                              onClick={() => handleAction(bookingId, 'REJECT')}
-                              className="rounded-lg border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                              disabled={actioningId === grp.primaryId}
+                              onClick={() => handleAction(grp.bookingIds, 'REJECT')}
+                              className="rounded-lg border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition cursor-pointer"
                             >
                               Reject
                             </button>
@@ -8439,9 +9513,9 @@ function LabBookingsTableView({
                         )}
                         {canCancel && (
                           <button
-                            disabled={actioningId === bookingId}
-                            onClick={() => handleCancel(bookingId)}
-                            className="rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#647376] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b] transition disabled:opacity-50"
+                            disabled={actioningId === grp.primaryId}
+                            onClick={() => handleCancel(grp.bookingIds)}
+                            className="rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#647376] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b] transition disabled:opacity-50 cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -8472,6 +9546,7 @@ function AcademicCalendarTableView({
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('ALL')
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState<'date_asc' | 'date_desc' | 'type'>('date_asc')
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [deletingEvent, setDeletingEvent] = useState<{ id: string; title: string } | null>(null)
   const [deletingLoading, setDeletingLoading] = useState(false)
   const [deletingError, setDeletingError] = useState<string | null>(null)
@@ -8592,18 +9667,17 @@ function AcademicCalendarTableView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
+          <div className="flex flex-wrap rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-1">
             {(['ALL', 'EXAMINATION', 'HOLIDAY', 'COMMENCEMENT', 'SYMPOSIUM'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setEventTypeFilter(type)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
-                  eventTypeFilter === type
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${eventTypeFilter === type
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
-                }`}
+                  }`}
               >
-                {type === 'ALL' ? 'All Events' : type === 'EXAMINATION' ? 'Exams' : type}
+                {type === 'ALL' ? 'All Events' : type === 'EXAMINATION' ? 'Exams' : type.charAt(0) + type.slice(1).toLowerCase()}
               </button>
             ))}
           </div>
@@ -8617,158 +9691,265 @@ function AcademicCalendarTableView({
             <option value="date_desc">Latest First</option>
             <option value="type">Event Type</option>
           </select>
+
+          <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-0.5">
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              aria-label="List view"
+              className={`rounded-md p-1.5 transition cursor-pointer ${viewMode === 'list' ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs' : 'text-[#647376] dark:text-[#8ea5a3]'
+                }`}
+            >
+              <List size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
+              aria-label="Card grid view"
+              className={`rounded-md p-1.5 transition cursor-pointer ${viewMode === 'grid' ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs' : 'text-[#647376] dark:text-[#8ea5a3]'
+                }`}
+            >
+              <Grid2X2 size={14} />
+            </button>
+          </div>
         </div>
       </Panel>
 
-      {/* Calendar Ledger Table */}
-      <div className="overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
-        <table className="w-full min-w-[900px] border-collapse text-left text-xs stagger-table">
-          <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
-            <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
-              <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">Event Date & Duration</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Event Designation & Subject</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Classification</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Timetable Impact</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Target Scope / Dept</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Campus Venue</th>
-              {canManageEvents && (
-                <th className="p-3 text-right font-semibold text-[#526164] dark:text-[#8ea5a3]">Actions</th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={canManageEvents ? 7 : 6} className="p-8 text-center text-[#7a898c]">
-                  No academic calendar events matched.
-                </td>
-              </tr>
-            ) : (
-              filtered.map((r) => {
-                const meta = r.meta || {}
-                const eventDate = String(meta.event_date || meta.start_date || '')
-                const endDate = meta.end_date ? String(meta.end_date) : null
-                const eventType = String(meta.event_type || meta.type || r.subtitle || 'ACADEMIC').toUpperCase()
-                const affectsTimetable = Boolean(meta.affects_timetable)
-                const venue = String(meta.venue || 'GMRIT Campus')
-                const dept = String(meta.department_id || 'All Autonomous Depts')
-                const description = String(meta.description || r.subtitle || '')
+      {/* Responsive Event Cards Grid (always shown in grid mode OR on mobile < md) */}
+      <div className={`${viewMode === 'grid' ? 'grid sm:grid-cols-2 lg:grid-cols-3 gap-3' : 'md:hidden space-y-2.5'} stagger-grid`}>
+        {filtered.length === 0 ? (
+          <Panel className="p-6 text-center text-xs text-[#7a898c] sm:col-span-2 lg:col-span-3">
+            No academic calendar events matched.
+          </Panel>
+        ) : (
+          filtered.map((r) => {
+            const meta = r.meta || {}
+            const eventDate = String(meta.event_date || meta.start_date || '')
+            const endDate = meta.end_date ? String(meta.end_date) : null
+            const eventType = String(meta.event_type || meta.type || r.subtitle || 'ACADEMIC').toUpperCase()
+            const affectsTimetable = Boolean(meta.affects_timetable ?? meta.affects_schedule ?? (eventType === 'HOLIDAY'))
+            const venue = String(meta.venue || 'GMRIT Campus')
+            const dept = String(meta.department_id || 'All Autonomous Depts')
+            const description = String(meta.description || r.subtitle || '')
+            const formattedType = eventType.charAt(0) + eventType.slice(1).toLowerCase()
 
-                return (
-                  <tr key={r.id} className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors">
-                    <td className="p-3">
-                      <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
-                        {eventDate}
-                      </span>
-                      {endDate && endDate !== eventDate && (
-                        <span className="font-mono text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">
-                          thru {endDate}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">
-                        {r.title}
-                      </span>
-                      {description && (
-                        <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5 line-clamp-2">
-                          {description}
-                        </p>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <span className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                        eventType === 'HOLIDAY'
-                          ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300'
-                          : eventType === 'EXAMINATION'
+            return (
+              <Panel key={`card-${r.id}`} className="p-3.5 border border-[#dce4e3] dark:border-[#124349] flex flex-col justify-between gap-2.5 card-interactive">
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="font-mono text-[11px] font-bold text-[#003135] dark:text-[#55d6dc]">
+                      {eventDate}{endDate && endDate !== eventDate ? ` → ${endDate}` : ''}
+                    </span>
+                    <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded-full ${eventType === 'HOLIDAY'
+                        ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300'
+                        : eventType === 'EXAMINATION'
                           ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
                           : 'bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]'
                       }`}>
-                        {eventType}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      {affectsTimetable ? (
-                        <span className="inline-flex items-center gap-1 font-semibold text-xs text-amber-600 dark:text-amber-400">
-                          <ShieldAlert size={13} />
-                          Suspends Classes
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 font-semibold text-xs text-emerald-600 dark:text-emerald-400">
-                          <CheckCircle2 size={13} />
-                          Regular Schedule
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3">
-                      <span className="font-mono text-[11px] font-medium text-slate-700 dark:text-slate-300">
-                        {dept}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <span className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
-                        {venue}
-                      </span>
-                    </td>
-                    {canManageEvents && (
-                      <td className="p-3 text-right">
-                        <div className="inline-flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditError(null)
-                              setEditingEvent({
-                                id: String(meta.event_id || r.id),
-                                title: r.title,
-                                event_type: eventType,
-                                event_date: eventDate,
-                                end_date: endDate || '',
-                                venue: String(meta.venue || ''),
-                                department_id: meta.department_id ? String(meta.department_id) : 'ALL',
-                                description,
-                                affects_schedule: affectsTimetable,
-                                status: String(meta.status || 'UPCOMING'),
-                              })
-                            }}
-                            title="Edit academic event"
-                            className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-[11px] font-semibold text-[#08747c] dark:text-[#55d6dc] hover:bg-[#ebf7f6] dark:hover:bg-[#0a353b] btn-interactive cursor-pointer"
-                          >
-                            <Pencil size={12} />
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setDeletingError(null)
-                              setDeletingEvent({ id: String(meta.event_id || r.id), title: r.title })
-                            }}
-                            title="Delete academic event"
-                            className="inline-flex items-center gap-1 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-[#331114]/70 px-2.5 py-1 text-[11px] font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-[#41171b] btn-interactive cursor-pointer"
-                          >
-                            <Trash2 size={12} />
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    )}
-                  </tr>
-                )
-              })
-            )}
-          </tbody>
-        </table>
+                      {formattedType}
+                    </span>
+                  </div>
+                  <h4 className="mt-1.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe]">{r.title}</h4>
+                  {description && (
+                    <p className="mt-0.5 text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2">{description}</p>
+                  )}
+                </div>
+                <div className="pt-2 border-t border-[#edf2f1] dark:border-[#124349] flex items-center justify-between gap-2 text-[10px]">
+                  <span className={affectsTimetable ? 'font-semibold text-amber-600 dark:text-amber-400' : 'font-semibold text-emerald-600 dark:text-emerald-400'}>
+                    {affectsTimetable ? 'Suspends Classes' : 'Regular Schedule'} · {dept}
+                  </span>
+                  {canManageEvents && (
+                    <div className="inline-flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditError(null)
+                          setEditingEvent({
+                            id: String(meta.event_id || r.id),
+                            title: r.title,
+                            event_type: eventType,
+                            event_date: eventDate,
+                            end_date: endDate || '',
+                            venue: String(meta.venue || ''),
+                            department_id: meta.department_id ? String(meta.department_id) : 'ALL',
+                            description,
+                            affects_schedule: affectsTimetable,
+                            status: String(meta.status || 'UPCOMING'),
+                          })
+                        }}
+                        className="rounded border border-[#d6dfde] dark:border-[#124349] px-2 py-0.5 text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc]"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeletingError(null)
+                          setDeletingEvent({ id: String(meta.event_id || r.id), title: r.title })
+                        }}
+                        className="rounded border border-red-200 dark:border-red-900/40 px-2 py-0.5 text-[10px] font-semibold text-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </Panel>
+            )
+          })
+        )}
       </div>
 
+      {/* Calendar Ledger Table (Desktop list mode) */}
+      {viewMode === 'list' && (
+        <div className="hidden md:block overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+          <table className="w-full min-w-[900px] border-collapse text-left text-xs stagger-table">
+            <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
+              <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
+                <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">Event Date & Duration</th>
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Event Designation & Subject</th>
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Classification</th>
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Timetable Impact</th>
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Target Scope / Dept</th>
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Campus Venue</th>
+                {canManageEvents && (
+                  <th className="p-3 text-right font-semibold text-[#526164] dark:text-[#8ea5a3]">Actions</th>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={canManageEvents ? 7 : 6} className="p-8 text-center text-[#7a898c]">
+                    No academic calendar events matched.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((r) => {
+                  const meta = r.meta || {}
+                  const eventDate = String(meta.event_date || meta.start_date || '')
+                  const endDate = meta.end_date ? String(meta.end_date) : null
+                  const eventType = String(meta.event_type || meta.type || r.subtitle || 'ACADEMIC').toUpperCase()
+                  const affectsTimetable = Boolean(meta.affects_timetable ?? meta.affects_schedule ?? (eventType === 'HOLIDAY'))
+                  const venue = String(meta.venue || 'GMRIT Campus')
+                  const dept = String(meta.department_id || 'All Autonomous Depts')
+                  const description = String(meta.description || r.subtitle || '')
+
+                  return (
+                    <tr key={r.id} className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors">
+                      <td className="p-3">
+                        <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
+                          {eventDate}
+                        </span>
+                        {endDate && endDate !== eventDate && (
+                          <span className="font-mono text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">
+                            thru {endDate}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">
+                          {r.title}
+                        </span>
+                        {description && (
+                          <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5 line-clamp-2">
+                            {description}
+                          </p>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <span className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded-full ${eventType === 'HOLIDAY'
+                            ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300'
+                            : eventType === 'EXAMINATION'
+                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                              : 'bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]'
+                          }`}>
+                          {eventType}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        {affectsTimetable ? (
+                          <span className="inline-flex items-center gap-1 font-semibold text-xs text-amber-600 dark:text-amber-400">
+                            <ShieldAlert size={13} />
+                            Suspends Classes
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 font-semibold text-xs text-emerald-600 dark:text-emerald-400">
+                            <CheckCircle2 size={13} />
+                            Regular Schedule
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <span className="font-mono text-[11px] font-medium text-slate-700 dark:text-slate-300">
+                          {dept}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
+                          {venue}
+                        </span>
+                      </td>
+                      {canManageEvents && (
+                        <td className="p-3 text-right">
+                          <div className="inline-flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditError(null)
+                                setEditingEvent({
+                                  id: String(meta.event_id || r.id),
+                                  title: r.title,
+                                  event_type: eventType,
+                                  event_date: eventDate,
+                                  end_date: endDate || '',
+                                  venue: String(meta.venue || ''),
+                                  department_id: meta.department_id ? String(meta.department_id) : 'ALL',
+                                  description,
+                                  affects_schedule: affectsTimetable,
+                                  status: String(meta.status || 'UPCOMING'),
+                                })
+                              }}
+                              title="Edit academic event"
+                              className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-[11px] font-semibold text-[#08747c] dark:text-[#55d6dc] hover:bg-[#ebf7f6] dark:hover:bg-[#0a353b] btn-interactive cursor-pointer"
+                            >
+                              <Pencil size={12} />
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeletingError(null)
+                                setDeletingEvent({ id: String(meta.event_id || r.id), title: r.title })
+                              }}
+                              title="Delete academic event"
+                              className="inline-flex items-center gap-1 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-[#331114]/70 px-2.5 py-1 text-[11px] font-semibold text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-[#41171b] btn-interactive cursor-pointer"
+                            >
+                              <Trash2 size={12} />
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {editingEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={() => setEditingEvent(null)} />
-          <div className="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-            <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 py-4 shrink-0">
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setEditingEvent(null)} />
+          <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+            <header className={FORM_MODAL_HEADER_CLASS}>
               <div className="min-w-0 flex-1 pr-3">
-                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#55d6dc]">
+                <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
                   Academic Calendar Modification
                 </span>
-                <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc] truncate">
+                <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb] truncate">
                   Edit Event · {editingEvent.title}
                 </h2>
               </div>
@@ -8776,33 +9957,33 @@ function AcademicCalendarTableView({
                 type="button"
                 aria-label="Close event editor"
                 onClick={() => setEditingEvent(null)}
-                className="shrink-0 grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+                className={FORM_MODAL_CLOSE_CLASS}
               >
                 <X size={16} />
               </button>
             </header>
-            <form onSubmit={handleSaveEditEvent} className="p-5 space-y-3 overflow-y-auto flex-1">
+            <form onSubmit={handleSaveEditEvent} className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1">
               {editError && (
                 <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-2.5 text-xs text-red-700 dark:text-red-300">
                   {editError}
                 </div>
               )}
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Event Title *</label>
+                <label className={FORM_LABEL_CLASS}>Event Title *</label>
                 <input
                   required
                   value={editingEvent.title}
                   onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, title: e.target.value } : ev)}
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Event Type</label>
+                  <label className={FORM_LABEL_CLASS}>Event Type</label>
                   <select
                     value={editingEvent.event_type}
                     onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, event_type: e.target.value } : ev)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                    className={`${FORM_INPUT_CLASS} font-semibold`}
                   >
                     {['HOLIDAY', 'EXAM', 'SEMINAR', 'FEST', 'WORKSHOP', 'GENERAL'].map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -8810,45 +9991,45 @@ function AcademicCalendarTableView({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Target Department</label>
+                  <label className={FORM_LABEL_CLASS}>Target Department</label>
                   <select
                     value={editingEvent.department_id}
                     disabled={!['SUPER_ADMIN', 'DEAN'].includes(user.role)}
                     onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, department_id: e.target.value } : ev)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none disabled:opacity-60"
+                    className={`${FORM_INPUT_CLASS} font-semibold`}
                   >
                     <DepartmentOptions showAllOption allLabel="University-Wide" includeValue={editingEvent.department_id} />
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Start Date *</label>
+                  <label className={FORM_LABEL_CLASS}>Start Date *</label>
                   <input
                     required
                     type="date"
                     value={editingEvent.event_date}
                     onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, event_date: e.target.value } : ev)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                    className={FORM_INPUT_CLASS}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">End Date</label>
+                  <label className={FORM_LABEL_CLASS}>End Date</label>
                   <input
                     type="date"
                     value={editingEvent.end_date}
                     onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, end_date: e.target.value } : ev)}
-                    className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                    className={FORM_INPUT_CLASS}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Campus Venue</label>
+                <label className={FORM_LABEL_CLASS}>Campus Venue</label>
                 <input
                   value={editingEvent.venue}
                   onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, venue: e.target.value } : ev)}
-                  className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none"
+                  className={FORM_INPUT_CLASS}
                 />
               </div>
-              <label className="flex items-center gap-2 text-xs font-medium text-[#003135] dark:text-[#e0f2fe] cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-medium text-[#003135] dark:text-[#f4f9fb] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={editingEvent.affects_schedule}
@@ -8857,19 +10038,19 @@ function AcademicCalendarTableView({
                 Suspends regular class timetable
               </label>
               <div>
-                <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">Description</label>
+                <label className={FORM_LABEL_CLASS}>Description</label>
                 <textarea
                   rows={2}
                   value={editingEvent.description}
                   onChange={(e) => setEditingEvent((ev) => ev ? { ...ev, description: e.target.value } : ev)}
-                  className="w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] p-2.5 text-xs outline-none"
+                  className={FORM_TEXTAREA_CLASS}
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#e3e9e8] dark:border-[#124349]">
-                <button type="button" onClick={() => setEditingEvent(null)} className="px-3.5 py-2 rounded-lg text-xs font-semibold text-[#526164] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
+                <button type="button" onClick={() => setEditingEvent(null)} className={FORM_CANCEL_BTN_CLASS}>
                   Cancel
                 </button>
-                <button type="submit" disabled={editSaving} className="inline-flex items-center gap-1.5 rounded-lg bg-[#08747c] px-4 py-2 text-xs font-semibold text-white hover:bg-[#003135] disabled:opacity-50 btn-interactive">
+                <button type="submit" disabled={editSaving} className={FORM_SUBMIT_BTN_CLASS}>
                   {editSaving ? <LoaderCircle size={13} className="animate-spin" /> : <Save size={13} />}
                   Save Event
                 </button>
@@ -8933,6 +10114,8 @@ function UserAccountFormModal({
   subjectTitle,
   form,
   onChange,
+  allowedRoles,
+  lockedDepartment,
   actionLoading,
   actionError,
   onClose,
@@ -8942,32 +10125,41 @@ function UserAccountFormModal({
   subjectTitle?: string
   form: UserFormState
   onChange: React.Dispatch<React.SetStateAction<UserFormState>>
+  allowedRoles: string[]
+  lockedDepartment?: string | null
   actionLoading: boolean
   actionError: string
   onClose: () => void
   onSubmit: () => void
 }) {
   const isEdit = mode === 'edit'
+  const roleOptions = allowedRoles.includes(form.role) ? allowedRoles : [form.role, ...allowedRoles]
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="bg-white dark:bg-[#062327] rounded-2xl border border-[#dce4e3] dark:border-[#124349] shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden modal-panel">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#dce4e3] dark:border-[#124349] shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <h3 className="font-bold text-sm text-[#003135] dark:text-[#55d6dc]">
+            <span className="font-mono text-[10px] font-bold uppercase text-[#08747c] dark:text-[#38e0d2]">
+              User Access Governance
+            </span>
+            <h3 className="font-bold text-sm text-[#003135] dark:text-[#f4f9fb]">
               {isEdit ? 'Edit User Account' : 'Add New User Account'}
             </h3>
-            <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
-              {isEdit ? `Modifying: ${subjectTitle || form.full_name}` : 'Create institutional login credentials'}
+            <p className="text-[11px] text-[#647376] dark:text-[#a6bcc9]">
+              {isEdit ? `Modifying: ${subjectTitle || form.full_name}` : 'Register Faculty, Technical Staff, Coordinator, or Student credentials'}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-[#f0f4f4] dark:hover:bg-[#082e34] text-[#526164] transition"
+            aria-label="Close user account modal"
+            className={FORM_MODAL_CLOSE_CLASS}
           >
             <X size={16} />
           </button>
-        </div>
+        </header>
 
         <form
           onSubmit={(e) => {
@@ -8976,65 +10168,65 @@ function UserAccountFormModal({
           }}
           className="overflow-y-auto flex-1"
         >
-          <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div className="sm:col-span-2">
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Full Name *
               </label>
               <input
                 value={form.full_name}
                 onChange={(e) => onChange((f) => ({ ...f, full_name: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
                 placeholder="Dr. / Mr. / Ms. Full Name"
                 required
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
-                PNR / Employee ID *
+              <label className={FORM_LABEL_CLASS}>
+                Staff ID / Student No *
               </label>
               <input
                 value={form.pnrno}
                 onChange={(e) => onChange((f) => ({ ...f, pnrno: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none focus:border-[#08747c]"
-                placeholder="52001 / 23A01A0001"
+                className={`${FORM_INPUT_CLASS} font-mono`}
+                placeholder="Faculty Staff ID or Student No"
                 required
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Mobile Number
               </label>
               <input
                 value={form.mobile_number}
                 onChange={(e) => onChange((f) => ({ ...f, mobile_number: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-mono`}
                 placeholder="9876543210"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Official Email *
               </label>
               <input
                 value={form.email}
                 onChange={(e) => onChange((f) => ({ ...f, email: e.target.value }))}
                 type="email"
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-mono`}
                 placeholder="name@gmrit.edu.in"
                 required
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Role *
               </label>
               <select
                 value={form.role}
                 onChange={(e) => onChange((f) => ({ ...f, role: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
-                {USER_DIR_ROLES.map((r) => (
+                {roleOptions.map((r) => (
                   <option key={r} value={r}>
                     {roleNames[r as BackendRole] || r}
                   </option>
@@ -9042,25 +10234,26 @@ function UserAccountFormModal({
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Department
               </label>
               <select
-                value={form.department_id}
+                value={lockedDepartment || form.department_id}
+                disabled={Boolean(lockedDepartment)}
                 onChange={(e) => onChange((f) => ({ ...f, department_id: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
-                <DepartmentOptions includeValue={form.department_id} />
+                <DepartmentOptions includeValue={lockedDepartment || form.department_id} />
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Status
               </label>
               <select
                 value={form.status}
                 onChange={(e) => onChange((f) => ({ ...f, status: e.target.value }))}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 {USER_DIR_STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -9070,37 +10263,37 @@ function UserAccountFormModal({
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 {isEdit ? 'New Password (blank = keep)' : 'Password *'}
               </label>
               <input
                 value={form.password}
                 onChange={(e) => onChange((f) => ({ ...f, password: e.target.value }))}
                 type="password"
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
                 placeholder={isEdit ? '(leave blank to keep)' : 'Min 6 characters'}
                 required={!isEdit}
               />
             </div>
             {actionError && (
-              <div className="col-span-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+              <div className="sm:col-span-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-300">
                 {actionError}
               </div>
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[#dce4e3] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-[#e3e9e8] dark:border-[#2e4656] bg-[#fafcfc] dark:bg-[#1f3240]/60">
             <button
               type="button"
               onClick={onClose}
-              className="h-8 px-4 rounded-lg border border-[#d6dfde] dark:border-[#175259] text-xs text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f0f4f4] dark:hover:bg-[#072a2f] transition"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={actionLoading}
-              className="h-8 px-4 rounded-lg bg-[#003135] dark:bg-[#024950] hover:bg-[#024950] dark:hover:bg-[#08747c] text-white text-xs font-semibold transition disabled:opacity-60 flex items-center gap-1.5"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {actionLoading ? (
                 <>
@@ -9139,21 +10332,22 @@ function UserDeleteConfirmModal({
 }) {
   const meta = targetUser.meta || {}
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="bg-white dark:bg-[#062327] rounded-2xl border border-[#dce4e3] dark:border-[#124349] shadow-2xl w-full max-w-sm modal-panel">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-sm`}>
         <div className="px-5 py-5 text-center">
-          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/50 flex items-center justify-center mx-auto mb-3">
             <AlertTriangle size={22} className="text-red-500 dark:text-red-400" />
           </div>
           <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-1">Delete User Account?</h3>
-          <p className="text-xs text-[#647376] dark:text-[#8ea5a3] mb-1">You are about to permanently delete:</p>
-          <p className="text-xs font-semibold text-[#003135] dark:text-[#55d6dc]">
+          <p className="text-xs text-[#647376] dark:text-[#a6bcc9] mb-1">You are about to permanently delete:</p>
+          <p className="text-xs font-semibold text-[#003135] dark:text-[#38e0d2]">
             {targetUser.title} ({String(meta.pnrno || meta.pnr || targetUser.id)})
           </p>
-          <p className="text-[11px] font-mono text-[#7a898c] mt-0.5 mb-3">{String(meta.email || '')}</p>
-          <p className="text-[11px] text-red-500 dark:text-red-400 font-semibold mb-4">This action cannot be undone.</p>
+          <p className="text-[11px] font-mono text-[#7a898c] dark:text-[#a6bcc9] mt-0.5 mb-3">{String(meta.email || '')}</p>
+          <p className="text-[11px] text-red-500 dark:text-red-300 font-semibold mb-4">This action cannot be undone.</p>
           {actionError && (
-            <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+            <div className="mb-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-3 py-2 text-xs text-red-600 dark:text-red-300">
               {actionError}
             </div>
           )}
@@ -9161,7 +10355,7 @@ function UserDeleteConfirmModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] text-xs text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f0f4f4] dark:hover:bg-[#072a2f] transition"
+              className={`${FORM_CANCEL_BTN_CLASS} flex-1`}
             >
               Cancel
             </button>
@@ -9169,7 +10363,7 @@ function UserDeleteConfirmModal({
               type="button"
               onClick={onConfirm}
               disabled={actionLoading}
-              className="flex-1 h-9 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition disabled:opacity-60 flex items-center justify-center gap-1.5"
+              className="flex-1 h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition disabled:opacity-60 flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {actionLoading ? (
                 <>
@@ -9204,10 +10398,39 @@ function UsersDirectoryTableView({
   const [deletingUser, setDeletingUser] = useState<AcademicRecord | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [actionError, setActionError] = useState('')
-  const [form, setForm] = useState<UserFormState>({ ...EMPTY_USER_FORM })
+
+  const creatableRoles = useMemo<string[]>(() => {
+    if (user.role === 'SUPER_ADMIN') return [...USER_DIR_ROLES]
+    if (user.role === 'DEAN') return ['DEPT_ADMIN', 'COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT']
+    if (user.role === 'DEPT_ADMIN') return ['COORDINATOR', 'TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT']
+    if (user.role === 'COORDINATOR') return ['TEACHING_STAFF', 'NON_TEACHING_STAFF', 'STUDENT']
+    return []
+  }, [user.role])
+
+  const canManageUsers = creatableRoles.length > 0
+  const lockedDept = ['DEPT_ADMIN', 'COORDINATOR'].includes(user.role)
+    ? String(user.departmentId || 'CSE').toUpperCase()
+    : null
+
+  const canManageRow = (rowRole: string, rowDept: string) => {
+    if (!canManageUsers) return false
+    if (!creatableRoles.includes(rowRole)) return false
+    if (lockedDept && rowDept.toUpperCase() !== lockedDept) return false
+    return true
+  }
+
+  const [form, setForm] = useState<UserFormState>(() => ({
+    ...EMPTY_USER_FORM,
+    department_id: lockedDept || 'CSE',
+    role: creatableRoles.includes('TEACHING_STAFF') ? 'TEACHING_STAFF' : (creatableRoles[0] || 'STUDENT'),
+  }))
 
   const openAddModal = () => {
-    setForm({ ...EMPTY_USER_FORM })
+    setForm({
+      ...EMPTY_USER_FORM,
+      department_id: lockedDept || 'CSE',
+      role: creatableRoles.includes('TEACHING_STAFF') ? 'TEACHING_STAFF' : (creatableRoles[0] || 'STUDENT'),
+    })
     setActionError('')
     setShowAddModal(true)
   }
@@ -9216,7 +10439,8 @@ function UsersDirectoryTableView({
     const handler = () => openAddModal()
     window.addEventListener('gmritdu:open-add-user', handler)
     return () => window.removeEventListener('gmritdu:open-add-user', handler)
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lockedDept, user.role])
 
   const filtered = useMemo(() => {
     let list = records.filter((r) => {
@@ -9253,7 +10477,7 @@ function UsersDirectoryTableView({
       pnrno: String(meta.pnrno || meta.pnr || r.id),
       mobile_number: String(meta.mobile_number || ''),
       role: String(meta.role || 'TEACHING_STAFF'),
-      department_id: String(meta.department_id || 'CSE'),
+      department_id: lockedDept || String(meta.department_id || 'CSE'),
       password: '',
       status: String(r.status || meta.status || 'ACTIVE'),
     })
@@ -9263,13 +10487,17 @@ function UsersDirectoryTableView({
 
   async function handleCreate() {
     if (!form.full_name.trim() || !form.email.trim() || !form.pnrno.trim() || !form.password) {
-      setActionError('Full name, email, PNR, and password are required.')
+      setActionError('Full name, email, Staff ID / Student No, and password are required.')
       return
     }
     setActionLoading(true)
     setActionError('')
     try {
-      const res = await backendFetch('/api/v1/admin/users', { method: 'POST', body: JSON.stringify(form) })
+      const payload = {
+        ...form,
+        department_id: lockedDept || form.department_id,
+      }
+      const res = await backendFetch('/api/v1/admin/users', { method: 'POST', body: JSON.stringify(payload) })
       const data = await res.json().catch(() => ({}))
       if (!res.ok || !data.success) throw new Error(data.message || 'Failed to create user')
       setShowAddModal(false)
@@ -9285,7 +10513,7 @@ function UsersDirectoryTableView({
   async function handleUpdate() {
     if (!editingUser) return
     if (!form.full_name.trim() || !form.email.trim() || !form.pnrno.trim()) {
-      setActionError('Full name, email, and PNR are required.')
+      setActionError('Full name, email, and Staff ID / Student No are required.')
       return
     }
     setActionLoading(true)
@@ -9297,7 +10525,7 @@ function UsersDirectoryTableView({
         pnrno: form.pnrno.trim(),
         mobile_number: form.mobile_number.trim(),
         role: form.role,
-        department_id: form.department_id,
+        department_id: lockedDept || form.department_id,
         status: form.status,
       }
       if (form.password.trim()) payload.password = form.password.trim()
@@ -9341,32 +10569,46 @@ function UsersDirectoryTableView({
     s === 'ACTIVE'
       ? 'text-emerald-600 dark:text-emerald-400'
       : s === 'SUSPENDED'
-      ? 'text-red-500 dark:text-red-400'
-      : 'text-amber-500 dark:text-amber-400'
+        ? 'text-red-500 dark:text-red-400'
+        : 'text-amber-500 dark:text-amber-400'
   const statusIcon = (s: string) =>
     s === 'ACTIVE' ? <CheckCircle2 size={12} /> : s === 'SUSPENDED' ? <XCircle size={12} /> : <Clock size={12} />
-  const isSuperAdmin = user.role === 'SUPER_ADMIN'
 
   return (
     <div className="space-y-4">
-      <Panel className="p-3.5 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
+      {user.role !== 'SUPER_ADMIN' && (
+        <div className="rounded-xl border border-[#c3e2df] dark:border-[#2e4656] bg-[#eef8f7] dark:bg-[#182732] px-4 py-2.5 text-xs text-[#003135] dark:text-[#d0e0ea] flex flex-wrap items-center justify-between gap-2">
+          <span>
+            {user.role === 'COORDINATOR'
+              ? `Department Coordinator Governance (${lockedDept}): Register & manage Faculty, Technical Staff, and Students for your branch.`
+              : user.role === 'DEPT_ADMIN'
+                ? `Head of Department Governance (${lockedDept}): Register Branch Coordinators, Faculty, Technical Staff, and Students.`
+                : 'Executive School Dean Governance: Register & manage HODs, Branch Coordinators, Faculty, Staff, and Students within your School.'}
+          </span>
+          <span className="text-[11px] font-semibold text-[#08747c] dark:text-[#38e0d2]">
+            Self-registration restricted to Students only
+          </span>
+        </div>
+      )}
+
+      <Panel className="p-3.5 border border-[#dce4e3] dark:border-[#2e4656] bg-white dark:bg-[#182732] rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386]" />
+          <Search size={14} className="absolute top-1/2 left-3 -translate-y-1/2 text-[#758386] dark:text-[#a6bcc9]" />
           <input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name, official email, or PNR..."
-            className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] pl-9 pr-3 text-xs outline-none focus:border-[#08747c]"
+            placeholder="Search by name, official email, or ID / Student No..."
+            className="h-9 w-full rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] pl-9 pr-3 text-xs text-[#172326] dark:text-[#f4f9fb] outline-none focus:border-[#08747c] dark:focus:border-[#38e0d2]"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
+            className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#38e0d2] outline-none"
           >
             <option value="ALL">All Roles ({records.length})</option>
-            <option value="SUPER_ADMIN">Higher Dean / Super Admin</option>
+            <option value="SUPER_ADMIN">Campus Super Admin</option>
             <option value="DEAN">Executive School Dean</option>
             <option value="DEPT_ADMIN">Head of Department (HOD)</option>
             <option value="COORDINATOR">Academic Coordinator</option>
@@ -9374,17 +10616,19 @@ function UsersDirectoryTableView({
             <option value="NON_TEACHING_STAFF">Lab Custodian / Technical</option>
             <option value="STUDENT">Enrolled Student</option>
           </select>
-          <select
-            value={deptFilter}
-            onChange={(e) => setDeptFilter(e.target.value)}
-            className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
-          >
-            <DepartmentOptions showAllOption allLabel="All Departments" includeValue={deptFilter} />
-          </select>
+          {!lockedDept && (
+            <select
+              value={deptFilter}
+              onChange={(e) => setDeptFilter(e.target.value)}
+              className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#38e0d2] outline-none"
+            >
+              <DepartmentOptions showAllOption allLabel="All Departments" includeValue={deptFilter} />
+            </select>
+          )}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] outline-none"
+            className="h-9 rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#38e0d2] outline-none"
           >
             <option value="name_asc">Name (A-Z)</option>
             <option value="role">Role Hierarchy</option>
@@ -9393,24 +10637,95 @@ function UsersDirectoryTableView({
         </div>
       </Panel>
 
-      <div className="overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327] shadow-xs">
+      {/* Mobile User Cards (< md) */}
+      <div className="md:hidden space-y-2.5 stagger-grid">
+        {filtered.length === 0 ? (
+          <Panel className="p-6 text-center text-xs text-[#7a898c]">
+            No user identities found matching current filters.
+          </Panel>
+        ) : (
+          filtered.map((r) => {
+            const meta = r.meta || {}
+            const role = String(meta.role || 'STUDENT').toUpperCase()
+            const dept = String(meta.department_id || 'CSE')
+            const email = String(meta.email || '')
+            const pnr = String(meta.pnrno || meta.pnr || r.id)
+            const accStatus = String(r.status || meta.status || 'ACTIVE')
+            const isSelf = user.userId === r.id
+            const canEditThisRow = canManageRow(role, dept)
+
+            return (
+              <Panel key={`card-${r.id}`} className="p-3.5 space-y-2 border border-[#dce4e3] dark:border-[#2e4656]">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <FacultyAvatar name={r.title} size="sm" />
+                    <div className="min-w-0">
+                      <span className="font-semibold text-[#003135] dark:text-[#f4f9fb] text-xs block truncate">{r.title}</span>
+                      <span className="font-mono text-[10px] text-[#08747c] dark:text-[#38e0d2] font-bold">{pnr} · {dept}</span>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 inline-flex items-center gap-1 text-[10px] font-bold ${statusColor(accStatus)}`}>
+                    {statusIcon(accStatus)}
+                    {accStatus.replace('_', ' ')}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#2e4656]">
+                  <div className="min-w-0">
+                    <span className="inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#ebf7f6] dark:bg-[#1f3240] text-[#08747c] dark:text-[#38e0d2]">
+                      {roleNames[role as BackendRole] || role}
+                    </span>
+                    <span className="block font-mono text-[10px] text-[#647376] dark:text-[#a6bcc9] truncate mt-0.5">{email}</span>
+                  </div>
+                  {canEditThisRow && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(r)}
+                        aria-label="Edit user"
+                        className="h-7 w-7 flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#2e4656] text-[#526164] dark:text-[#d0e0ea]"
+                      >
+                        <Pencil size={12} />
+                      </button>
+                      {!isSelf && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeletingUser(r)
+                            setActionError('')
+                          }}
+                          aria-label="Delete user"
+                          className="h-7 w-7 flex items-center justify-center rounded-lg border border-red-200 dark:border-red-900/40 text-red-500"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </Panel>
+            )
+          })
+        )}
+      </div>
+
+      <div className="hidden md:block overflow-auto max-h-[calc(100vh-295px)] rounded-xl border border-[#dce4e3] dark:border-[#2e4656] bg-white dark:bg-[#182732] shadow-xs">
         <table className="w-full min-w-[1000px] border-collapse text-left text-xs">
-          <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#031d21]">
-            <tr className="border-b border-[#dce4e3] dark:border-[#124349]">
-              <th className="p-3 font-semibold text-[#003135] dark:text-[#55d6dc]">User & Institutional PNR</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Assigned Role</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Department Scope</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Official Email</th>
-              <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3]">Account Status</th>
-              {isSuperAdmin && (
-                <th className="p-3 font-semibold text-[#526164] dark:text-[#8ea5a3] text-right">Actions</th>
+          <thead className="sticky top-0 z-10 bg-[#f7f9f9] dark:bg-[#1f3240]">
+            <tr className="border-b border-[#dce4e3] dark:border-[#2e4656]">
+              <th className="p-3 font-semibold text-[#003135] dark:text-[#38e0d2]">User &amp; Staff ID / Student No</th>
+              <th className="p-3 font-semibold text-[#526164] dark:text-[#a6bcc9]">Assigned Role</th>
+              <th className="p-3 font-semibold text-[#526164] dark:text-[#a6bcc9]">Department Scope</th>
+              <th className="p-3 font-semibold text-[#526164] dark:text-[#a6bcc9]">Official Email</th>
+              <th className="p-3 font-semibold text-[#526164] dark:text-[#a6bcc9]">Account Status</th>
+              {canManageUsers && (
+                <th className="p-3 font-semibold text-[#526164] dark:text-[#a6bcc9] text-right">Actions</th>
               )}
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={isSuperAdmin ? 6 : 5} className="p-8 text-center text-[#7a898c]">
+                <td colSpan={canManageUsers ? 6 : 5} className="p-8 text-center text-[#7a898c]">
                   No user identities found matching current filters.
                 </td>
               </tr>
@@ -9423,48 +10738,48 @@ function UsersDirectoryTableView({
                 const pnr = String(meta.pnrno || meta.pnr || r.id)
                 const accStatus = String(r.status || meta.status || 'ACTIVE')
                 const isSelf = user.userId === r.id
+                const canEditThisRow = canManageRow(role, dept)
                 return (
                   <tr
                     key={r.id}
-                    className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors"
+                    className="border-b border-[#e8efee] dark:border-[#2e4656] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#1f3240]/60 transition-colors"
                   >
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
                         <FacultyAvatar name={r.title} size="sm" />
                         <div>
                           <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">{r.title}</span>
-                          <span className="font-mono text-[10px] text-[#08747c] dark:text-[#55d6dc] block font-bold">{pnr}</span>
+                          <span className="font-mono text-[10px] text-[#08747c] dark:text-[#38e0d2] block font-bold">{pnr}</span>
                         </div>
                       </div>
                     </td>
                     <td className="p-3">
                       <span
-                        className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                          role === 'SUPER_ADMIN'
-                            ? 'bg-[#003135] dark:bg-[#07363d] text-white dark:text-[#55d6dc]'
+                        className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded-full ${role === 'SUPER_ADMIN'
+                            ? 'bg-[#003135] dark:bg-[#1f3240] text-white dark:text-[#38e0d2]'
                             : role === 'DEAN'
-                            ? 'bg-[#024950] text-white dark:bg-[#084147] dark:text-[#a0f0f4]'
-                            : role === 'DEPT_ADMIN'
-                            ? 'bg-[#08747c]/15 dark:bg-[#08747c]/30 text-[#003135] dark:text-[#55d6dc]'
-                            : role === 'COORDINATOR'
-                            ? 'bg-[#0fa4af]/15 dark:bg-[#0fa4af]/25 text-[#003135] dark:text-[#55d6dc]'
-                            : role === 'TEACHING_STAFF'
-                            ? 'bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300'
-                            : role === 'NON_TEACHING_STAFF'
-                            ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                        }`}
+                              ? 'bg-[#024950] text-white dark:bg-[#1f3240] dark:text-[#a0f0f4]'
+                              : role === 'DEPT_ADMIN'
+                                ? 'bg-[#08747c]/15 dark:bg-[#08747c]/30 text-[#003135] dark:text-[#38e0d2]'
+                                : role === 'COORDINATOR'
+                                  ? 'bg-[#0fa4af]/15 dark:bg-[#0fa4af]/25 text-[#003135] dark:text-[#38e0d2]'
+                                  : role === 'TEACHING_STAFF'
+                                    ? 'bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300'
+                                    : role === 'NON_TEACHING_STAFF'
+                                      ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                                      : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          }`}
                       >
                         {roleNames[role as BackendRole] || role}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
+                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#1f3240] text-[#08747c] dark:text-[#38e0d2]">
                         {dept}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className="font-mono text-[11px] text-[#647376] dark:text-[#8ea5a3]">{email}</span>
+                      <span className="font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9]">{email}</span>
                     </td>
                     <td className="p-3">
                       <span className={`inline-flex items-center gap-1 text-[10px] font-bold ${statusColor(accStatus)}`}>
@@ -9472,29 +10787,35 @@ function UsersDirectoryTableView({
                         {accStatus.replace('_', ' ')}
                       </span>
                     </td>
-                    {isSuperAdmin && (
+                    {canManageUsers && (
                       <td className="p-3">
                         <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(r)}
-                            title="Edit user"
-                            className="h-7 w-7 flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] hover:border-[#08747c] hover:text-[#08747c] dark:hover:text-[#55d6dc] transition"
-                          >
-                            <Pencil size={12} />
-                          </button>
-                          {!isSelf && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setDeletingUser(r)
-                                setActionError('')
-                              }}
-                              title="Delete user"
-                              className="h-7 w-7 flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] hover:border-red-400 hover:text-red-500 dark:hover:text-red-400 transition"
-                            >
-                              <Trash2 size={12} />
-                            </button>
+                          {canEditThisRow ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => openEditModal(r)}
+                                title="Edit user"
+                                className="h-7 w-7 flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] text-[#526164] dark:text-[#d0e0ea] hover:border-[#08747c] hover:text-[#08747c] dark:hover:text-[#38e0d2] transition cursor-pointer"
+                              >
+                                <Pencil size={12} />
+                              </button>
+                              {!isSelf && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setDeletingUser(r)
+                                    setActionError('')
+                                  }}
+                                  title="Delete user"
+                                  className="h-7 w-7 flex items-center justify-center rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] text-[#526164] dark:text-[#d0e0ea] hover:border-red-400 hover:text-red-500 dark:hover:text-red-400 transition cursor-pointer"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-[10px] text-[#7a898c] dark:text-[#7e9aa8]">View only</span>
                           )}
                         </div>
                       </td>
@@ -9512,6 +10833,8 @@ function UsersDirectoryTableView({
           mode="create"
           form={form}
           onChange={setForm}
+          allowedRoles={creatableRoles}
+          lockedDepartment={lockedDept}
           actionLoading={actionLoading}
           actionError={actionError}
           onClose={() => setShowAddModal(false)}
@@ -9525,6 +10848,8 @@ function UsersDirectoryTableView({
           subjectTitle={editingUser.title}
           form={form}
           onChange={setForm}
+          allowedRoles={creatableRoles}
+          lockedDepartment={lockedDept}
           actionLoading={actionLoading}
           actionError={actionError}
           onClose={() => setEditingUser(null)}
@@ -9556,6 +10881,20 @@ function SubmitOnlyFeedbackView({
   const [comments, setComments] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submittedTicket, setSubmittedTicket] = useState<string | null>(null)
+  const myTicketsRes = useLiveResource<{
+    success?: boolean
+    data?: Array<{
+      feedback_id?: string
+      id?: string
+      title?: string
+      category?: string
+      rating?: number
+      comments?: string
+      status?: string
+      created_at?: string
+    }>
+  }>('/api/v1/feedback')
+  const myTickets = myTicketsRes.data?.data || []
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -9591,6 +10930,8 @@ function SubmitOnlyFeedbackView({
       setSubmittedTicket(ticketId)
       setTitle('')
       setComments('')
+      myTicketsRes.retry()
+      window.dispatchEvent(new Event('gmritdu:data-change'))
       window.dispatchEvent(new CustomEvent('gmritdu:toast', {
         detail: { message: `Feedback ticket #${ticketId} submitted successfully to Academic Administration.`, type: 'success' }
       }))
@@ -9607,9 +10948,9 @@ function SubmitOnlyFeedbackView({
     <div className="space-y-6 max-w-3xl">
       <div>
         <span className="text-xs font-semibold text-[#08747c] dark:text-[#55d6dc] uppercase">Campus Stakeholder Voice</span>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#003135] dark:text-[#55d6dc]">
-          Submit Campus & System Feedback
-        </h1>
+        <h2 className="mt-1 text-lg sm:text-xl font-bold tracking-tight text-[#003135] dark:text-[#55d6dc]">
+          Submit Campus &amp; System Feedback
+        </h2>
         <p className="text-xs text-[#647376] dark:text-[#8ea5a3] mt-1">
           Your feedback is submitted directly to the Head of Department and System Administration. Individual submissions are kept strictly confidential.
         </p>
@@ -9663,6 +11004,7 @@ function SubmitOnlyFeedbackView({
                   <button
                     key={star}
                     type="button"
+                    aria-label={`Rate ${star} out of 5`}
                     onClick={() => setRating(star)}
                     className="text-xl transition hover:scale-110 cursor-pointer focus:outline-none"
                   >
@@ -9719,6 +11061,77 @@ function SubmitOnlyFeedbackView({
             </button>
           </div>
         </form>
+      </Panel>
+
+      {/* Personal Feedback Ticket History Tracker */}
+      <Panel className="p-4 sm:p-5 space-y-3">
+        <div className="flex items-center justify-between border-b border-[#edf2f1] dark:border-[#124349] pb-2.5">
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#08747c] dark:text-[#55d6dc]">
+              My Submitted Feedback Tickets ({myTickets.length})
+            </h3>
+            <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3]">
+              Live status updates from Department Head &amp; Institutional Administration
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => myTicketsRes.retry()}
+            className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] px-2.5 py-1 text-[11px] font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#f5f7f6] dark:hover:bg-[#072a2f] cursor-pointer"
+          >
+            <RefreshCw size={11} />
+            Refresh
+          </button>
+        </div>
+
+        {myTickets.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-[#d6dfde] dark:border-[#124349] p-6 text-center text-xs text-[#7a898c]">
+            You have not submitted any feedback tickets yet. Use the form above to report schedule clashes, laboratory issues, or enhancement ideas.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {myTickets.map((t, idx) => {
+              const tid = String(t.feedback_id || t.id || idx)
+              const st = String(t.status || 'PENDING').toUpperCase()
+              return (
+                <div
+                  key={tid}
+                  className="rounded-xl border border-[#e3e9e8] dark:border-[#124349] bg-[#f9fbfb] dark:bg-[#042125] p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc]">{tid}</span>
+                      <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
+                        {String(t.category || 'GENERAL').replaceAll('_', ' ')}
+                      </span>
+                    </div>
+                    <h4 className="mt-1 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">
+                      {t.title}
+                    </h4>
+                    {t.comments && (
+                      <p className="mt-0.5 text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2">{t.comments}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span
+                      className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
+                        st === 'IMPLEMENTED'
+                          ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+                          : st === 'DISMISSED'
+                          ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                          : st === 'REVIEWED'
+                          ? 'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300'
+                          : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                      }`}
+                    >
+                      {st}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </Panel>
     </div>
   )
@@ -10004,18 +11417,24 @@ function RecommendationsTableView({
   clockState,
   onInspectFaculty,
   onBookVacantSlot,
+  onAssignSubstitute,
 }: {
   user: BackendUser
   clockState: ScheduleState
   onInspectFaculty?: (staffId: string, name: string) => void
   onBookVacantSlot?: (roomId: string, day: string, period: number, labId?: string | null) => void
+  onAssignSubstitute?: (staffId: string, day: string, period: number) => void
 }) {
   const [day, setDay] = useState<string>(
     clockState.day && clockState.day !== 'SUNDAY' ? clockState.day : 'MONDAY'
   )
   const [period, setPeriod] = useState<number>(clockState.period || 1)
   const [dept, setDept] = useState<string>(
-    user.departmentId && user.departmentId !== 'ALL' ? user.departmentId : 'ALL'
+    ['SUPER_ADMIN', 'DEAN'].includes(user.role)
+      ? 'ALL'
+      : user.departmentId && user.departmentId !== 'ALL'
+        ? user.departmentId
+        : 'ALL'
   )
   const [activeTab, setActiveTab] = useState<'FACULTY' | 'LABS' | 'ROOMS'>('FACULTY')
   const [searchTerm, setSearchTerm] = useState('')
@@ -10236,14 +11655,26 @@ function RecommendationsTableView({
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      {onInspectFaculty && (
-                        <button
-                          onClick={() => onInspectFaculty(f.staff_id, f.full_name)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] transition"
-                        >
-                          <CalendarDays size={12} /> View Timetable
-                        </button>
-                      )}
+                      <div className="inline-flex items-center justify-end gap-1.5">
+                        {onAssignSubstitute && (
+                          <button
+                            type="button"
+                            onClick={() => onAssignSubstitute(f.staff_id, day, period)}
+                            className="inline-flex items-center gap-1 rounded-lg bg-[#08747c] hover:bg-[#003135] text-white px-2.5 py-1 text-xs font-semibold transition cursor-pointer"
+                          >
+                            <UserCheck size={12} /> Assign Sub
+                          </button>
+                        )}
+                        {onInspectFaculty && (
+                          <button
+                            type="button"
+                            onClick={() => onInspectFaculty(f.staff_id, f.full_name)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] px-2.5 py-1 text-xs font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#f0f4f3] transition cursor-pointer"
+                          >
+                            <CalendarDays size={12} /> View Timetable
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -10585,10 +12016,442 @@ function IngestionAuditStagingTableView({
   )
 }
 
+function ContinuousActivityLogMonitor() {
+  const [livePolling, setLivePolling] = useState(true)
+  const [activeTab, setActiveTab] = useState<'audit' | 'security' | 'activity'>('audit')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'OK' | 'ALERT'>('ALL')
+  const [lastSyncedAt, setLastSyncedAt] = useState<string>('')
+  const [loading, setLoading] = useState(false)
+  const [logData, setLogData] = useState<{
+    auditLogs: Array<{
+      log_id?: string | number
+      admin_name?: string
+      action?: string
+      entity_name?: string
+      entity_id?: string
+      new_value?: string
+      ip_address?: string
+      timestamp?: string
+    }>
+    securityEvents: Array<{
+      id?: string | number
+      event_type?: string
+      severity?: string
+      user_identifier?: string
+      details?: string
+      ip_address?: string
+      timestamp?: string
+    }>
+    recentRequests: Array<{
+      id?: string | number
+      method?: string
+      path?: string
+      status_code?: number
+      duration_ms?: number
+      ip_address?: string
+      timestamp?: string
+    }>
+    dbStats?: {
+      totalAuditLogs?: number
+    }
+  }>({
+    auditLogs: [],
+    securityEvents: [],
+    recentRequests: [],
+  })
+
+  const fetchLogs = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await backendFetch('/api/v1/telemetry')
+      const json = await res.json().catch(() => null)
+      if (res.ok && json?.success && json.data) {
+        setLogData({
+          auditLogs: json.data.auditLogs || [],
+          securityEvents: json.data.securityEvents || [],
+          recentRequests: json.data.recentRequests || [],
+          dbStats: json.data.dbStats,
+        })
+        setLastSyncedAt(
+          new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        )
+      }
+    } catch {
+      // ignore transient polling failure
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetchLogs()
+  }, [fetchLogs])
+
+  useEffect(() => {
+    if (!livePolling) return
+    const timer = window.setInterval(() => {
+      void fetchLogs()
+    }, 5000)
+    return () => window.clearInterval(timer)
+  }, [livePolling, fetchLogs])
+
+  const formatTimestamp = (ts?: string) => {
+    if (!ts) return 'Just now'
+    const dt = new Date(ts)
+    if (Number.isNaN(dt.getTime())) return String(ts)
+    return dt.toLocaleString('en-IN', {
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+  }
+
+  const mapMethodAction = (method?: string) => {
+    const m = String(method || '').toUpperCase()
+    if (m === 'GET') return 'Read'
+    if (m === 'POST') return 'Submit'
+    if (m === 'PUT' || m === 'PATCH') return 'Update'
+    if (m === 'DELETE') return 'Remove'
+    return 'Check'
+  }
+
+  const mapWorkspacePath = (path?: string) => {
+    const p = String(path || '')
+    if (p.includes('/auth')) return 'Campus Sign-In & Registration'
+    if (p.includes('/users')) return 'User Accounts & Roles'
+    if (p.includes('/departments')) return 'Schools & Departments'
+    if (p.includes('/timetables') || p.includes('/slots')) return 'Academic Timetable Matrix'
+    if (p.includes('/staff')) return 'Faculty & Staff Roster'
+    if (p.includes('/laboratories') || p.includes('/bookings')) return 'Laboratories & Room Bookings'
+    if (p.includes('/substitutions')) return 'Faculty Substitutions'
+    if (p.includes('/events')) return 'Academic Calendar'
+    if (p.includes('/feedback')) return 'Institutional Feedback'
+    if (p.includes('/telemetry') || p.includes('/health')) return 'System Health Monitor'
+    if (p.includes('/audit')) return 'Institutional Audit Trail'
+    return 'Campus Operations Workspace'
+  }
+
+  const q = searchTerm.trim().toLowerCase()
+
+  const filteredAudit = useMemo(
+    () =>
+      logData.auditLogs.filter((row) => {
+        if (statusFilter === 'ALERT') {
+          const act = String(row.action || '').toUpperCase()
+          if (!act.includes('DELETE') && !act.includes('REJECT') && !act.includes('SUSPEND')) return false
+        }
+        if (!q) return true
+        return [row.admin_name, row.action, row.entity_name, row.entity_id, row.ip_address]
+          .some((v) => String(v || '').toLowerCase().includes(q))
+      }),
+    [logData.auditLogs, q, statusFilter],
+  )
+
+  const filteredSecurity = useMemo(
+    () =>
+      logData.securityEvents.filter((row) => {
+        const sev = String(row.severity || '').toUpperCase()
+        if (statusFilter === 'ALERT' && !['WARNING', 'HIGH', 'CRITICAL', 'ERROR'].includes(sev)) return false
+        if (statusFilter === 'OK' && ['WARNING', 'HIGH', 'CRITICAL', 'ERROR'].includes(sev)) return false
+        if (!q) return true
+        return [row.event_type, row.severity, row.user_identifier, row.details, row.ip_address]
+          .some((v) => String(v || '').toLowerCase().includes(q))
+      }),
+    [logData.securityEvents, q, statusFilter],
+  )
+
+  const filteredActivity = useMemo(
+    () =>
+      logData.recentRequests.filter((row) => {
+        const code = Number(row.status_code || 200)
+        if (statusFilter === 'OK' && code >= 400) return false
+        if (statusFilter === 'ALERT' && code < 400) return false
+        if (!q) return true
+        const area = mapWorkspacePath(row.path)
+        const verb = mapMethodAction(row.method)
+        return [area, verb, row.status_code, row.ip_address]
+          .some((v) => String(v || '').toLowerCase().includes(q))
+      }),
+    [logData.recentRequests, q, statusFilter],
+  )
+
+  return (
+    <Panel className="p-4 sm:p-5 border border-[#dce4e3] dark:border-[#2e4656] bg-white dark:bg-[#182732] rounded-xl space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#ebf7f6] dark:bg-[#1f3240] px-2.5 py-0.5 text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2]">
+              <span className={`h-2 w-2 rounded-full ${livePolling ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+              {livePolling ? 'Continuous Live Watch ON (5s)' : 'Live Watch Paused'}
+            </span>
+            {lastSyncedAt && (
+              <span className="font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9]">
+                Last checked: {lastSyncedAt}
+              </span>
+            )}
+          </div>
+          <h3 className="mt-1.5 text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
+            Super Admin Continuous Activity &amp; Security Log Stream
+          </h3>
+          <p className="text-xs text-[#647376] dark:text-[#a6bcc9]">
+            Automatic live monitoring across governance changes, sign-in security notices, and institutional workspace actions.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setLivePolling((v) => !v)}
+            className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition cursor-pointer ${
+              livePolling
+                ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                : 'border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#1f3240] text-[#526164] dark:text-[#d0e0ea]'
+            }`}
+          >
+            {livePolling ? 'Pause Live Watch' : 'Resume Live Watch'}
+          </button>
+          <button
+            type="button"
+            onClick={() => void fetchLogs()}
+            disabled={loading}
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#08747c] dark:bg-[#0d8d96] px-3 text-xs font-semibold text-white hover:bg-[#003135] dark:hover:bg-[#13a4af] disabled:opacity-50 transition cursor-pointer"
+          >
+            <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
+            Check Now
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+        <div className="flex flex-wrap rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-[#f5f7f6] dark:bg-[#111c24] p-1 gap-1">
+          <button
+            type="button"
+            onClick={() => setActiveTab('audit')}
+            className={`rounded-md px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              activeTab === 'audit'
+                ? 'bg-white dark:bg-[#1f3240] text-[#003135] dark:text-[#38e0d2] shadow-xs'
+                : 'text-[#647376] dark:text-[#a6bcc9]'
+            }`}
+          >
+            Audit Changes ({filteredAudit.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('security')}
+            className={`rounded-md px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              activeTab === 'security'
+                ? 'bg-white dark:bg-[#1f3240] text-[#003135] dark:text-[#38e0d2] shadow-xs'
+                : 'text-[#647376] dark:text-[#a6bcc9]'
+            }`}
+          >
+            Security Events ({filteredSecurity.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('activity')}
+            className={`rounded-md px-3 py-1 text-xs font-semibold transition cursor-pointer ${
+              activeTab === 'activity'
+                ? 'bg-white dark:bg-[#1f3240] text-[#003135] dark:text-[#38e0d2] shadow-xs'
+                : 'text-[#647376] dark:text-[#a6bcc9]'
+            }`}
+          >
+            Live Workspace Activity ({filteredActivity.length})
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 sm:w-64">
+            <Search size={13} className="absolute top-1/2 left-2.5 -translate-y-1/2 text-[#758386] dark:text-[#a6bcc9]" />
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Filter logs by actor, action, IP..."
+              className="h-8 w-full rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] pl-8 pr-2.5 text-xs text-[#172326] dark:text-[#f4f9fb] outline-none focus:border-[#08747c] dark:focus:border-[#38e0d2]"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
+            className="h-8 rounded-lg border border-[#d6dfde] dark:border-[#2e4656] bg-white dark:bg-[#111c24] px-2.5 text-xs font-semibold text-[#003135] dark:text-[#38e0d2] outline-none"
+          >
+            <option value="ALL">All Entries</option>
+            <option value="OK">Normal / 2xx</option>
+            <option value="ALERT">Warnings / 4xx+</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="overflow-auto max-h-[340px] rounded-xl border border-[#dce4e3] dark:border-[#2e4656] bg-[#fafcfc] dark:bg-[#111c24]">
+        {activeTab === 'audit' && (
+          <table className="w-full min-w-[700px] border-collapse text-left text-xs">
+            <thead className="sticky top-0 z-10 bg-[#f2f6f6] dark:bg-[#1f3240]">
+              <tr className="border-b border-[#dce4e3] dark:border-[#2e4656]">
+                <th className="p-2.5 font-semibold text-[#003135] dark:text-[#38e0d2]">Time</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Actor</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Action</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Target Record</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Origin</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAudit.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-6 text-center text-[#7a898c] dark:text-[#a6bcc9]">
+                    No audit trail entries matched your filter yet.
+                  </td>
+                </tr>
+              ) : (
+                filteredAudit.map((row, idx) => (
+                  <tr key={String(row.log_id || idx)} className="border-b border-[#e8efee] dark:border-[#2e4656] last:border-0">
+                    <td className="p-2.5 font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9] whitespace-nowrap">
+                      {formatTimestamp(row.timestamp)}
+                    </td>
+                    <td className="p-2.5 font-semibold text-[#003135] dark:text-[#f4f9fb]">
+                      {row.admin_name || 'System Governance'}
+                    </td>
+                    <td className="p-2.5">
+                      <span className="inline-block rounded bg-[#ebf7f6] dark:bg-[#1f3240] px-2 py-0.5 font-mono text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2]">
+                        {String(row.action || 'UPDATED').replace(/_/g, ' ')}
+                      </span>
+                    </td>
+                    <td className="p-2.5 font-mono text-[11px] text-[#526164] dark:text-[#d0e0ea]">
+                      {row.entity_name || 'Record'} {row.entity_id ? `· ${row.entity_id}` : ''}
+                    </td>
+                    <td className="p-2.5 font-mono text-[11px] text-[#7a898c] dark:text-[#a6bcc9]">
+                      {row.ip_address || 'Local'}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+
+        {activeTab === 'security' && (
+          <table className="w-full min-w-[700px] border-collapse text-left text-xs">
+            <thead className="sticky top-0 z-10 bg-[#f2f6f6] dark:bg-[#1f3240]">
+              <tr className="border-b border-[#dce4e3] dark:border-[#2e4656]">
+                <th className="p-2.5 font-semibold text-[#003135] dark:text-[#38e0d2]">Time</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Severity</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Event</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Account / Identifier</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredSecurity.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-6 text-center text-[#7a898c] dark:text-[#a6bcc9]">
+                    No security events matched your filter.
+                  </td>
+                </tr>
+              ) : (
+                filteredSecurity.map((row, idx) => {
+                  const sev = String(row.severity || 'INFO').toUpperCase()
+                  const isWarn = ['WARNING', 'HIGH', 'CRITICAL', 'ERROR'].includes(sev)
+                  return (
+                    <tr key={String(row.id || idx)} className="border-b border-[#e8efee] dark:border-[#2e4656] last:border-0">
+                      <td className="p-2.5 font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9] whitespace-nowrap">
+                        {formatTimestamp(row.timestamp)}
+                      </td>
+                      <td className="p-2.5">
+                        <span
+                          className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold ${
+                            isWarn
+                              ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                              : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+                          }`}
+                        >
+                          {sev}
+                        </span>
+                      </td>
+                      <td className="p-2.5 font-semibold text-[#003135] dark:text-[#f4f9fb]">
+                        {String(row.event_type || 'SECURITY_NOTICE').replace(/_/g, ' ')}
+                      </td>
+                      <td className="p-2.5 font-mono text-[11px] text-[#08747c] dark:text-[#38e0d2]">
+                        {row.user_identifier || 'System'}
+                      </td>
+                      <td className="p-2.5 text-[11px] text-[#526164] dark:text-[#d0e0ea]">
+                        {row.details || 'Verified access check'}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        )}
+
+        {activeTab === 'activity' && (
+          <table className="w-full min-w-[700px] border-collapse text-left text-xs">
+            <thead className="sticky top-0 z-10 bg-[#f2f6f6] dark:bg-[#1f3240]">
+              <tr className="border-b border-[#dce4e3] dark:border-[#2e4656]">
+                <th className="p-2.5 font-semibold text-[#003135] dark:text-[#38e0d2]">Time</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Action Type</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Workspace Area</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9]">Outcome</th>
+                <th className="p-2.5 font-semibold text-[#526164] dark:text-[#a6bcc9] text-right">Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredActivity.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-6 text-center text-[#7a898c] dark:text-[#a6bcc9]">
+                    No recent workspace activity entries matched your filter.
+                  </td>
+                </tr>
+              ) : (
+                filteredActivity.map((row, idx) => {
+                  const code = Number(row.status_code || 200)
+                  const ok = code < 400
+                  return (
+                    <tr key={String(row.id || idx)} className="border-b border-[#e8efee] dark:border-[#2e4656] last:border-0">
+                      <td className="p-2.5 font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9] whitespace-nowrap">
+                        {formatTimestamp(row.timestamp)}
+                      </td>
+                      <td className="p-2.5">
+                        <span className="inline-block rounded bg-[#ebf7f6] dark:bg-[#1f3240] px-2 py-0.5 text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2]">
+                          {mapMethodAction(row.method)}
+                        </span>
+                      </td>
+                      <td className="p-2.5 font-semibold text-[#003135] dark:text-[#f4f9fb]">
+                        {mapWorkspacePath(row.path)}
+                      </td>
+                      <td className="p-2.5">
+                        <span
+                          className={`inline-block rounded px-2 py-0.5 font-mono text-[10px] font-bold ${
+                            ok
+                              ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+                              : 'bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300'
+                          }`}
+                        >
+                          {ok ? `Completed (${code})` : `Notice (${code})`}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-right font-mono text-[11px] text-[#647376] dark:text-[#a6bcc9]">
+                        {typeof row.duration_ms === 'number' ? `${row.duration_ms} ms` : '—'}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </Panel>
+  )
+}
+
 function SystemHealthAuditTableView({
   records,
+  user,
 }: {
   records: AcademicRecord[]
+  user?: BackendUser
 }) {
   const formatHealthRow = (r: AcademicRecord) => {
     const rawId = String(r.id || '').toLowerCase()
@@ -10687,6 +12550,7 @@ function SystemHealthAuditTableView({
           </tbody>
         </table>
       </div>
+      {user?.role === 'SUPER_ADMIN' && <ContinuousActivityLogMonitor />}
     </div>
   )
 }
@@ -10793,8 +12657,30 @@ function TimetableIngestionHeader({
             className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-[#08747c] hover:bg-[#065b61] text-white shadow-xs cursor-pointer transition-colors"
           >
             {isUploading ? <LoaderCircle size={13} className="animate-spin" /> : <HardDriveDownload size={13} />}
-            {isUploading ? 'Uploading...' : 'Upload Excel / PDF'}
+            {isUploading ? 'Uploading...' : 'Upload Excel / CSV / PDF'}
           </label>
+          <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-[#647376] dark:text-[#8ea5a3]">
+            <span className="truncate">Columns: Day, Period, Subject, Faculty, Room</span>
+            <button
+              type="button"
+              onClick={() => {
+                const csv = [
+                  'Day,Period,Section,Semester,Subject Code,Subject Name,Faculty Name,Room',
+                  `MONDAY,1,A,SEM_5,CS501,Sample Theory Course,Assigned Faculty,${selectedDept}-101`,
+                ].join('\n')
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `GMRITDU_Timetable_Template_${selectedDept}.csv`
+                a.click()
+                URL.revokeObjectURL(url)
+              }}
+              className="shrink-0 font-semibold text-[#08747c] dark:text-[#55d6dc] hover:underline cursor-pointer"
+            >
+              Download Template CSV
+            </button>
+          </div>
         </div>
 
         <div className="pt-2 border-t border-[#edf2f1] dark:border-[#124349] grid grid-cols-2 gap-2">
@@ -10904,20 +12790,21 @@ function AddSubjectModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-5 sm:px-6 py-4 shrink-0">
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-md`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#55d6dc] uppercase">
+            <span className="font-mono text-[10px] font-bold text-[#08747c] dark:text-[#38e0d2] uppercase">
               Curriculum Catalog
             </span>
-            <h2 className="text-sm font-bold text-[#003135] dark:text-[#55d6dc]">Add Institutional Subject</h2>
+            <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">Add Institutional Subject</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+            aria-label="Close subject modal"
+            className={FORM_MODAL_CLOSE_CLASS}
           >
             <X size={16} />
           </button>
@@ -10928,28 +12815,28 @@ function AddSubjectModal({
               {error}
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Department *
               </label>
               <select
                 value={departmentId}
                 disabled={restrictDept}
                 onChange={(e) => setDepartmentId(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 <DepartmentOptions includeValue={departmentId} />
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Semester *
               </label>
               <select
                 value={semesterId}
                 onChange={(e) => setSemesterId(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 {['SEM_1', 'SEM_2', 'SEM_3', 'SEM_4', 'SEM_5', 'SEM_6', 'SEM_7', 'SEM_8'].map((s) => (
                   <option key={s} value={s}>{s.replace('_', ' ')}</option>
@@ -10957,9 +12844,9 @@ function AddSubjectModal({
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Subject Code *
               </label>
               <input
@@ -10967,17 +12854,17 @@ function AddSubjectModal({
                 value={subjectCode}
                 onChange={(e) => setSubjectCode(e.target.value)}
                 placeholder="e.g. 23CS301"
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-mono uppercase outline-none focus:border-[#08747c]"
+                className={`${FORM_INPUT_CLASS} font-mono uppercase`}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Course Type *
               </label>
               <select
                 value={courseType}
                 onChange={(e) => setCourseType(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs font-semibold outline-none"
+                className={`${FORM_INPUT_CLASS} font-semibold`}
               >
                 <option value="THEORY">THEORY</option>
                 <option value="LABORATORY">LABORATORY</option>
@@ -10986,9 +12873,9 @@ function AddSubjectModal({
               </select>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Subject Name *
               </label>
               <input
@@ -10996,11 +12883,11 @@ function AddSubjectModal({
                 value={subjectName}
                 onChange={(e) => setSubjectName(e.target.value)}
                 placeholder="e.g. Data Structures"
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#003135] dark:text-[#55d6dc] mb-1">
+              <label className={FORM_LABEL_CLASS}>
                 Credits
               </label>
               <input
@@ -11009,22 +12896,22 @@ function AddSubjectModal({
                 min="0"
                 value={credits}
                 onChange={(e) => setCredits(e.target.value)}
-                className="w-full h-9 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs outline-none focus:border-[#08747c]"
+                className={FORM_INPUT_CLASS}
               />
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-[#647376] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#08747c] hover:bg-[#003135] text-white disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting ? 'Saving...' : 'Create Subject'}
             </button>
@@ -11073,7 +12960,9 @@ function BlockchainAuditLedgerPanel() {
     : isSynchronized
       ? 'Trail Active'
       : 'Synchronizing...'
-  const chainState = status?.status || 'SYNCING'
+  const chainState = verificationResult
+    ? 'VERIFIED INTACT'
+    : status?.status || (isSynchronized ? 'ACTIVE & SEALED' : 'SYNCING')
 
   return (
     <Panel className="mb-6 p-4 sm:p-5 border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#002528] rounded-xl shadow-sm card-interactive">
@@ -11320,7 +13209,7 @@ function StudentOverviewDeck({
       incharge_name?: string
       incharge_designation?: string
     }>
-  }>(`/api/v1/laboratories?department=${encodeURIComponent(user.departmentId || 'CSE')}`)
+  }>(`/api/v1/laboratories?department=${encodeURIComponent(user.departmentId || 'CSE')}&scope=ALL`)
 
   const departmentLabs = useMemo(() => {
     return labsRes.data?.data || []
@@ -11367,11 +13256,11 @@ function StudentOverviewDeck({
             </button>
             <button
               type="button"
-              onClick={() => onNavigate('availability')}
+              onClick={() => onNavigate('labs')}
               className="px-3 py-1.5 rounded-lg bg-white/15 text-white text-xs font-semibold hover:bg-white/25 transition backdrop-blur-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <Building2 size={13} />
-              Free Labs
+              <FlaskConical size={13} />
+              Department Labs
             </button>
           </div>
         </div>
@@ -11451,10 +13340,10 @@ function StudentOverviewDeck({
             <span className="text-[#7a898c]">Section: {user.sectionId || user.departmentId || 'Assigned'}</span>
             <button
               type="button"
-              onClick={() => onNavigate('availability')}
-              className="text-[#08747c] dark:text-[#55d6dc] font-semibold hover:underline"
+              onClick={() => onNavigate('calendar')}
+              className="text-[#08747c] dark:text-[#55d6dc] font-semibold hover:underline cursor-pointer"
             >
-              Campus Facilities →
+              Academic Calendar →
             </button>
           </div>
         </Panel>
@@ -11561,10 +13450,14 @@ function FacultyOverviewDeck({
 
   const myWorkload = useMemo(() => {
     const list = workloadRes.data?.data || []
-    return list.find((w) => w.staff_id === user.pnr || w.full_name?.toLowerCase().includes(user.fullName.toLowerCase())) || list[0]
+    return list.find(
+      (w) =>
+        (user.pnr && w.staff_id === user.pnr) ||
+        (user.fullName && w.full_name?.toLowerCase() === user.fullName.toLowerCase())
+    )
   }, [workloadRes.data, user])
 
-  const assignedHrs = myWorkload?.weekly_workload || 16
+  const assignedHrs = myWorkload?.weekly_workload ?? 0
   const maxHrs = myWorkload?.max_workload || 18
   const pct = Math.min(100, Math.round((assignedHrs / maxHrs) * 100))
 
@@ -11647,28 +13540,34 @@ function FacultyOverviewDeck({
             </button>
           </div>
           <div className="space-y-2">
-            {extractLiveClasses(liveClassesRes.data).slice(0, 3).map((cls: any, i: number) => (
-              <div
-                key={cls.slot_id || i}
-                className="p-2.5 rounded-xl border border-[#e2eae9] dark:border-[#124349] bg-[#f9fbfa] dark:bg-[#042428] flex items-center justify-between"
-              >
-                <div className="min-w-0 pr-2">
-                  <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#e2f1f0] dark:bg-[#07363d] text-[#076970] dark:text-[#55d6dc]">
-                    {cls.section_id || 'CSE-A'}
-                  </span>
-                  <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">
-                    {cls.subject_name || cls.title}
-                  </h4>
-                  <span className="text-[10px] text-[#647376] dark:text-[#8ea5a3]">
-                    {cls.faculty_name} · {cls.room_id || cls.room_number || 'Classroom'}
+            {extractLiveClasses(liveClassesRes.data).length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[#d6dfde] dark:border-[#124349] p-5 text-center text-xs text-[#7a898c]">
+                No live classes active during Period {clockState.period || 1}.
+              </div>
+            ) : (
+              extractLiveClasses(liveClassesRes.data).slice(0, 3).map((cls: any, i: number) => (
+                <div
+                  key={cls.slot_id || i}
+                  className="p-2.5 rounded-xl border border-[#e2eae9] dark:border-[#124349] bg-[#f9fbfa] dark:bg-[#042428] flex items-center justify-between"
+                >
+                  <div className="min-w-0 pr-2">
+                    <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#e2f1f0] dark:bg-[#07363d] text-[#076970] dark:text-[#55d6dc]">
+                      {cls.section_id || 'Assigned'}
+                    </span>
+                    <h4 className="mt-0.5 text-xs font-bold text-[#003135] dark:text-[#e0f2fe] truncate">
+                      {cls.subject_name || cls.title}
+                    </h4>
+                    <span className="text-[10px] text-[#647376] dark:text-[#8ea5a3]">
+                      {cls.faculty_name} · {cls.room_id || cls.room_number || 'Classroom'}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1b6d53] dark:text-[#45c39c] uppercase shrink-0">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#1b6d53] dark:bg-[#45c39c] animate-pulse" />
+                    Active
                   </span>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1b6d53] dark:text-[#45c39c] uppercase shrink-0">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#1b6d53] dark:bg-[#45c39c] animate-pulse" />
-                  Active
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Panel>
 
@@ -11687,27 +13586,33 @@ function FacultyOverviewDeck({
             </button>
           </div>
           <div className="space-y-2">
-            {(subsRes.data?.data || []).slice(0, 3).map((sub: any, i: number) => (
-              <div
-                key={sub.substitution_id || i}
-                className="p-2.5 rounded-xl border border-[#e2eae9] dark:border-[#124349] bg-[#f9fbfa] dark:bg-[#042428]"
-              >
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="font-bold text-[#08747c] dark:text-[#55d6dc]">
-                    {sub.day_of_week} · Period {sub.period_index}
-                  </span>
-                  <StatusBadge tone={sub.status === 'APPROVED' ? 'green' : 'amber'}>
-                    {sub.status}
-                  </StatusBadge>
-                </div>
-                <h4 className="mt-0.5 text-xs font-semibold text-[#003135] dark:text-[#e0f2fe]">
-                  {sub.subject_name}
-                </h4>
-                <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
-                  {sub.original_faculty_name} → <strong className="text-[#08747c] dark:text-[#55d6dc]">{sub.substitute_faculty_name}</strong>
-                </p>
+            {(subsRes.data?.data || []).length === 0 ? (
+              <div className="rounded-xl border border-dashed border-[#d6dfde] dark:border-[#124349] p-5 text-center text-xs text-[#7a898c]">
+                No peer substitution requests recorded yet.
               </div>
-            ))}
+            ) : (
+              (subsRes.data?.data || []).slice(0, 3).map((sub: any, i: number) => (
+                <div
+                  key={sub.substitution_id || i}
+                  className="p-2.5 rounded-xl border border-[#e2eae9] dark:border-[#124349] bg-[#f9fbfa] dark:bg-[#042428]"
+                >
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="font-bold text-[#08747c] dark:text-[#55d6dc]">
+                      {sub.day_of_week} · Period {sub.period_index}
+                    </span>
+                    <StatusBadge tone={sub.status === 'APPROVED' ? 'green' : 'amber'}>
+                      {sub.status}
+                    </StatusBadge>
+                  </div>
+                  <h4 className="mt-0.5 text-xs font-semibold text-[#003135] dark:text-[#e0f2fe]">
+                    {sub.subject_name}
+                  </h4>
+                  <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
+                    {sub.original_faculty_name} → <strong className="text-[#08747c] dark:text-[#55d6dc]">{sub.substitute_faculty_name}</strong>
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </Panel>
       </div>
@@ -11848,11 +13753,15 @@ function DeptAdminOverviewDeck({
     }
   }>(`/api/v1/availability?type=LABORATORY&department=${encodeURIComponent(dept)}&day=${activeDay}&period=${selectedPeriod}`)
 
-  // Pending lab requests
+  // Pending lab requests & pending faculty substitution requests
   const pendingBookingsRes = useLiveResource<{
     success: boolean
     data: Array<any>
   }>(`/api/v1/laboratories/pending-requests?department=${encodeURIComponent(dept)}`)
+  const pendingSubsRes = useLiveResource<{
+    success: boolean
+    data: Array<any>
+  }>(`/api/v1/substitutions/pending?department=${encodeURIComponent(dept)}`)
 
   const liveClasses = useMemo(() => extractLiveClasses(liveClassesRes.data), [liveClassesRes.data])
 
@@ -11862,6 +13771,8 @@ function DeptAdminOverviewDeck({
   }, [facultyRes.data])
 
   const pendingBookings = useMemo(() => pendingBookingsRes.data?.data || [], [pendingBookingsRes.data])
+  const pendingSubs = useMemo(() => pendingSubsRes.data?.data || [], [pendingSubsRes.data])
+  const totalPendingRequests = pendingBookings.length + pendingSubs.length
 
   const deptSections = useMemo(() => sectionsRes.data?.data || [], [sectionsRes.data])
 
@@ -11973,6 +13884,36 @@ function DeptAdminOverviewDeck({
     }
   }
 
+  const handleSubAction = async (subId: string, action: 'APPROVE' | 'REJECT') => {
+    setActioningId(subId)
+    try {
+      const raw = await backendFetch(`/api/v1/substitutions/${encodeURIComponent(subId)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: action === 'APPROVE' ? 'APPROVED' : 'REJECTED' }),
+      })
+      const res = (await raw.json().catch(() => ({}))) as any
+      if (!raw.ok) throw new Error(res.message || 'Action failed')
+      window.dispatchEvent(
+        new CustomEvent('gmritdu:toast', {
+          detail: {
+            message: action === 'APPROVE'
+              ? 'Faculty substitution confirmed.'
+              : 'Faculty substitution rejected.',
+            type: action === 'APPROVE' ? 'success' : 'info',
+          },
+        })
+      )
+      window.dispatchEvent(new Event('gmritdu:data-change'))
+      pendingSubsRes.retry()
+    } catch (e) {
+      window.dispatchEvent(new CustomEvent('gmritdu:toast', {
+        detail: { message: `Decision error: ${e instanceof Error ? e.message : 'Unknown error'}`, type: 'error' }
+      }))
+    } finally {
+      setActioningId(null)
+    }
+  }
+
   return (
     <div className="space-y-2.5">
       {/* 1. HOD Executive Command Banner */}
@@ -12056,7 +13997,16 @@ function DeptAdminOverviewDeck({
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {totalPendingRequests > 0 && (
+              <button
+                type="button"
+                onClick={() => onNavigate('approvals')}
+                className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#003135] hover:bg-amber-300 transition cursor-pointer"
+              >
+                {totalPendingRequests} Pending {totalPendingRequests === 1 ? 'Request' : 'Requests'} →
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onNavigate('availability')}
@@ -12471,22 +14421,22 @@ function DeptAdminOverviewDeck({
             </div>
 
             {/* Pending Requests or Clean Status Footer */}
-            {pendingBookings.length === 0 ? (
+            {totalPendingRequests === 0 ? (
               <div className="p-2 rounded-lg border border-[#e8efee] dark:border-[#124349] bg-[#fbfdfc] dark:bg-[#042024] text-[11px] text-[#526164] dark:text-[#8ea5a3] flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <CheckCircle2 size={13} className="text-emerald-500" />
-                  <span>All {dept} lab booking requests are up to date.</span>
+                  <span>All {dept} lab &amp; faculty substitution requests are up to date.</span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => onNavigate('labs')}
-                  className="font-bold text-[#08747c] dark:text-[#55d6dc] hover:underline"
+                  onClick={() => onNavigate('approvals')}
+                  className="font-bold text-[#08747c] dark:text-[#55d6dc] hover:underline cursor-pointer"
                 >
-                  Lab Registry →
+                  HOD Requests →
                 </button>
               </div>
             ) : (
-              <div className="space-y-1.5 max-h-[85px] overflow-y-auto pr-1 pt-1.5 border-t border-[#edf2f1] dark:border-[#124349]">
+              <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1 pt-1.5 border-t border-[#edf2f1] dark:border-[#124349]">
                 {pendingBookings.slice(0, 3).map((b: any) => (
                   <div
                     key={b.booking_id}
@@ -12494,7 +14444,7 @@ function DeptAdminOverviewDeck({
                   >
                     <div className="min-w-0">
                       <h4 className="font-bold text-[#003135] dark:text-[#e0f2fe] text-[11px] truncate">
-                        {b.title || 'Lab Booking'}
+                        Lab Booking: {b.title || 'Reservation'}
                       </h4>
                       <span className="text-[10px] text-[#647376] dark:text-[#8ea5a3] block truncate">
                         {b.lab_name} · {b.day_of_week} P{b.period_index || 1} ({b.requester_name})
@@ -12514,6 +14464,40 @@ function DeptAdminOverviewDeck({
                         type="button"
                         disabled={actioningId === b.booking_id}
                         onClick={() => handleBookingAction(b.booking_id, 'REJECT')}
+                        className="rounded border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-1.5 py-0.5 text-[10px] font-bold text-red-600 hover:bg-red-50 disabled:opacity-50 cursor-pointer"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {pendingSubs.slice(0, 3).map((s: any) => (
+                  <div
+                    key={s.substitution_id}
+                    className="p-2 rounded-lg border border-amber-200 dark:border-amber-900/40 bg-amber-50/40 dark:bg-[#2b1f09] flex items-center justify-between gap-2 text-xs"
+                  >
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-[#003135] dark:text-[#e0f2fe] text-[11px] truncate">
+                        Substitution: {s.subject_code || s.subject_name} (Sec {s.section_name})
+                      </h4>
+                      <span className="text-[10px] text-[#647376] dark:text-[#8ea5a3] block truncate">
+                        {s.original_faculty_name} → {s.substitute_faculty_name} · {s.day_of_week} P{s.period_index}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        disabled={actioningId === s.substitution_id}
+                        onClick={() => handleSubAction(s.substitution_id, 'APPROVE')}
+                        className="rounded bg-[#024950] px-2 py-0.5 text-[10px] font-bold text-white hover:bg-[#003135] disabled:opacity-50 cursor-pointer"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        type="button"
+                        disabled={actioningId === s.substitution_id}
+                        onClick={() => handleSubAction(s.substitution_id, 'REJECT')}
                         className="rounded border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#072a2f] px-1.5 py-0.5 text-[10px] font-bold text-red-600 hover:bg-red-50 disabled:opacity-50 cursor-pointer"
                       >
                         Reject
@@ -12832,37 +14816,43 @@ function DeanOverviewDeck({
   clockState: ScheduleState
   onNavigate: (s: AcademicScreen) => void
 }) {
-  const [selectedSchool, setSelectedSchool] = useState<'ALL' | 'SOC' | 'SOEE' | 'SOIM'>('ALL')
-  const schoolsRes = useLiveResource<{
-    success: boolean
-    data: Array<{
-      school_id: string
-      name: string
-      dean_name: string
-      dean_email: string
-      department_count: number
-      faculty_count: number
-      lab_count: number
-    }>
-  }>('/api/v1/departments/schools')
-
-  const deptsRes = useLiveResource<{
-    success: boolean
-    data: Array<any>
-  }>('/api/v1/departments')
+  const { schools, departments, loading: dirLoading } = useInstitutionalDirectory()
+  const mySchool = useMemo(
+    () =>
+      schools.find(
+        (s) =>
+          (user.schoolId && s.school_id === user.schoolId) ||
+          (user.email && s.dean_email?.toLowerCase() === user.email.toLowerCase())
+      ) || null,
+    [schools, user.schoolId, user.email]
+  )
+  const scopedSchools = useMemo(() => (mySchool ? [mySchool] : schools), [mySchool, schools])
+  const [selectedSchool, setSelectedSchool] = useState<string>('ALL')
+  useEffect(() => {
+    if (mySchool) setSelectedSchool(mySchool.school_id)
+  }, [mySchool?.school_id])
 
   const liveClassesRes = useLiveResource<{
     success: boolean
     data: Array<any>
   }>(`/api/v1/availability/live-classes?day=${clockState.day === 'SUNDAY' ? 'MONDAY' : clockState.day}&period=${clockState.period || 1}`)
 
-  const schools = schoolsRes.data?.data || []
-  const departments = deptsRes.data?.data || []
+  const pendingLabsRes = useLiveResource<{
+    success: boolean
+    data: Array<any>
+  }>('/api/v1/laboratories/pending-requests')
 
   const filteredDepts = useMemo(() => {
+    if (mySchool) {
+      return departments.filter((d: any) => d.school_id === mySchool.school_id)
+    }
     if (selectedSchool === 'ALL') return departments
     return departments.filter((d: any) => d.school_id === selectedSchool)
-  }, [departments, selectedSchool])
+  }, [departments, mySchool, selectedSchool])
+
+  const totalDeanFaculty = filteredDepts.reduce((sum: number, d: any) => sum + Number(d.faculty_count ?? 0), 0)
+  const totalDeanLabs = filteredDepts.reduce((sum: number, d: any) => sum + Number(d.laboratories_count ?? 0), 0)
+  const pendingRequests = (pendingLabsRes.data?.data || []).length
 
   return (
     <div className="space-y-4">
@@ -12874,15 +14864,17 @@ function DeanOverviewDeck({
               <GraduationCap size={24} className="text-[#55d6dc]" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#55d6dc] text-[#003135] uppercase">
                   Executive Dean
                 </span>
-                <span className="text-xs text-white/80">College-Wide School Governance</span>
+                <span className="text-xs text-white/80">
+                  {mySchool ? `${mySchool.school_id} · ${mySchool.name}` : 'School Governance Scope'}
+                </span>
               </div>
               <h2 className="mt-0.5 text-base font-bold text-white tracking-tight">{user.fullName}</h2>
               <p className="text-[11px] text-white/70">
-                School Governance Tree · Multi-Department Curricular Oversight · NAAC 'A' Grade
+                School Governance Tree · Multi-Department Curricular Oversight · Verified Governance
               </p>
             </div>
           </div>
@@ -12894,7 +14886,7 @@ function DeanOverviewDeck({
               className="px-3 py-1.5 rounded-lg bg-white text-[#003135] text-xs font-bold hover:bg-[#eaf5f4] transition shadow-xs flex items-center gap-1.5 cursor-pointer"
             >
               <Building2 size={13} />
-              Cross-School Vacancy Matrix
+              School Vacancy Matrix
             </button>
             <button
               type="button"
@@ -12902,40 +14894,70 @@ function DeanOverviewDeck({
               className="px-3 py-1.5 rounded-lg bg-white/15 text-white text-xs font-semibold hover:bg-white/25 transition backdrop-blur-xs flex items-center gap-1.5 cursor-pointer"
             >
               <MessageSquareText size={13} />
-              College-Wide Feedback
+              School Feedback Queue
             </button>
           </div>
         </div>
 
-        {/* 3 Schools Filter Bar */}
-        <div className="mt-3.5 pt-2.5 border-t border-white/15">
+        {/* Dean KPI Summary Strip */}
+        <div className="mt-3.5 pt-3 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="rounded-xl bg-white/10 dark:bg-black/25 p-2.5 border border-white/10">
+            <span className="block font-mono text-base font-bold text-[#55d6dc]">
+              {dirLoading ? '…' : filteredDepts.length}
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/80">Governed Depts</span>
+          </div>
+          <div className="rounded-xl bg-white/10 dark:bg-black/25 p-2.5 border border-white/10">
+            <span className="block font-mono text-base font-bold text-[#55d6dc]">
+              {dirLoading ? '…' : totalDeanFaculty}
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/80">Teaching Faculty</span>
+          </div>
+          <div className="rounded-xl bg-white/10 dark:bg-black/25 p-2.5 border border-white/10">
+            <span className="block font-mono text-base font-bold text-[#55d6dc]">
+              {dirLoading ? '…' : totalDeanLabs}
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/80">Laboratories</span>
+          </div>
+          <div className="rounded-xl bg-white/10 dark:bg-black/25 p-2.5 border border-white/10">
+            <span className="block font-mono text-base font-bold text-amber-300">
+              {pendingRequests}
+            </span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-white/80">Pending Approvals</span>
+          </div>
+        </div>
+
+        {/* School Filter Bar */}
+        <div className="mt-3 pt-2.5 border-t border-white/15">
           <div className="text-[11px] font-semibold text-white/70 mb-2 uppercase tracking-wider">
-            Filter Departments By School:
+            {mySchool ? 'Assigned Academic School Governance:' : 'Filter Departments By School:'}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSelectedSchool('ALL')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                selectedSchool === 'ALL'
-                  ? 'bg-white text-[#003135] shadow-xs'
-                  : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
-            >
-              All Schools ({schools.length}) · {departments.length} Depts
-            </button>
-            {schools.map((s) => (
+            {!mySchool && (
+              <button
+                type="button"
+                onClick={() => setSelectedSchool('ALL')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+                  selectedSchool === 'ALL'
+                    ? 'bg-white text-[#003135] shadow-xs'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                All Schools ({schools.length}) · {departments.length} Depts
+              </button>
+            )}
+            {scopedSchools.map((s) => (
               <button
                 key={s.school_id}
                 type="button"
-                onClick={() => setSelectedSchool(s.school_id as any)}
+                onClick={() => setSelectedSchool(s.school_id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                   selectedSchool === s.school_id
                     ? 'bg-[#55d6dc] text-[#003135] shadow-xs'
                     : 'bg-white/10 text-white hover:bg-white/20'
                 }`}
               >
-                {s.name} ({s.department_count} Depts · {s.faculty_count} Faculty)
+                {s.name} ({filteredDepts.length} Depts · {totalDeanFaculty} Faculty)
               </button>
             ))}
           </div>
@@ -13045,6 +15067,7 @@ function SuperAdminOverviewDeck({
         timetableSlotsCount?: number
         eventsCount?: number
         totalAuditLogs?: number
+        ledgerEntriesCount?: number
       }
     }
   }>('/api/v1/telemetry')
@@ -13063,9 +15086,10 @@ function SuperAdminOverviewDeck({
   const dbStats = telemetryRes.data?.data?.dbStats
   const feedbackList = feedbackRes.data?.data || []
   const pendingFeedback = feedbackList.filter((f) => {
-    const s = String(f.status || 'OPEN').toUpperCase()
-    return s !== 'RESOLVED' && s !== 'CLOSED'
+    const s = String(f.status || 'PENDING').toUpperCase()
+    return !['IMPLEMENTED', 'DISMISSED', 'RESOLVED', 'CLOSED'].includes(s)
   })
+  const isOverviewLoading = (deptsRes.loading && !deptsRes.data) || (telemetryRes.loading && !telemetryRes.data)
   const resolvedFeedbackCount = feedbackList.length - pendingFeedback.length
   const resolutionPct = feedbackList.length > 0 ? Math.round((resolvedFeedbackCount / feedbackList.length) * 100) : 100
   const pendingDepts = Array.from(new Set(pendingFeedback.map((f) => f.department_id).filter(Boolean))).slice(0, 3)
@@ -13130,7 +15154,7 @@ function SuperAdminOverviewDeck({
             </div>
             <div className="min-w-0">
               <span className="block font-mono text-base font-bold text-[#55d6dc] leading-tight">
-                {dbStats?.departmentsCount ?? departments.length}
+                {isOverviewLoading ? <span className="inline-block h-4 w-10 rounded skeleton-shimmer align-middle" /> : (dbStats?.departmentsCount ?? departments.length)}
               </span>
               <span className="block text-[10px] uppercase font-bold tracking-wider text-white/80 truncate">Departments</span>
             </div>
@@ -13142,7 +15166,7 @@ function SuperAdminOverviewDeck({
             </div>
             <div className="min-w-0">
               <span className="block font-mono text-base font-bold text-[#55d6dc] leading-tight">
-                {dbStats?.timetableSlotsCount ?? '—'}
+                {isOverviewLoading ? <span className="inline-block h-4 w-10 rounded skeleton-shimmer align-middle" /> : (dbStats?.timetableSlotsCount ?? '—')}
               </span>
               <span className="block text-[10px] uppercase font-bold tracking-wider text-white/80 truncate">Master Slots</span>
             </div>
@@ -13155,7 +15179,7 @@ function SuperAdminOverviewDeck({
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-base font-bold text-emerald-400 leading-tight">
-                  {extractLiveClasses(liveClassesRes.data).length}
+                  {liveClassesRes.loading && !liveClassesRes.data ? <span className="inline-block h-4 w-8 rounded skeleton-shimmer align-middle" /> : extractLiveClasses(liveClassesRes.data).length}
                 </span>
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
@@ -13169,7 +15193,7 @@ function SuperAdminOverviewDeck({
             </div>
             <div className="min-w-0">
               <span className="block font-mono text-base font-bold text-[#55d6dc] leading-tight">
-                {dbStats?.totalAuditLogs ?? 'Verified'}
+                {isOverviewLoading ? <span className="inline-block h-4 w-10 rounded skeleton-shimmer align-middle" /> : (dbStats?.ledgerEntriesCount ?? dbStats?.totalAuditLogs ?? 'Verified')}
               </span>
               <span className="block text-[10px] uppercase font-bold tracking-wider text-white/80 truncate">Ledger Entries</span>
             </div>
@@ -13463,7 +15487,9 @@ function ResourceScreen({
   const disruption = disruptionResource.data?.data
 
   const [modalOpen, setModalOpen] = useState(false)
-  const canMutate = Boolean((mutationContracts[screen] || screen === 'users') && mutateRoles[screen]?.includes(user.role))
+  const canMutate =
+    Boolean((mutationContracts[screen] || screen === 'users') && mutateRoles[screen]?.includes(user.role)) &&
+    !(screen === 'feedback' && !['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN'].includes(user.role))
 
   const openPrefilledBooking = (
     targetId: string,
@@ -13654,6 +15680,18 @@ function ResourceScreen({
           clockState={clockState}
           onInspectFaculty={(id, name) => setInspectedFaculty({ id, name })}
           onBookVacantSlot={(fid, day, p, lid) => openPrefilledBooking(fid, day, p, 1, lid, 'availability')}
+          onAssignSubstitute={(staffId, day, p) => {
+            setBookingPrefill({
+              screenOverride: 'substitutions',
+              values: {
+                substitute_faculty_id: staffId,
+                day_of_week: day,
+                period_index: String(p),
+                leave_date: nextDateForDay(day),
+              },
+            })
+            setModalOpen(true)
+          }}
         />
       ) : screen === 'ingestion' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
@@ -13680,6 +15718,7 @@ function ResourceScreen({
           <BlockchainAuditLedgerPanel />
           <SystemHealthAuditTableView
             records={normalized?.data ?? []}
+            user={user}
           />
         </>
       ) : (
@@ -13923,7 +15962,15 @@ function ContinuousLabBookingDialog({
         }))
       case 'faculty':
         return (facultyRes.data?.data ?? [])
-          .filter((f) => inScope(f.department_id))
+          .filter((f) => {
+            if (!inScope(f.department_id)) return false
+            if (screen === 'substitutions') {
+              const selfId = user.pnr && f.staff_id === user.pnr
+              const selfEmail = user.email && String((f as any).official_email || '').toLowerCase() === user.email.toLowerCase()
+              if (selfId || selfEmail) return false
+            }
+            return true
+          })
           .map((f) => ({
             value: f.staff_id,
             label: `${f.full_name}${f.designation ? ` · ${f.designation}` : ''}${
@@ -13956,7 +16003,7 @@ function ContinuousLabBookingDialog({
           )
           .map((l) => ({
             value: l.lab_id,
-            label: `${l.name} (${l.department_id} · Room ${l.room_id} · ${l.capacity} seats)`,
+            label: `${l.name} (${l.department_id} · ${l.room_id} · ${l.capacity} seats)`,
           }))
       case 'bookings':
         return (bookingsRes.data?.data ?? []).map((b) => ({
@@ -13989,6 +16036,16 @@ function ContinuousLabBookingDialog({
   const setFieldValue = (name: string, value: string) => {
     setValues((prev) => {
       const next = { ...prev, [name]: value }
+      if ((name === 'booking_date' || name === 'bookingDate' || name === 'leaveDate') && value) {
+        const dt = new Date(`${value}T12:00:00`)
+        if (!Number.isNaN(dt.getTime())) {
+          const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
+          const derived = days[dt.getDay()]
+          const safeDay = !derived || derived === 'SUNDAY' ? 'MONDAY' : derived
+          if (fields.some((f) => f.name === 'day_of_week')) next.day_of_week = safeDay
+          if (fields.some((f) => f.name === 'dayOfWeek')) next.dayOfWeek = safeDay
+        }
+      }
       // Any dependent field must be re-selected when its parent changes.
       for (const f of fields) {
         if (f.dependsOn === name) delete next[f.name]
@@ -14055,26 +16112,26 @@ function ContinuousLabBookingDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 modal-backdrop" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-[#002d31]/60 dark:bg-black/80 backdrop-blur-xs transition-opacity" onClick={onClose} />
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
 
-      <section className="relative z-10 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-[#062327] border border-[#dce4e3] dark:border-[#124349] shadow-2xl modal-panel">
-        <header className="flex items-center justify-between border-b border-[#e3e9e8] dark:border-[#124349] px-4 py-3.5 sm:px-6 sm:py-4 shrink-0">
+      <section className={`${FORM_MODAL_PANEL_CLASS} max-w-2xl`}>
+        <header className={FORM_MODAL_HEADER_CLASS}>
           <div>
-            <span className="font-mono text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc] uppercase">
+            <span className="font-mono text-[10px] font-semibold text-[#08747c] dark:text-[#38e0d2] uppercase">
               {screenCopy[screen].title}
             </span>
-            <h2 className="text-base sm:text-lg font-bold text-[#003135] dark:text-[#55d6dc]">{screenCopy[screen].action}</h2>
+            <h2 className="text-base sm:text-lg font-bold text-[#003135] dark:text-[#f4f9fb]">{screenCopy[screen].action}</h2>
           </div>
-          <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-lg text-[#647376] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#0a353b]">
+          <button type="button" autoFocus onClick={onClose} aria-label="Close modal" className={FORM_MODAL_CLOSE_CLASS}>
             <X size={18} />
           </button>
         </header>
 
-        <form onSubmit={handleFormSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <form onSubmit={handleFormSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
           {initialValues && Object.keys(initialValues).length > 0 && (
-            <div className="rounded-xl border border-[#c3e2df] dark:border-[#175259] bg-[#eef8f7] dark:bg-[#07363d]/60 px-3.5 py-2.5 text-xs text-[#003135] dark:text-[#55d6dc] flex items-center gap-2">
-              <CheckCircle2 size={15} className="shrink-0 text-[#08747c] dark:text-[#55d6dc]" />
+            <div className="rounded-xl border border-[#c3e2df] dark:border-[#2e4656] bg-[#eef8f7] dark:bg-[#1f3240] px-3.5 py-2.5 text-xs text-[#003135] dark:text-[#38e0d2] flex items-center gap-2">
+              <CheckCircle2 size={15} className="shrink-0 text-[#08747c] dark:text-[#38e0d2]" />
               <span>
                 <strong>Slot Prefilled:</strong> Facility, Day, Period &amp; Date have been automatically populated from your selected slot. Add an event title and submit.
               </span>
@@ -14084,32 +16141,53 @@ function ContinuousLabBookingDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             {fields.map((field) => {
               const isLiveSelect = Boolean(field.source)
+              const isSectionCascade = field.source === 'sections'
               const isSelect = isLiveSelect || field.type === 'select'
-              const options: SourceOption[] = isLiveSelect
+              const isPeriodField = field.name === 'period_index' || field.name === 'periodIndex'
+              const options: SourceOption[] = isLiveSelect && !isSectionCascade
                 ? buildOptions(field.source as MutationFieldSource)
-                : (field.options ?? []).map((opt) => ({
-                    value: opt,
-                    label: opt === 'true' ? 'Yes' : opt === 'false' ? 'No' : opt.replaceAll('_', ' '),
-                  }))
+                : (field.options ?? []).map((opt) => {
+                    if (isPeriodField) {
+                      const pNum = Number(opt)
+                      const bell = bellSchedule.find((b) => b.period === pNum && b.type === 'period')
+                      return {
+                        value: opt,
+                        label: `Period ${opt}${bell ? ` (${bell.startsAt}–${bell.endsAt})` : ''}`,
+                      }
+                    }
+                    return {
+                      value: opt,
+                      label: opt === 'true' ? 'Yes' : opt === 'false' ? 'No' : opt.replaceAll('_', ' '),
+                    }
+                  })
               const loading = isLiveSelect ? sourceLoading(field.source as MutationFieldSource) : false
               const wide = field.type === 'textarea' || isLiveSelect
-              const controlClass =
-                'h-10 w-full rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] px-3 text-xs text-[#172326] dark:text-[#e6f4f3] outline-none focus:border-[#08747c] [color-scheme:light] dark:[color-scheme:dark]'
 
               return (
                 <div key={field.name} className={wide ? 'sm:col-span-2' : ''}>
-                  <label className="mb-1.5 block text-xs font-semibold text-[#526164] dark:text-[#8ea5a3]">
+                  <label className={FORM_LABEL_CLASS}>
                     {field.label} {field.required && '*'}
                   </label>
 
-                  {field.type === 'textarea' ? (
+                  {isSectionCascade ? (
+                    <SectionCohortCascadePicker
+                      sections={sections}
+                      value={values[field.name] ?? ''}
+                      onChange={(secId) => setFieldValue(field.name, secId)}
+                      lockedDept={scopedDept}
+                      allowedDepts={allowedDepts}
+                      loading={loading}
+                      fieldName={field.name}
+                      required={field.required}
+                    />
+                  ) : field.type === 'textarea' ? (
                     <textarea
                       name={field.name}
                       required={field.required}
                       rows={3}
                       value={values[field.name] ?? ''}
                       onChange={(e) => setFieldValue(field.name, e.target.value)}
-                      className={`${controlClass} h-auto p-3`}
+                      className={FORM_TEXTAREA_CLASS}
                     />
                   ) : field.type === 'date' ? (
                     <input
@@ -14118,7 +16196,7 @@ function ContinuousLabBookingDialog({
                       required={field.required}
                       value={values[field.name] ?? new Date().toLocaleDateString('en-CA')}
                       onChange={(e) => setFieldValue(field.name, e.target.value)}
-                      className={controlClass}
+                      className={FORM_INPUT_CLASS}
                     />
                   ) : isSelect ? (
                     <select
@@ -14127,7 +16205,7 @@ function ContinuousLabBookingDialog({
                       disabled={loading || (isLiveSelect && options.length === 0)}
                       value={values[field.name] ?? ''}
                       onChange={(e) => setFieldValue(field.name, e.target.value)}
-                      className={`${controlClass} disabled:opacity-60`}
+                      className={FORM_INPUT_CLASS}
                     >
                       <option value="">
                         {loading
@@ -14137,7 +16215,7 @@ function ContinuousLabBookingDialog({
                             : 'Select an option'}
                       </option>
                       {options.map((opt) => (
-                        <option key={opt.value} value={opt.value} className="bg-white text-[#172326] dark:bg-[#072a2f] dark:text-[#e6f4f3]">
+                        <option key={opt.value} value={opt.value}>
                           {opt.label}
                         </option>
                       ))}
@@ -14151,12 +16229,12 @@ function ContinuousLabBookingDialog({
                       max={field.name === 'rating' ? 5 : undefined}
                       value={values[field.name] ?? ''}
                       onChange={(e) => setFieldValue(field.name, e.target.value)}
-                      className={controlClass}
+                      className={FORM_INPUT_CLASS}
                     />
                   )}
 
                   {field.help && (
-                    <p className="mt-1 text-[11px] text-[#7a898c] dark:text-[#7f9a98]">{field.help}</p>
+                    <p className="mt-1 text-[11px] text-[#7a898c] dark:text-[#a6bcc9]">{field.help}</p>
                   )}
                 </div>
               )
@@ -14180,18 +16258,18 @@ function ContinuousLabBookingDialog({
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-[#e3e9e8] dark:border-[#124349]">
+          <div className="flex justify-end gap-3 pt-4 border-t border-[#e3e9e8] dark:border-[#2e4656]">
             <button
               type="button"
               onClick={onClose}
-              className="h-10 rounded-lg border border-[#d6dfde] dark:border-[#175259] px-4 text-xs font-semibold text-[#526164] dark:text-[#8ea5a3] hover:bg-[#f5f7f6] dark:hover:bg-[#072a2f]"
+              className={FORM_CANCEL_BTN_CLASS}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#024950] px-5 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] disabled:opacity-50"
+              className={FORM_SUBMIT_BTN_CLASS}
             >
               {submitting && <LoaderCircle size={14} className="animate-spin" />}
               Submit Request
@@ -14241,7 +16319,9 @@ function ProfileScreen({ user }: { user: BackendUser }) {
               <dd className="mt-1 font-mono font-bold text-[#003135] dark:text-[#55d6dc]">{user.userId}</dd>
             </div>
             <div className="rounded-lg bg-[#f9fbfa] dark:bg-[#072428] p-3 border border-[#e8efee] dark:border-[#124349]">
-              <dt className="text-[#8a9799] dark:text-[#6e8886] font-medium">University PNR / Staff ID</dt>
+              <dt className="text-[#8a9799] dark:text-[#6e8886] font-medium">
+                {user.role === 'STUDENT' ? 'Student No' : 'Staff ID'}
+              </dt>
               <dd className="mt-1 font-mono font-bold text-[#003135] dark:text-[#55d6dc]">{user.pnr || 'N/A'}</dd>
             </div>
             <div className="rounded-lg bg-[#f9fbfa] dark:bg-[#072428] p-3 border border-[#e8efee] dark:border-[#124349]">
@@ -14482,6 +16562,10 @@ const screenMeta: Record<string, { title: string; desc: string }> = {
     title: 'Smart Class Adjustment & Faculty Discovery | GMRITDU',
     desc: 'Real-time discovery of free available faculty, vacant classrooms, and vacant labs for emergency replacement.',
   },
+  recommendations: {
+    title: 'Schedule Optimization & Free Slots | GMRITDU',
+    desc: 'Real-time discovery of free available faculty, vacant classrooms, and vacant laboratories for coverage.',
+  },
   users: {
     title: 'Institutional User Directory & Roles | GMRITDU',
     desc: 'Role-based access governance, account authorizations, and departmental identity allocations.',
@@ -14609,7 +16693,27 @@ function InstitutionalFooter({
 
 
 export function OperationsApp({ user }: { user: BackendUser }) {
+  return (
+    <InstitutionalDirectoryProvider>
+      <OperationsAppShell user={user} />
+    </InstitutionalDirectoryProvider>
+  )
+}
+
+function OperationsAppShell({ user }: { user: BackendUser }) {
   const router = useRouter()
+  const { schools } = useInstitutionalDirectory()
+  const deanSchool = useMemo(
+    () =>
+      user.role === 'DEAN'
+        ? schools.find(
+            (sc) =>
+              (user.schoolId && sc.school_id === user.schoolId) ||
+              (user.email && sc.dean_email?.toLowerCase() === user.email.toLowerCase())
+          ) || null
+        : null,
+    [schools, user.role, user.schoolId, user.email]
+  )
   const allowedScreens = roleNavigation[user.role] || ['overview']
   const resolveAllowedScreen = (candidate: AcademicScreen | 'profile'): AcademicScreen | 'profile' => {
     if (candidate === 'profile') return 'profile'
@@ -14717,8 +16821,40 @@ export function OperationsApp({ user }: { user: BackendUser }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [globalSearch, setGlobalSearch] = useState('')
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [supportModalOpen, setSupportModalOpen] = useState(false)
+  const [isMobileViewport, setIsMobileViewport] = useState(false)
+  const notifContainerRef = useRef<HTMLDivElement | null>(null)
   const [now, setNow] = useState<Date | null>(null)
   const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const sync = () => setIsMobileViewport(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setNotificationsOpen(false)
+        setSupportModalOpen(false)
+        setDrawerOpen(false)
+      }
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      if (notificationsOpen && notifContainerRef.current && !notifContainerRef.current.contains(e.target as Node)) {
+        setNotificationsOpen(false)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('pointerdown', onPointerDown)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('pointerdown', onPointerDown)
+    }
+  }, [notificationsOpen])
 
   // Initialize Theme State
   useEffect(() => {
@@ -14778,13 +16914,27 @@ export function OperationsApp({ user }: { user: BackendUser }) {
     router.replace('/login')
   }
 
-  async function markNotificationAsRead(id?: string) {
+  async function markNotificationAsRead(id?: string, notice?: { title?: string; message?: string }) {
     try {
       await backendFetch(
         id ? `/api/v1/notifications/${encodeURIComponent(id)}/read` : '/api/v1/notifications/read-all',
         { method: 'PATCH' }
       )
       window.dispatchEvent(new Event('gmritdu:data-change'))
+      if (notice) {
+        const hay = `${notice.title || ''} ${notice.message || ''}`.toLowerCase()
+        let target: AcademicScreen | null = null
+        if (hay.includes('approv')) target = 'approvals'
+        else if (hay.includes('booking') || hay.includes('lab')) target = 'bookings'
+        else if (hay.includes('substitut') || hay.includes('leave')) target = 'substitutions'
+        else if (hay.includes('feedback') || hay.includes('ticket')) target = 'feedback'
+        else if (hay.includes('exam') || hay.includes('holiday') || hay.includes('calendar')) target = 'calendar'
+        else if (hay.includes('timetable') || hay.includes('upload')) target = 'ingestion'
+        if (target && allowedScreens.includes(target)) {
+          handleNavigate(target)
+          return
+        }
+      }
       showToast('Notification marked as read')
     } catch {
       noticesResource.retry()
@@ -14815,13 +16965,13 @@ export function OperationsApp({ user }: { user: BackendUser }) {
   }, [navItems, globalSearch])
 
   return (
-    <div className="min-h-screen bg-[#f3f6f5] dark:bg-[#01191c] text-[#172326] dark:text-[#e2f0ef] transition-colors duration-200 max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#f3f6f5] dark:bg-[#111c24] text-[#172326] dark:text-[#edf5f8] transition-colors duration-200 max-w-full overflow-x-hidden">
       {/* Top Universal Institutional Header */}
-      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-[#dce4e3] dark:border-[#124349] bg-white/95 dark:bg-[#031d21]/95 px-4 backdrop-blur-md sm:px-6">
+      <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-[#dce4e3] dark:border-[#2e4656] bg-white/95 dark:bg-[#15222c]/95 px-4 backdrop-blur-md sm:px-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setDrawerOpen(true)}
-            className="grid h-10 w-10 place-items-center rounded-lg text-[#526164] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] lg:hidden cursor-pointer"
+            className="grid h-10 w-10 place-items-center rounded-lg text-[#526164] dark:text-[#d0e0ea] hover:bg-[#edf2f1] dark:hover:bg-[#253b4a] lg:hidden cursor-pointer"
             aria-label="Open Navigation Drawer"
           >
             <Menu size={20} />
@@ -14836,23 +16986,23 @@ export function OperationsApp({ user }: { user: BackendUser }) {
           >
             <BrandMark />
             <div className="hidden sm:block">
-              <strong className="block text-sm font-bold tracking-tight text-[#003135] dark:text-[#55d6dc]">
+              <strong className="block text-sm font-bold tracking-tight text-[#003135] dark:text-[#f4f9fb]">
                 GMRITDU Timetable Hub
               </strong>
-              <small className="block text-[10px] text-[#7a898c] dark:text-[#7ba09d]">Autonomous University Academic Platform</small>
+              <small className="block text-[10px] text-[#7a898c] dark:text-[#a6bcc9]">Autonomous University Academic Platform</small>
             </div>
           </button>
         </div>
 
         {/* Global Workspace Search */}
         <div className="relative mx-4 hidden max-w-sm flex-1 md:block">
-          <div className="flex h-9 items-center gap-2 rounded-lg border border-[#dce4e3] dark:border-[#175259] bg-[#f8faf9] dark:bg-[#062327] px-3 focus-within:border-[#08747c] focus-within:bg-white dark:focus-within:bg-[#072a2f] transition">
-            <Search size={15} className="text-[#758386]" />
+          <div className="flex h-9 items-center gap-2 rounded-lg border border-[#dce4e3] dark:border-[#395467] bg-[#f8faf9] dark:bg-[#101b23] px-3 focus-within:border-[#08747c] dark:focus-within:border-[#38e0d2] focus-within:bg-white dark:focus-within:bg-[#182732] transition">
+            <Search size={15} className="text-[#758386] dark:text-[#a6bcc9]" />
             <input
               value={globalSearch}
               onChange={(e) => setGlobalSearch(e.target.value)}
               placeholder="Jump to academic workspace..."
-              className="w-full bg-transparent text-xs outline-none text-[#172326] dark:text-[#e2f0ef]"
+              className="w-full bg-transparent text-xs outline-none text-[#172326] dark:text-white"
             />
           </div>
 
@@ -14892,14 +17042,16 @@ export function OperationsApp({ user }: { user: BackendUser }) {
             </div>
           </div>
 
-          <a
-            href="mailto:timetable.support@gmrit.edu.in"
-            className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#dce4e3] dark:border-[#124349] text-[11px] font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] btn-interactive"
+          <button
+            type="button"
+            onClick={() => setSupportModalOpen(true)}
+            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[#dce4e3] dark:border-[#124349] text-[11px] font-semibold text-[#003135] dark:text-[#55d6dc] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] btn-interactive cursor-pointer"
             title="Institutional Support Helpdesk"
+            aria-label="Open Institutional Support Desk"
           >
-            <Mail size={12} className="text-[#08747c] dark:text-[#55d6dc]" />
-            <span>Support Desk</span>
-          </a>
+            <CircleHelp size={13} className="text-[#08747c] dark:text-[#55d6dc]" />
+            <span className="hidden xl:inline">Support Desk</span>
+          </button>
 
           {/* Theme Toggle Button (Light/Dark Mode) */}
           <button
@@ -14912,11 +17064,12 @@ export function OperationsApp({ user }: { user: BackendUser }) {
           </button>
 
           {/* Notifications Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={notifContainerRef}>
             <button
               onClick={() => setNotificationsOpen((v) => !v)}
-              className="relative grid h-10 w-10 place-items-center rounded-lg text-[#526164] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] transition"
+              className="relative grid h-10 w-10 place-items-center rounded-lg text-[#526164] dark:text-[#8ea5a3] hover:bg-[#edf2f1] dark:hover:bg-[#072d32] transition cursor-pointer"
               aria-label="Notifications"
+              aria-expanded={notificationsOpen}
             >
               <Bell size={18} />
               {unreadNotices.length > 0 && (
@@ -14934,7 +17087,7 @@ export function OperationsApp({ user }: { user: BackendUser }) {
                   {unreadNotices.length > 0 && (
                     <button
                       onClick={() => markNotificationAsRead()}
-                      className="text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc] hover:underline"
+                      className="text-[10px] font-semibold text-[#08747c] dark:text-[#55d6dc] hover:underline cursor-pointer"
                     >
                       Mark all as read
                     </button>
@@ -14944,14 +17097,15 @@ export function OperationsApp({ user }: { user: BackendUser }) {
                 <div className="mt-2 max-h-72 overflow-y-auto divide-y divide-[#edf2f1] dark:divide-[#124349]">
                   {unreadNotices.length > 0 ? (
                     unreadNotices.map((n) => (
-                      <div
+                      <button
+                        type="button"
                         key={n.notification_id}
-                        onClick={() => markNotificationAsRead(n.notification_id)}
-                        className="p-2.5 text-left hover:bg-[#f7f9f9] dark:hover:bg-[#082a2f] cursor-pointer rounded-lg transition"
+                        onClick={() => markNotificationAsRead(n.notification_id, n)}
+                        className="w-full p-2.5 text-left hover:bg-[#f7f9f9] dark:hover:bg-[#082a2f] cursor-pointer rounded-lg transition"
                       >
                         <strong className="block text-xs font-semibold text-[#172326] dark:text-[#e2f0ef]">{n.title}</strong>
                         <p className="mt-0.5 text-[11px] text-[#647376] dark:text-[#8ea5a3] line-clamp-2">{n.message}</p>
-                      </div>
+                      </button>
                     ))
                   ) : (
                     <p className="p-4 text-center text-xs text-[#7a898c]">No unread alerts</p>
@@ -14986,7 +17140,8 @@ export function OperationsApp({ user }: { user: BackendUser }) {
 
       {/* Left Sidebar Navigation */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col bg-[#002d31] dark:bg-[#011417] p-4 text-white transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:top-16 lg:z-30 lg:w-60 ${
+        aria-hidden={isMobileViewport && !drawerOpen}
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-64 flex-col bg-[#002d31] dark:bg-gradient-to-b dark:from-[#0c373d] dark:via-[#102933] dark:to-[#111c24] dark:border-r dark:border-[#264a52] p-4 text-white transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:top-16 lg:z-30 lg:w-60 ${
           drawerOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         }`}
       >
@@ -14996,8 +17151,10 @@ export function OperationsApp({ user }: { user: BackendUser }) {
             <strong className="text-sm font-bold">GMRITDU</strong>
           </div>
           <button
+            type="button"
             onClick={() => setDrawerOpen(false)}
-            className="grid h-9 w-9 place-items-center rounded-lg hover:bg-white/10"
+            aria-label="Close navigation menu"
+            className="grid h-9 w-9 place-items-center rounded-lg hover:bg-white/10 cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -15007,7 +17164,9 @@ export function OperationsApp({ user }: { user: BackendUser }) {
           <span className="text-[10px] text-[#87a6a4] uppercase font-semibold">Active Institutional Scope</span>
           <strong className="mt-1 block text-xs font-semibold text-white truncate">
             {user.role === 'SUPER_ADMIN'
-              ? 'Higher Dean · University Governance'
+              ? 'Campus Super Admin · Root Governance'
+              : user.role === 'DEAN'
+              ? (deanSchool ? `${deanSchool.school_id} · ${deanSchool.name}` : 'Executive School Governance')
               : user.role === 'STUDENT'
               ? `Cohort ${user.sectionId || user.departmentId || 'Assigned'} · Enrolled Student`
               : `${user.departmentId || 'GMRIT'} · ${roleNames[user.role]}`}
@@ -15021,8 +17180,8 @@ export function OperationsApp({ user }: { user: BackendUser }) {
               onClick={() => handleNavigate(id)}
               className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-medium transition ${
                 activeScreen === id
-                  ? 'bg-[#0b5055] dark:bg-[#084147] text-white shadow-xs font-semibold'
-                  : 'text-[#a9c0be] hover:bg-white/5 hover:text-white'
+                  ? 'bg-[#0b5055] dark:bg-[#155059] dark:border dark:border-[#38e0d2]/40 text-white shadow-xs font-semibold'
+                  : 'text-[#b7ced0] hover:bg-white/10 hover:text-white'
               }`}
             >
               <NavIcon size={16} />
@@ -15074,7 +17233,7 @@ export function OperationsApp({ user }: { user: BackendUser }) {
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid h-16 grid-cols-4 border-t border-[#dce4e3] dark:border-[#124349] bg-white/95 dark:bg-[#031d21]/95 px-2 backdrop-blur-md lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid h-16 grid-cols-4 border-t border-[#dce4e3] dark:border-[#2e4656] bg-white/95 dark:bg-[#15222c]/95 px-2 backdrop-blur-md lg:hidden">
         {navItems.slice(0, 3).map(({ id, label, icon: NavIcon }) => (
           <button
             key={id}
@@ -15095,6 +17254,65 @@ export function OperationsApp({ user }: { user: BackendUser }) {
           <span>Menu</span>
         </button>
       </nav>
+
+      {supportModalOpen && (
+        <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true" aria-label="Institutional Support Desk">
+          <div className={FORM_MODAL_SCRIM_CLASS} onClick={() => setSupportModalOpen(false)} />
+          <section className={`${FORM_MODAL_PANEL_CLASS} max-w-md p-5 space-y-4`}>
+            <header className="flex items-start justify-between border-b border-[#edf2f1] dark:border-[#2e4656] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-[#ebf7f6] dark:bg-[#1f3240] text-[#08747c] dark:text-[#38e0d2]">
+                  <CircleHelp size={18} />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">Institutional Support Desk</h2>
+                  <p className="text-[11px] text-[#647376] dark:text-[#a6bcc9]">Academic Operations &amp; Scheduling Help</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSupportModalOpen(false)}
+                aria-label="Close support dialog"
+                className={FORM_MODAL_CLOSE_CLASS}
+              >
+                <X size={16} />
+              </button>
+            </header>
+
+            <div className="space-y-2.5 text-xs text-[#526164] dark:text-[#d0e0ea]">
+              <div className="rounded-xl border border-[#e3e9e8] dark:border-[#2e4656] bg-[#f8faf9] dark:bg-[#111c24] p-3">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-[#08747c] dark:text-[#38e0d2]">Support Contact</span>
+                <p className="mt-1 font-mono font-semibold text-[#003135] dark:text-[#f4f9fb]">timetable.support@gmrit.edu.in</p>
+                <p className="mt-1 text-[11px]">Working Hours: Monday – Saturday, 09:00 AM – 05:00 PM IST</p>
+              </div>
+              <p className="text-[11px] leading-relaxed">
+                For classroom clashes, lab equipment faults, or account access changes, log an issue directly in Campus Feedback for tracked resolution.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-[#edf2f1] dark:border-[#2e4656]">
+              <button
+                type="button"
+                onClick={() => {
+                  setSupportModalOpen(false)
+                  if (allowedScreens.includes('feedback')) handleNavigate('feedback')
+                }}
+                className={FORM_SUBMIT_BTN_CLASS}
+              >
+                <MessageSquareText size={13} />
+                Log Ticket in Portal
+              </button>
+              <a
+                href="mailto:timetable.support@gmrit.edu.in"
+                className={FORM_CANCEL_BTN_CLASS}
+              >
+                <Mail size={13} className="mr-1.5" />
+                Email Helpdesk
+              </a>
+            </div>
+          </section>
+        </div>
+      )}
 
       {toast && (
         <div

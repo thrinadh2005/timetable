@@ -345,23 +345,7 @@ CREATE INDEX IF NOT EXISTS idx_acad_events_dept ON public.academic_events(depart
 CREATE INDEX IF NOT EXISTS idx_acad_events_date ON public.academic_events(event_date);
 CREATE INDEX IF NOT EXISTS idx_acad_events_type ON public.academic_events(event_type);
 
-CREATE TABLE IF NOT EXISTS public.digital_notices (
-  notice_id TEXT PRIMARY KEY,
-  title TEXT NOT NULL,
-  author_name TEXT NOT NULL,
-  author_designation TEXT,
-  author_initials TEXT,
-  category TEXT NOT NULL CHECK (category IN ('Posts', 'Announcements', 'Polls', 'Urgent Notices', 'Important Notices')),
-  publish_date TEXT NOT NULL,
-  summary TEXT NOT NULL,
-  full_content TEXT,
-  tags TEXT,
-  likes_count INTEGER NOT NULL DEFAULT 0,
-  department_id TEXT DEFAULT 'CSE',
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_digital_notices_cat ON public.digital_notices(category);
-CREATE INDEX IF NOT EXISTS idx_digital_notices_dept ON public.digital_notices(department_id);
+DROP TABLE IF EXISTS public.digital_notices;
 
 CREATE TABLE IF NOT EXISTS public.notifications (
   notification_id TEXT PRIMARY KEY,
@@ -525,7 +509,6 @@ ALTER TABLE public.timetable_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.lab_incidents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.academic_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.digital_notices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_feedback ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.password_resets ENABLE ROW LEVEL SECURITY;

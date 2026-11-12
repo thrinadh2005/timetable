@@ -1,8 +1,8 @@
 const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
-const { 
-  getAcademicHierarchy, 
+const {
+  getAcademicHierarchy,
   getSectionTimetable,
   resolveStudentEnrolledSection,
   getFacultyWorkloadMatrix
@@ -45,7 +45,7 @@ router.get('/my-section', requireAuth, async (req, res) => {
       }
     }
     const result = await getSectionTimetable(enrolled.department, enrolled.semester, enrolled.section);
-    
+
     res.json({
       success: true,
       enrolledCohort: enrolled,
@@ -222,7 +222,7 @@ router.get('/section', async (req, res) => {
 });
 
 // Pre-flight collision validation endpoint for interactive UI feedback
-router.post('/validate-slot', requireAuth, requireRole(['SUPER_ADMIN', 'DEPT_ADMIN']), async (req, res) => {
+router.post('/validate-slot', requireAuth, requireRole(['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN', 'COORDINATOR']), async (req, res) => {
   try {
     const validation = await validateSlotConflict(req.body, req.body.exclude_slot_id || null);
     res.json({

@@ -226,17 +226,22 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
     throw new Error('Access denied: Only HOD or Dean may approve or reject laboratory bookings.');
   }
 
-  const existing = await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [bookingId]);
+  const rawId = String(bookingId || '').trim();
+  const rootId = rawId.replace(/-P\d+$/i, '');
+  const existing =
+    (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [rootId])) ||
+    (await db.get('SELECT * FROM lab_bookings WHERE booking_id = $1', [rawId]));
   if (!existing) {
-    throw new Error(`Booking '${bookingId}' was not found.`);
+    throw new Error(`Booking '${rawId}' was not found.`);
   }
+  const targetId = existing.booking_id.replace(/-P\d+$/i, '');
 
   const newStatus = action.toUpperCase() === 'APPROVE' ? 'CONFIRMED' : 'CANCELLED';
 
   await db.transaction(async (tx) => {
     await tx.run(
       'UPDATE lab_bookings SET status = $1 WHERE booking_id = $2 OR booking_id LIKE $3',
-      [newStatus, bookingId, `${bookingId}-%`]
+      [newStatus, targetId, `${targetId}-%`]
     );
 
     await tx.run(
@@ -250,7 +255,7 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
         currentUser.fullName,
         action.toUpperCase() === 'APPROVE' ? 'APPROVE_LAB_BOOKING' : 'REJECT_LAB_BOOKING',
         'LAB_BOOKING',
-        bookingId,
+        targetId,
         JSON.stringify({ previousStatus: existing.status }),
         JSON.stringify({ status: newStatus }),
         ipAddress
@@ -266,7 +271,7 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
       title: approved ? 'Laboratory Booking Approved' : 'Laboratory Booking Rejected',
       message: `Your booking "${existing.title}" on ${existing.day_of_week}${existing.period_index ? ` Period ${existing.period_index}` : ''} was ${approved ? 'approved and confirmed' : 'rejected'} by ${currentUser.fullName}.`,
       entityType: 'LAB_BOOKING',
-      entityId: bookingId,
+      entityId: targetId,
       actionUrl: 'laboratories',
       createdByUserId: currentUser.userId,
       createdByName: currentUser.fullName
@@ -275,7 +280,7 @@ async function approveLabBooking(bookingId, currentUser, action = 'APPROVE', ipA
 
   return {
     success: true,
-    bookingId,
+    bookingId: targetId,
     status: newStatus,
     message: `Laboratory booking ${approved ? 'approved and confirmed' : 'rejected and cancelled'}.`
   };
@@ -364,16 +369,25 @@ async function deleteLabBooking(bookingId, currentUser, ipAddress = '127.0.0.1')
   };
 }
 
-async function getPendingLabRequests(departmentId = null) {
+async function getPendingLabRequests(departmentId = null, statusFilter = 'PENDING') {
+  const normalizedStatus = String(statusFilter || 'PENDING').toUpperCase();
+  let statusClause = "lb.status = 'PENDING'";
+  if (normalizedStatus === 'ALL') {
+    statusClause = "lb.status IN ('PENDING', 'CONFIRMED', 'CANCELLED')";
+  } else if (['PENDING', 'CONFIRMED', 'CANCELLED'].includes(normalizedStatus)) {
+    statusClause = `lb.status = '${normalizedStatus}'`;
+  }
+
   let query = `
-    SELECT lb.*, l.name as lab_name, l.room_id, r.room_number,
+    SELECT lb.*, l.name as lab_name, l.room_id, l.department_id, r.room_number,
            s.full_name as incharge_name, u.full_name as requester_name, u.role as requester_role, u.pnrno as requester_pnr
     FROM lab_bookings lb
     JOIN laboratories l ON lb.lab_id = l.lab_id
     JOIN rooms r ON l.room_id = r.room_id
     LEFT JOIN staff s ON l.staff_incharge_id = s.staff_id
     LEFT JOIN users u ON lb.booked_by_user_id = u.user_id
-    WHERE lb.status = 'PENDING'
+    WHERE ${statusClause}
+      AND lb.booking_id !~ '-P[0-9]+$'
   `;
   const params = [];
   if (Array.isArray(departmentId)) {
@@ -381,12 +395,12 @@ async function getPendingLabRequests(departmentId = null) {
       query += ' AND 1 = 0';
     } else {
       const phs = departmentId.map((_, i) => `$${params.length + i + 1}`).join(', ');
-      query += ` AND r.department_id IN (${phs})`;
+      query += ` AND (l.department_id IN (${phs}) OR r.department_id IN (${phs}))`;
       params.push(...departmentId);
     }
   } else if (departmentId && departmentId !== 'ALL') {
     params.push(departmentId);
-    query += ` AND r.department_id = $${params.length}`;
+    query += ` AND (l.department_id = $${params.length} OR r.department_id = $${params.length})`;
   }
   query += ' ORDER BY lb.created_at DESC';
   return db.all(query, params);

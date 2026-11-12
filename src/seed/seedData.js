@@ -3,7 +3,7 @@ const { db, initializeSchema } = require('../config/database');
 
 // Clean baseline: no pre-seeded institutional roster beyond the 8 demo accounts.
 // Real faculty, non-teaching staff, rooms, laboratories, subjects, timetables,
-// notices, and academic events are added directly through the live UI / APIs.
+// and academic events are added directly through the live UI / APIs.
 const MASTER_STAFF_ROSTER = [];
 
 async function seedDatabase() {
@@ -121,10 +121,36 @@ async function seedDatabase() {
         status = EXCLUDED.status
     `;
 
-    // 6a. Super Admin, HOD, Timetable Coordinator (role-based baseline accounts; names editable via Users & Roles)
+    // 6a. Super Admin, Branch HODs, and Branch Timetable Coordinators (role-based baseline accounts; names editable via Users & Roles)
     await tx.run(upsertUserSql, ['USR-ADMIN-01', 'ADMIN001', 'admin@gmrit.edu.in', adminPasswordHash, 'Campus Super Admin', '', 'SUPER_ADMIN', 'CSE', 'ACTIVE']);
     await tx.run(upsertUserSql, ['USR-DEPT-CSE', 'COORD001', 'cse.admin@gmrit.edu.in', adminPasswordHash, 'Department Head (CSE)', '', 'DEPT_ADMIN', 'CSE', 'ACTIVE']);
-    await tx.run(upsertUserSql, ['USR-COORD-CSE', 'COORD002', 'timetable.coord@gmrit.edu.in', adminPasswordHash, 'Timetable Coordinator', '', 'COORDINATOR', 'CSE', 'ACTIVE']);
+    await tx.run(upsertUserSql, ['USR-COORD-CSE', 'COORD002', 'timetable.coord@gmrit.edu.in', adminPasswordHash, 'Timetable Coordinator (CSE)', '', 'COORDINATOR', 'CSE', 'ACTIVE']);
+
+    for (const dept of departments) {
+      if (dept.id === 'CSE') continue;
+      await tx.run(upsertUserSql, [
+        `USR-HOD-${dept.id}`,
+        `HOD-${dept.id}`,
+        `hod.${dept.id.toLowerCase()}@gmrit.edu.in`,
+        adminPasswordHash,
+        `Department Head (${dept.id})`,
+        '',
+        'DEPT_ADMIN',
+        dept.id,
+        'ACTIVE'
+      ]);
+      await tx.run(upsertUserSql, [
+        `USR-COORD-${dept.id}`,
+        `COORD-${dept.id}`,
+        `coord.${dept.id.toLowerCase()}@gmrit.edu.in`,
+        adminPasswordHash,
+        `Timetable Coordinator (${dept.id})`,
+        '',
+        'COORDINATOR',
+        dept.id,
+        'ACTIVE'
+      ]);
+    }
 
     // 6b. School Deans
     const upsertDeanSchoolSql = `
@@ -220,7 +246,7 @@ async function seedDatabase() {
     }
   });
 
-  console.log('Clean institutional baseline synced: 2 schools, 9 departments, 8 demo accounts, 0 sample schedules/notices/events.');
+  console.log('Clean institutional baseline synced: 2 schools, 9 departments, 8 demo accounts, 0 sample schedules/events.');
 }
 
 if (require.main === module) {

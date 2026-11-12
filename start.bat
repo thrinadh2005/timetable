@@ -37,11 +37,18 @@ echo ENABLE_STATIC_CACHE=true
 ) > .env
 
 :Ready
+:: Detect if .env lacks a non-empty DATABASE_URL / SUPABASE_DB_URL / PG_ENGINE and fall back cleanly to embedded PGlite
+findstr /r /c:"^[ ]*DATABASE_URL=[^ ]" /c:"^[ ]*SUPABASE_DB_URL=[^ ]" /c:"^[ ]*PG_ENGINE=[^ ]" ".env" >nul 2>&1
+if errorlevel 1 (
+    set "PG_ENGINE=pglite"
+    set "DATABASE_URL=pglite://./data/gmritdu-pg"
+)
+
 echo System Configuration:
 echo   - Platform: Node.js Web Server
 echo   - Local Portal URL: http://localhost:3000
 echo   - Health Endpoint:  http://localhost:3000/api/v1/health
-echo   - Database Engine:  PostgreSQL / PGlite at ./data/gmritdu-pg
+echo   - Database Engine:  PostgreSQL / Embedded Local Engine (./data/gmritdu-pg)
 echo.
 echo Institutional Authentication Access:
 echo   - Role accounts are managed inside the Users Directory after deployment.
@@ -55,9 +62,15 @@ echo.
 :: 3. Build Frontend Bundle
 echo [BUILD] Synchronizing modern frontend bundle...
 call npm run build:frontend
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Frontend build failed. Check errors above.
+    pause
+    exit /b 1
+)
 
-:: Launch default web browser in background after 2 seconds
-start /b cmd /c "ping 127.0.0.1 -n 3 >nul & start http://localhost:3000"
+:: Wait until server /api/v1/health is accepting connections before launching browser (prevents ERR_CONNECTION_REFUSED)
+start /b powershell -NoProfile -Command "for($i=0;$i -lt 60;$i++){try{$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3000/api/v1/health' -TimeoutSec 2;if($r.StatusCode -eq 200){Start-Process 'http://localhost:3000';exit}}catch{};Start-Sleep -Milliseconds 500}"
 
 node server.js
 

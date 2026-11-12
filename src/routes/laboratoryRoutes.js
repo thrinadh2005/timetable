@@ -113,14 +113,15 @@ const { createLabBooking, getLabBookings, deleteLabBooking, approveLabBooking, g
 // Get pending lab requests for HOD/Dean approval workflow
 router.get('/pending-requests', requireAuth, requireRole(['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN']), async (req, res) => {
   try {
+    const statusFilter = req.query.status || 'PENDING';
     let requests;
     if (req.user.role === 'DEAN') {
       // Dean sees every pending request raised within their school.
       const scope = await getDeanSchoolScope(req.user.userId);
-      requests = await getPendingLabRequests(scope ? scope.departmentIds : []);
+      requests = await getPendingLabRequests(scope ? scope.departmentIds : [], statusFilter);
     } else {
       const dept = req.user.role === 'SUPER_ADMIN' ? (req.query.department || null) : (req.user.departmentId || null);
-      requests = await getPendingLabRequests(dept);
+      requests = await getPendingLabRequests(dept, statusFilter);
     }
     res.json({
       success: true,
