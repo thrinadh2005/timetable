@@ -69,8 +69,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
+:: Ensure no stale server process is holding port 3000 from an earlier run
+set "APP_PORT=3000"
+for /f "tokens=1,2 delims==" %%A in ('findstr /r "^[ ]*PORT=" ".env" 2^>nul') do set "APP_PORT=%%B"
+set "APP_PORT=%APP_PORT: =%"
+if "%APP_PORT%"=="" set "APP_PORT=3000"
+powershell -NoProfile -Command "$p = Get-NetTCPConnection -LocalPort %APP_PORT% -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique; if ($p) { Write-Host '[CLEANUP] Stopping stale process on port %APP_PORT%:' ($p -join ', '); $p | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Milliseconds 600 }"
+
 :: Wait until server /api/v1/health is accepting connections before launching browser (prevents ERR_CONNECTION_REFUSED)
-start /b powershell -NoProfile -Command "for($i=0;$i -lt 60;$i++){try{$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:3000/api/v1/health' -TimeoutSec 2;if($r.StatusCode -eq 200){Start-Process 'http://localhost:3000';exit}}catch{};Start-Sleep -Milliseconds 500}"
+start /b powershell -NoProfile -Command "for($i=0;$i -lt 60;$i++){try{$r=Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:%APP_PORT%/api/v1/health' -TimeoutSec 2;if($r.StatusCode -eq 200){Start-Process 'http://localhost:%APP_PORT%';exit}}catch{};Start-Sleep -Milliseconds 500}"
 
 node server.js
 
