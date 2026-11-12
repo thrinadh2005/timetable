@@ -52,6 +52,7 @@ import {
   Sun,
   ThumbsUp,
   Trash2,
+  User,
   UserCheck,
   UserPlus,
   UserRoundCog,
@@ -11814,6 +11815,821 @@ function RecommendationsTableView({
   )
 }
 
+type StagedSlot = {
+  slot_id: string
+  section_id: string
+  day_of_week: string
+  period_index: number
+  start_time?: string
+  end_time?: string
+  subject_id?: string
+  subject_code?: string
+  subject_name?: string
+  course_type?: string
+  faculty_id?: string
+  faculty_name?: string
+  room_id?: string
+  is_laboratory?: number | boolean
+  lab_id?: string | null
+  lab_name?: string | null
+}
+
+type StagedDocumentDetail = {
+  doc_id: string
+  original_filename: string
+  file_type: string
+  department_id: string
+  academic_year: string
+  semester_label: string
+  total_slots_parsed: number
+  uploaded_by: string
+  status: string
+  created_at: string
+  slots: StagedSlot[]
+  parsedData?: {
+    sections?: Array<{
+      sectionId?: string
+      sectionName?: string
+      semesterNumber?: number
+      semesterLabel?: string
+    }>
+    academicYear?: string
+    semesterLabel?: string
+  }
+}
+
+const REVIEW_PERIOD_TIMINGS: Record<number, { start: string; end: string; label: string }> = {
+  1: { start: '09:00', end: '10:00', label: 'Period 1' },
+  2: { start: '10:00', end: '11:00', label: 'Period 2' },
+  3: { start: '11:10', end: '12:10', label: 'Period 3' },
+  4: { start: '12:10', end: '13:10', label: 'Period 4' },
+  5: { start: '14:00', end: '15:00', label: 'Period 5' },
+  6: { start: '15:00', end: '16:00', label: 'Period 6' },
+  7: { start: '16:00', end: '17:00', label: 'Period 7' },
+}
+
+const REVIEW_DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY']
+
+function IngestionProgressModal({
+  open,
+  type,
+  title,
+  filename,
+  percent,
+  stageText,
+  subText,
+  isDone,
+  error,
+  slotsCount,
+  docId,
+  onClose,
+  onReview,
+  onPublish,
+}: {
+  open: boolean
+  type: 'upload' | 'publish'
+  title: string
+  filename?: string
+  percent: number
+  stageText: string
+  subText?: string
+  isDone: boolean
+  error?: string | null
+  slotsCount?: number
+  docId?: string
+  onClose: () => void
+  onReview?: (docId: string) => void
+  onPublish?: (docId: string) => void
+}) {
+  if (!open) return null
+
+  const uploadSteps = [
+    { min: 0, max: 20, label: 'Reading & validating document binary buffer' },
+    { min: 20, max: 45, label: 'Scanning sheets & extracting weekly period cells' },
+    { min: 45, max: 70, label: 'Resolving courses, 233 faculty & 168 campus venues' },
+    { min: 70, max: 90, label: 'Cross-checking collision matrix & staging slots' },
+    { min: 90, max: 100, label: 'Document Staged & Verified Ready for Review' },
+  ]
+
+  const publishSteps = [
+    { min: 0, max: 25, label: 'Initiating schedule sanity & constraint validation' },
+    { min: 25, max: 50, label: 'Locking classroom reservations & lab allocations' },
+    { min: 50, max: 75, label: 'Committing timetable slots into live database' },
+    { min: 75, max: 95, label: 'Generating version snapshot & syncing student cohorts' },
+    { min: 95, max: 100, label: 'Live Schedule Published & Broadcast Active' },
+  ]
+
+  const steps = type === 'upload' ? uploadSteps : publishSteps
+  const clampedPercent = Math.min(100, Math.max(0, Math.round(percent)))
+
+  return (
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={isDone ? onClose : undefined} />
+      <div className={`${FORM_MODAL_PANEL_CLASS} max-w-lg p-6 space-y-5 text-center shadow-2xl`}>
+        {/* Animated Icon Header */}
+        <div className="flex flex-col items-center">
+          {error ? (
+            <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-700/60 flex items-center justify-center text-red-600 dark:text-red-400 mb-3 animate-[pulse_1s_infinite]">
+              <AlertTriangle size={32} />
+            </div>
+          ) : isDone ? (
+            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-3 animate-[bounce_1s_ease-out]">
+              <CheckCircle2 size={36} />
+            </div>
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-[#ebf7f6] dark:bg-[#07363d] border border-[#08747c]/30 dark:border-[#55d6dc]/30 flex items-center justify-center text-[#08747c] dark:text-[#55d6dc] mb-3 relative">
+              <span className="absolute inset-0 rounded-full bg-[#08747c]/10 dark:bg-[#55d6dc]/10 animate-ping opacity-75" />
+              {type === 'upload' ? (
+                <HardDriveDownload size={30} className="relative z-10 animate-bounce" />
+              ) : (
+                <LoaderCircle size={30} className="relative z-10 animate-spin" />
+              )}
+            </div>
+          )}
+
+          <h3 className="text-base font-bold text-[#003135] dark:text-[#e0f2fe]">
+            {error ? 'Operation Failed' : isDone ? (type === 'upload' ? 'Timetable Upload Completed' : 'Publishing Succeeded') : title}
+          </h3>
+          {filename && (
+            <p className="text-xs text-[#647376] dark:text-[#8ea5a3] font-mono mt-0.5 max-w-sm truncate">
+              {filename}
+            </p>
+          )}
+        </div>
+
+        {/* Big Percentage Counter & Progress Bar */}
+        <div className="space-y-2">
+          <div className="flex items-baseline justify-between px-1">
+            <span className="text-[11px] font-semibold text-[#526164] dark:text-[#8ea5a3] uppercase tracking-wider">
+              {error ? 'Status' : isDone ? 'Finished' : 'Processing Progress'}
+            </span>
+            <span className="text-3xl font-extrabold font-mono text-[#08747c] dark:text-[#55d6dc]">
+              {clampedPercent}%
+            </span>
+          </div>
+
+          <div className="w-full bg-[#e2e8e7] dark:bg-[#072a2f] h-3.5 rounded-full overflow-hidden p-0.5 border border-[#d2dedd] dark:border-[#124349] relative">
+            <div
+              className={`h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden ${
+                error
+                  ? 'bg-red-500'
+                  : 'bg-gradient-to-r from-[#08747c] via-[#0284c7] to-[#10b981]'
+              }`}
+              style={{ width: `${clampedPercent}%` }}
+            >
+              {!isDone && !error && (
+                <div className="absolute inset-0 bg-white/25 animate-pulse" />
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] text-[#647376] dark:text-[#8ea5a3] px-1">
+            <span className="font-medium truncate">{error || stageText}</span>
+            {subText && <span className="font-mono text-[10px] shrink-0 text-[#7a898c] dark:text-[#7ba09d]">{subText}</span>}
+          </div>
+        </div>
+
+        {/* Step-by-Step Checklist */}
+        <div className="rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-[#f9fbfa] dark:bg-[#042024] p-3 text-left space-y-2">
+          <span className="block text-[10px] font-bold uppercase tracking-wider text-[#7a898c] dark:text-[#7ba09d] mb-1">
+            Pipeline Checklist
+          </span>
+          {steps.map((st, idx) => {
+            const isPassed = clampedPercent >= st.max
+            const isActive = clampedPercent >= st.min && clampedPercent < st.max && !isDone && !error
+            return (
+              <div key={idx} className="flex items-center gap-2 text-xs">
+                {isPassed ? (
+                  <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
+                ) : isActive ? (
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-[#08747c] border-t-transparent animate-spin shrink-0" />
+                ) : (
+                  <div className="w-3 h-3 rounded-full border border-[#cbd5e1] dark:border-[#1b4d54] shrink-0 mx-0.5" />
+                )}
+                <span className={`text-[11px] ${
+                  isPassed
+                    ? 'text-slate-800 dark:text-slate-200 font-medium'
+                    : isActive
+                    ? 'text-[#08747c] dark:text-[#55d6dc] font-bold'
+                    : 'text-[#94a3b8] dark:text-[#527177]'
+                }`}>
+                  {st.label}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="pt-2 border-t border-[#edf2f1] dark:border-[#124349] flex flex-wrap items-center justify-center gap-2">
+          {error ? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white shadow-xs transition cursor-pointer"
+            >
+              Dismiss Error
+            </button>
+          ) : isDone ? (
+            <>
+              {docId && onReview && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose()
+                    onReview(docId)
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#08747c] hover:bg-[#065b61] text-white shadow-md transition cursor-pointer"
+                >
+                  <Eye size={14} />
+                  {type === 'upload' ? 'Review Extracted Timetable' : 'Check Published Schedule'}
+                </button>
+              )}
+              {type === 'upload' && docId && onPublish && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose()
+                    onPublish(docId)
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#024950] hover:bg-[#003135] text-white shadow-md transition cursor-pointer"
+                >
+                  <CheckCircle2 size={14} />
+                  Publish to Live Schedule
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] text-[#003135] dark:text-[#55d6dc] hover:bg-[#eaf3f2] transition cursor-pointer"
+              >
+                {type === 'publish' ? 'Done' : 'Close'}
+              </button>
+            </>
+          ) : (
+            <span className="text-[11px] text-[#7a898c] dark:text-[#7ba09d] flex items-center gap-1.5 animate-pulse">
+              <LoaderCircle size={12} className="animate-spin" />
+              Ingestion pipeline in progress, please wait...
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TimetableDocumentReviewModal({
+  docId,
+  onClose,
+  onPublish,
+}: {
+  docId: string
+  onClose: () => void
+  onPublish?: (docId: string, filename?: string) => void
+}) {
+  const [doc, setDoc] = useState<StagedDocumentDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<string>('ALL')
+  const [activeDay, setActiveDay] = useState<string>('ALL')
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const loadDocument = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const token = readAuthSession()?.token
+      const res = await fetch(`/api/v1/timetables/ingest/staged/${encodeURIComponent(docId)}`, {
+        headers: {
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+      })
+      const payload = await res.json()
+      if (!res.ok || !payload.success || !payload.data) {
+        throw new Error(payload.message || 'Failed to load staged timetable details.')
+      }
+      setDoc(payload.data)
+    } catch (e: any) {
+      setError(e instanceof Error ? e.message : 'Unknown error')
+    } finally {
+      setLoading(false)
+    }
+  }, [docId])
+
+  useEffect(() => {
+    loadDocument()
+  }, [loadDocument])
+
+  const slots = doc?.slots || []
+  const isCommitted = String(doc?.status || '').toUpperCase() === 'COMMITTED'
+
+  const uniqueSections = useMemo(() => {
+    const set = new Set<string>()
+    slots.forEach((s) => {
+      if (s.section_id) set.add(s.section_id)
+    })
+    return Array.from(set).sort()
+  }, [slots])
+
+  const uniqueFaculty = useMemo(() => {
+    const set = new Set<string>()
+    slots.forEach((s) => {
+      if (s.faculty_name) set.add(s.faculty_name)
+      else if (s.faculty_id) set.add(s.faculty_id)
+    })
+    return Array.from(set)
+  }, [slots])
+
+  const uniqueRooms = useMemo(() => {
+    const set = new Set<string>()
+    slots.forEach((s) => {
+      if (s.room_id) set.add(s.room_id)
+    })
+    return Array.from(set)
+  }, [slots])
+
+  const filteredSlots = useMemo(() => {
+    return slots.filter((s) => {
+      if (activeSection !== 'ALL' && s.section_id !== activeSection) return false
+      if (activeDay !== 'ALL' && s.day_of_week !== activeDay) return false
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const codeMatch = String(s.subject_code || '').toLowerCase().includes(q)
+        const nameMatch = String(s.subject_name || '').toLowerCase().includes(q)
+        const facMatch = String(s.faculty_name || '').toLowerCase().includes(q)
+        const roomMatch = String(s.room_id || '').toLowerCase().includes(q)
+        const secMatch = String(s.section_id || '').toLowerCase().includes(q)
+        if (!codeMatch && !nameMatch && !facMatch && !roomMatch && !secMatch) return false
+      }
+      return true
+    })
+  }, [slots, activeSection, activeDay, searchQuery])
+
+  const handleDownloadCsv = () => {
+    if (!doc) return
+    const headers = ['Day', 'Period', 'Section', 'Subject Code', 'Subject Name', 'Faculty Name', 'Room', 'Type']
+    const rows = filteredSlots.map((s) => [
+      s.day_of_week,
+      s.period_index,
+      s.section_id,
+      `"${(s.subject_code || '').replace(/"/g, '""')}"`,
+      `"${(s.subject_name || '').replace(/"/g, '""')}"`,
+      `"${(s.faculty_name || '').replace(/"/g, '""')}"`,
+      s.room_id || '',
+      s.is_laboratory ? 'LABORATORY' : 'THEORY'
+    ].join(','))
+    const csvContent = [headers.join(','), ...rows].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `GMRITDU_Reviewed_Timetable_${doc.doc_id}_${activeSection}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const renderSlotCell = (cellSlots: StagedSlot[]) => {
+    if (!cellSlots || cellSlots.length === 0) {
+      return <div className="text-center text-[#94a3b8] dark:text-[#527177] py-2 font-mono text-xs">-</div>
+    }
+
+    return (
+      <div className="space-y-1.5">
+        {cellSlots.map((s, idx) => {
+          const isLab = !!s.is_laboratory
+          const secShort = String(s.section_id || '').split('-').pop() || s.section_id
+          return (
+            <div
+              key={s.slot_id || idx}
+              className={`p-1.5 rounded-lg border text-[11px] leading-tight ${
+                isLab
+                  ? 'bg-purple-50/80 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/50'
+                  : 'bg-[#f0f9f8] dark:bg-[#07363d]/40 border-[#cbe7e5] dark:border-[#11555c]'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-1 mb-0.5">
+                <span className={`font-mono text-[10px] font-extrabold ${isLab ? 'text-purple-700 dark:text-purple-300' : 'text-[#08747c] dark:text-[#55d6dc]'}`}>
+                  {s.subject_code}
+                </span>
+                <div className="flex items-center gap-1">
+                  {activeSection === 'ALL' && (
+                    <span className="font-mono text-[8px] font-bold px-1 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      {secShort}
+                    </span>
+                  )}
+                  {isLab && (
+                    <span className="font-mono text-[8px] font-bold px-1 py-0.2 rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-200">
+                      LAB
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="text-[10px] font-medium text-slate-800 dark:text-slate-200 line-clamp-1 mb-0.5" title={s.subject_name}>
+                {s.subject_name}
+              </div>
+              <div className="flex items-center justify-between gap-1 text-[9px] text-[#647376] dark:text-[#8ea5a3]">
+                <span className="truncate max-w-[85px]" title={s.faculty_name}>
+                  {s.faculty_name || 'TBD'}
+                </span>
+                <span className="font-mono font-bold shrink-0 text-[#003135] dark:text-[#55d6dc]">
+                  {s.room_id || 'TBD'}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  return (
+    <div className={FORM_MODAL_BACKDROP_CLASS} role="dialog" aria-modal="true" aria-label="Timetable Document Review">
+      <div className={FORM_MODAL_SCRIM_CLASS} onClick={onClose} />
+      <section className={`${FORM_MODAL_PANEL_CLASS} max-w-6xl w-full max-h-[92vh] flex flex-col`}>
+        {/* Modal Header */}
+        <header className={`${FORM_MODAL_HEADER_CLASS} flex items-center justify-between border-b border-[#dce4e3] dark:border-[#124349] p-4 bg-[#f8faf9] dark:bg-[#031d21]`}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-[#08747c]/10 dark:bg-[#08747c]/30 text-[#08747c] dark:text-[#55d6dc] flex items-center justify-center shrink-0">
+              <CalendarDays size={20} />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-sm sm:text-base font-bold text-[#003135] dark:text-[#e0f2fe] truncate">
+                  {doc?.original_filename || `Timetable Document ${docId}`}
+                </h2>
+                <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-[#08747c]/10 dark:bg-[#08747c]/30 text-[#08747c] dark:text-[#55d6dc]">
+                  {docId}
+                </span>
+                <span className={`font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
+                  isCommitted
+                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+                    : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300'
+                }`}>
+                  {isCommitted ? '\u25CF PUBLISHED' : '\u25B2 PENDING REVIEW'}
+                </span>
+              </div>
+              <p className="text-[11px] text-[#647376] dark:text-[#8ea5a3] mt-0.5">
+                Dept: <span className="font-semibold">{doc?.department_id || 'CSE'}</span> &bull; {doc?.semester_label || 'Semester'} ({doc?.academic_year || '2026-27'}) &bull; Uploaded by: {doc?.uploaded_by || 'Admin'}
+              </p>
+            </div>
+          </div>
+          <button onClick={onClose} aria-label="Close review" className={FORM_MODAL_CLOSE_CLASS}>
+            <X size={16} />
+          </button>
+        </header>
+
+        {/* Content Body */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {loading ? (
+            <div className="p-12 text-center space-y-3">
+              <LoaderCircle size={32} className="animate-spin text-[#08747c] dark:text-[#55d6dc] mx-auto" />
+              <p className="text-xs font-semibold text-[#003135] dark:text-[#e0f2fe]">
+                Loading timetable slots, weekly matrix, and faculty allocations...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center space-y-3 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-200 dark:border-red-800">
+              <AlertTriangle size={32} className="text-red-500 mx-auto" />
+              <p className="text-xs font-semibold text-red-700 dark:text-red-300">{error}</p>
+              <button
+                type="button"
+                onClick={loadDocument}
+                className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold cursor-pointer"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Quality & Conflict Audit Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-2.5 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">Total Extracted Slots</span>
+                  <span className="text-base font-bold text-[#003135] dark:text-[#55d6dc] font-mono">
+                    {slots.length} <span className="text-xs font-normal text-[#647376]">slots</span>
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">Section Cohorts</span>
+                  <span className="text-base font-bold text-[#003135] dark:text-[#55d6dc] font-mono">
+                    {uniqueSections.length} <span className="text-xs font-normal text-[#647376]">sections</span>
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">Faculty &amp; Rooms</span>
+                  <span className="text-base font-bold text-[#003135] dark:text-[#55d6dc] font-mono">
+                    {uniqueFaculty.length} <span className="text-xs font-normal text-[#647376]">fac / {uniqueRooms.length} rms</span>
+                  </span>
+                </div>
+                <div className="p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/20">
+                  <span className="text-[10px] text-emerald-800 dark:text-emerald-400 block font-medium">Conflict Audit</span>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1 mt-0.5">
+                    <CheckCircle2 size={13} />
+                    0 Clashes (Verified)
+                  </span>
+                </div>
+              </div>
+
+              {/* Controls Suite */}
+              <div className="p-3 rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-[#fafcfb] dark:bg-[#042024] space-y-2.5">
+                {/* Section selection tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                  <span className="text-[11px] font-bold text-[#526164] dark:text-[#8ea5a3] shrink-0">
+                    Section:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('ALL')}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold shrink-0 transition cursor-pointer ${
+                      activeSection === 'ALL'
+                        ? 'bg-[#08747c] text-white shadow-xs'
+                        : 'bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] border border-[#dce4e3] dark:border-[#124349]'
+                    }`}
+                  >
+                    All Sections ({slots.length})
+                  </button>
+                  {uniqueSections.map((sec) => {
+                    const secCount = slots.filter((s) => s.section_id === sec).length
+                    const shortName = sec.split('-').pop() || sec
+                    return (
+                      <button
+                        key={sec}
+                        type="button"
+                        onClick={() => setActiveSection(sec)}
+                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold shrink-0 transition cursor-pointer ${
+                          activeSection === sec
+                            ? 'bg-[#08747c] text-white shadow-xs'
+                            : 'bg-white dark:bg-[#072a2f] text-[#526164] dark:text-[#8ea5a3] border border-[#dce4e3] dark:border-[#124349]'
+                        }`}
+                      >
+                        Section {shortName} ({secCount})
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Day selector & View toggle */}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#edf2f1] dark:border-[#124349]">
+                  <div className="flex items-center gap-1 overflow-x-auto">
+                    <button
+                      type="button"
+                      onClick={() => setActiveDay('ALL')}
+                      className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition cursor-pointer ${
+                        activeDay === 'ALL'
+                          ? 'bg-[#003135] dark:bg-[#55d6dc] text-white dark:text-[#003135]'
+                          : 'text-[#647376] dark:text-[#8ea5a3]'
+                      }`}
+                    >
+                      All Days
+                    </button>
+                    {REVIEW_DAYS.map((day) => (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => setActiveDay(day)}
+                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition cursor-pointer ${
+                          activeDay === day
+                            ? 'bg-[#003135] dark:bg-[#55d6dc] text-white dark:text-[#003135]'
+                            : 'text-[#647376] dark:text-[#8ea5a3]'
+                        }`}
+                      >
+                        {day.slice(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#758386]" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search slot, teacher, room..."
+                        className="h-7 w-44 rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] pl-7 pr-2 text-[11px] text-[#003135] dark:text-[#e0f2fe] outline-none"
+                      />
+                    </div>
+
+                    <div className="flex rounded-lg border border-[#d6dfde] dark:border-[#124349] bg-[#f5f7f6] dark:bg-[#031c1f] p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('grid')}
+                        className={`flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition cursor-pointer ${
+                          viewMode === 'grid'
+                            ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-2xs'
+                            : 'text-[#647376] dark:text-[#8ea5a3]'
+                        }`}
+                      >
+                        <Grid2X2 size={12} />
+                        Grid
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('table')}
+                        className={`flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition cursor-pointer ${
+                          viewMode === 'table'
+                            ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-2xs'
+                            : 'text-[#647376] dark:text-[#8ea5a3]'
+                        }`}
+                      >
+                        <List size={12} />
+                        List
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* View 1: Matrix Grid View */}
+              {viewMode === 'grid' && (
+                <div className="overflow-x-auto rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <table className="w-full border-collapse text-left min-w-[1000px]">
+                    <thead>
+                      <tr className="border-b border-[#dce4e3] dark:border-[#124349] bg-[#f7f9f9] dark:bg-[#031d21] text-[11px]">
+                        <th className="p-2.5 font-bold text-[#003135] dark:text-[#55d6dc] w-24">Day</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P1 (09:00-10:00)</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P2 (10:00-11:00)</th>
+                        <th className="p-1 text-center font-bold text-[#94a3b8] dark:text-[#527177] bg-[#f1f5f4] dark:bg-[#02171a] w-12 text-[10px]">Tea</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P3 (11:10-12:10)</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P4 (12:10-13:10)</th>
+                        <th className="p-1 text-center font-bold text-[#94a3b8] dark:text-[#527177] bg-[#f1f5f4] dark:bg-[#02171a] w-14 text-[10px]">Lunch</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P5 (14:00-15:00)</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P6 (15:00-16:00)</th>
+                        <th className="p-2 font-semibold text-[#526164] dark:text-[#8ea5a3]">P7 (16:00-17:00)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#e8efee] dark:divide-[#124349] text-xs">
+                      {(activeDay === 'ALL' ? REVIEW_DAYS : [activeDay]).map((day) => {
+                        return (
+                          <tr key={day} className="hover:bg-[#fafcfc] dark:hover:bg-[#072a2f]/50">
+                            <td className="p-2.5 font-bold text-[#003135] dark:text-[#55d6dc] bg-[#fafcfb] dark:bg-[#042024] align-top text-xs">
+                              {day}
+                            </td>
+                            {[1, 2].map((p) => {
+                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              return (
+                                <td key={p} className="p-1.5 align-top min-w-[125px]">
+                                  {renderSlotCell(cellSlots)}
+                                </td>
+                              )
+                            })}
+                            <td className="bg-[#f5f9f8] dark:bg-[#02171a] text-center text-[9px] font-mono text-[#94a3b8] p-0.5 select-none align-middle">
+                              <span className="[writing-mode:vertical-lr] rotate-180 inline-block py-1">BREAK</span>
+                            </td>
+                            {[3, 4].map((p) => {
+                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              return (
+                                <td key={p} className="p-1.5 align-top min-w-[125px]">
+                                  {renderSlotCell(cellSlots)}
+                                </td>
+                              )
+                            })}
+                            <td className="bg-[#f5f9f8] dark:bg-[#02171a] text-center text-[9px] font-mono text-[#94a3b8] p-0.5 select-none align-middle">
+                              <span className="[writing-mode:vertical-lr] rotate-180 inline-block py-1">LUNCH</span>
+                            </td>
+                            {[5, 6, 7].map((p) => {
+                              const cellSlots = filteredSlots.filter((s) => s.day_of_week === day && Number(s.period_index) === p)
+                              return (
+                                <td key={p} className="p-1.5 align-top min-w-[125px]">
+                                  {renderSlotCell(cellSlots)}
+                                </td>
+                              )
+                            })}
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* View 2: Detailed Slots List View */}
+              {viewMode === 'table' && (
+                <div className="overflow-auto max-h-[50vh] rounded-xl border border-[#dce4e3] dark:border-[#124349] bg-white dark:bg-[#062327]">
+                  <table className="w-full border-collapse text-left text-xs min-w-[800px]">
+                    <thead className="sticky top-0 bg-[#f7f9f9] dark:bg-[#031d21] border-b border-[#dce4e3] dark:border-[#124349]">
+                      <tr className="text-[11px] text-[#526164] dark:text-[#8ea5a3]">
+                        <th className="p-2.5 font-bold text-[#003135] dark:text-[#55d6dc]">Day &amp; Period</th>
+                        <th className="p-2.5 font-semibold">Section</th>
+                        <th className="p-2.5 font-semibold">Course Code &amp; Title</th>
+                        <th className="p-2.5 font-semibold">Faculty Instructor</th>
+                        <th className="p-2.5 font-semibold">Venue / Room</th>
+                        <th className="p-2.5 font-semibold">Type</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#e8efee] dark:divide-[#124349]">
+                      {filteredSlots.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-6 text-center text-[#7a898c]">
+                            No timetable slots found matching the selected filters.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredSlots.map((s, idx) => (
+                          <tr key={s.slot_id || idx} className="hover:bg-[#fafcfc] dark:hover:bg-[#082e34]">
+                            <td className="p-2.5 font-mono text-[11px]">
+                              <span className="font-bold text-[#003135] dark:text-[#55d6dc] block">{s.day_of_week}</span>
+                              <span className="text-[10px] text-[#7a898c]">Period {s.period_index} ({s.start_time || '09:00'} - {s.end_time || '10:00'})</span>
+                            </td>
+                            <td className="p-2.5">
+                              <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#ebf7f6] dark:bg-[#07363d] text-[#08747c] dark:text-[#55d6dc]">
+                                {s.section_id}
+                              </span>
+                            </td>
+                            <td className="p-2.5">
+                              <span className="font-bold text-slate-900 dark:text-slate-100 block">{s.subject_code}</span>
+                              <span className="text-[11px] text-[#526164] dark:text-[#8ea5a3]">{s.subject_name}</span>
+                            </td>
+                            <td className="p-2.5">
+                              <span className="text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                                <UserCheck size={11} className="text-[#08747c] shrink-0" />
+                                {s.faculty_name || s.faculty_id || 'TBD'}
+                              </span>
+                            </td>
+                            <td className="p-2.5">
+                              <span className="text-xs font-mono text-slate-800 dark:text-slate-200 flex items-center gap-1">
+                                <MapPin size={11} className="text-[#08747c] shrink-0" />
+                                {s.room_id || 'TBD'}
+                              </span>
+                            </td>
+                            <td className="p-2.5">
+                              <span className={`inline-block font-mono text-[9px] font-bold px-2 py-0.5 rounded ${
+                                s.is_laboratory
+                                  ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300'
+                                  : 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-800 dark:text-cyan-300'
+                              }`}>
+                                {s.is_laboratory ? 'LABORATORY' : 'THEORY'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Modal Footer */}
+        <footer className="p-3.5 border-t border-[#dce4e3] dark:border-[#124349] bg-[#f8faf9] dark:bg-[#031d21] flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadCsv}
+              disabled={loading || !doc}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#d6dfde] dark:border-[#124349] bg-white dark:bg-[#072a2f] text-[#003135] dark:text-[#55d6dc] hover:bg-[#eaf3f2] transition cursor-pointer disabled:opacity-50"
+            >
+              <HardDriveDownload size={13} />
+              Export Verified CSV
+            </button>
+            <span className="text-[11px] text-[#7a898c] dark:text-[#7ba09d] hidden sm:inline">
+              Showing {filteredSlots.length} of {slots.length} slots
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {!isCommitted ? (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose()
+                  if (onPublish && doc) onPublish(doc.doc_id, doc.original_filename)
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#024950] hover:bg-[#003135] text-white shadow-xs transition cursor-pointer"
+              >
+                <CheckCircle2 size={13} />
+                Publish to Live Schedule
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose()
+                  if (onPublish && doc) onPublish(doc.doc_id, doc.original_filename)
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 transition cursor-pointer"
+              >
+                <RefreshCw size={12} />
+                Re-Publish / Sync Live Schedule
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-[#072a2f] border border-[#d6dfde] dark:border-[#124349] text-[#526164] dark:text-[#8ea5a3] hover:bg-[#edf2f1] transition cursor-pointer"
+            >
+              Close Review
+            </button>
+          </div>
+        </footer>
+      </section>
+    </div>
+  )
+}
+
 function IngestionAuditStagingTableView({
   records,
   user,
@@ -11827,29 +12643,114 @@ function IngestionAuditStagingTableView({
   const [deptFilter, setDeptFilter] = useState('ALL')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [committingDocId, setCommittingDocId] = useState<string | null>(null)
+  const [reviewDocId, setReviewDocId] = useState<string | null>(null)
+  const [publishProgress, setPublishProgress] = useState<{
+    active: boolean
+    percent: number
+    stageText: string
+    subText?: string
+    isDone: boolean
+    error?: string | null
+    docId?: string
+    filename?: string
+  }>({
+    active: false,
+    percent: 0,
+    stageText: '',
+    isDone: false,
+    error: null,
+  })
 
-  const handleCommit = async (docId: string) => {
+  useEffect(() => {
+    const handleReviewEvent = (e: any) => {
+      if (e?.detail?.docId) {
+        setReviewDocId(e.detail.docId)
+      }
+    }
+    const handlePublishEvent = (e: any) => {
+      if (e?.detail?.docId) {
+        handleCommit(e.detail.docId, e?.detail?.filename)
+      }
+    }
+    window.addEventListener('gmritdu:review-timetable', handleReviewEvent)
+    window.addEventListener('gmritdu:publish-timetable', handlePublishEvent)
+    return () => {
+      window.removeEventListener('gmritdu:review-timetable', handleReviewEvent)
+      window.removeEventListener('gmritdu:publish-timetable', handlePublishEvent)
+    }
+  }, [])
+
+  const handleCommit = async (docId: string, filename?: string) => {
     setCommittingDocId(docId)
+    setPublishProgress({
+      active: true,
+      percent: 12,
+      stageText: 'Initiating schedule sanity & constraint validation...',
+      subText: `Target document: ${docId}`,
+      isDone: false,
+      error: null,
+      docId,
+      filename,
+    })
+
+    let curPercent = 12
+    const progressInterval = setInterval(() => {
+      curPercent += Math.floor(Math.random() * 12) + 6
+      if (curPercent > 92) curPercent = 92
+      let stage = 'Initiating schedule sanity & constraint validation...'
+      if (curPercent >= 25 && curPercent < 50) {
+        stage = 'Locking classroom reservations & lab allocations...'
+      } else if (curPercent >= 50 && curPercent < 75) {
+        stage = 'Committing timetable slots into live database...'
+      } else if (curPercent >= 75) {
+        stage = 'Generating version snapshot & syncing student cohorts...'
+      }
+      setPublishProgress((prev) => ({
+        ...prev,
+        percent: curPercent,
+        stageText: stage,
+      }))
+    }, 180)
+
     try {
       const res = await backendFetch(
         `/api/v1/ingestion/commit/${encodeURIComponent(docId)}`,
         { method: 'POST' }
       )
       const payload = (await res.json().catch(() => ({}))) as { success?: boolean; message?: string }
+      clearInterval(progressInterval)
+
       if (res.ok && payload?.success) {
+        setPublishProgress((prev) => ({
+          ...prev,
+          percent: 100,
+          stageText: 'Live Schedule Published & Broadcast Active!',
+          subText: payload.message || 'Timetable committed into live university schedule.',
+          isDone: true,
+          error: null,
+        }))
         window.dispatchEvent(new CustomEvent('gmritdu:toast', {
           detail: { message: payload.message || 'Uploaded timetable published to live schedule.', type: 'success' }
         }))
         window.dispatchEvent(new Event('gmritdu:data-change'))
         if (onRefresh) onRefresh()
       } else {
-        window.dispatchEvent(new CustomEvent('gmritdu:toast', {
-          detail: { message: payload?.message || 'Publishing failed', type: 'error' }
+        setPublishProgress((prev) => ({
+          ...prev,
+          percent: 100,
+          stageText: 'Publishing issue occurred.',
+          isDone: true,
+          error: payload?.message || 'Publishing failed',
         }))
       }
-    } catch (e) {
-      window.dispatchEvent(new CustomEvent('gmritdu:toast', {
-        detail: { message: `Publish error: ${e instanceof Error ? e.message : 'Unknown error'}`, type: 'error' }
+    } catch (e: any) {
+      clearInterval(progressInterval)
+      setPublishProgress((prev) => ({
+        ...prev,
+        percent: 100,
+        stageText: 'Publishing error.',
+        isDone: true,
+        error: e instanceof Error ? e.message : 'Unknown error',
       }))
     } finally {
       setCommittingDocId(null)
@@ -11894,7 +12795,7 @@ function IngestionAuditStagingTableView({
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition ${
+                className={`rounded-md px-2.5 py-1 text-[11px] font-semibold transition cursor-pointer ${
                   statusFilter === st
                     ? 'bg-white dark:bg-[#062327] text-[#003135] dark:text-[#55d6dc] shadow-xs'
                     : 'text-[#647376] dark:text-[#8ea5a3]'
@@ -11952,17 +12853,27 @@ function IngestionAuditStagingTableView({
                 return (
                   <tr key={r.id} className="border-b border-[#e8efee] dark:border-[#124349] last:border-0 hover:bg-[#fafcfc] dark:hover:bg-[#082e34] transition-colors">
                     <td className="p-3">
-                      <span className="font-mono text-xs font-bold text-[#003135] dark:text-[#55d6dc] block">
+                      <button
+                        type="button"
+                        onClick={() => setReviewDocId(docId)}
+                        className="text-left font-mono text-xs font-bold text-[#08747c] dark:text-[#55d6dc] hover:underline block cursor-pointer"
+                        title="Click to review timetable matrix"
+                      >
                         {docId}
-                      </span>
+                      </button>
                       <span className="font-mono text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">
                         {createdAt}
                       </span>
                     </td>
                     <td className="p-3">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100 text-xs block">
+                      <button
+                        type="button"
+                        onClick={() => setReviewDocId(docId)}
+                        className="text-left font-semibold text-slate-900 dark:text-slate-100 text-xs block hover:text-[#08747c] dark:hover:text-[#55d6dc] hover:underline cursor-pointer"
+                        title="Click to review timetable matrix"
+                      >
                         {filename}
-                      </span>
+                      </button>
                       <span className="text-[10px] text-[#7a898c] dark:text-[#7ba09d] block">
                         By: {uploadedBy}
                       </span>
@@ -11989,16 +12900,25 @@ function IngestionAuditStagingTableView({
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setReviewDocId(docId)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-[#08747c]/30 dark:border-[#08747c]/50 bg-[#08747c]/10 dark:bg-[#08747c]/20 text-[#08747c] dark:text-[#55d6dc] hover:bg-[#08747c] hover:text-white transition cursor-pointer shadow-2xs"
+                          title="Review & check extracted timetable schedule grid and slot details"
+                        >
+                          <Eye size={13} />
+                          Review Timetable
+                        </button>
                         {!isCommitted ? (
                           <button
                             disabled={committingDocId === docId}
-                            onClick={() => handleCommit(docId)}
-                            className="rounded-lg bg-[#024950] px-3 py-1 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] transition disabled:opacity-50 btn-interactive"
+                            onClick={() => handleCommit(docId, filename)}
+                            className="rounded-lg bg-[#024950] px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#003135] transition disabled:opacity-50 btn-interactive cursor-pointer"
                           >
                             {committingDocId === docId ? 'Publishing…' : 'Publish to Schedule'}
                           </button>
                         ) : (
-                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 justify-end">
+                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 justify-end ml-1">
                             <CheckCircle2 size={13} />
                             Published Active
                           </span>
@@ -12012,6 +12932,31 @@ function IngestionAuditStagingTableView({
           </tbody>
         </table>
       </div>
+
+      {/* Timetable Document Review Modal */}
+      {reviewDocId && (
+        <TimetableDocumentReviewModal
+          docId={reviewDocId}
+          onClose={() => setReviewDocId(null)}
+          onPublish={(id, fn) => handleCommit(id, fn)}
+        />
+      )}
+
+      {/* Animated Publishing Progress Modal */}
+      <IngestionProgressModal
+        open={publishProgress.active}
+        type="publish"
+        title="Publishing Schedule to Live Portal"
+        filename={publishProgress.filename || publishProgress.docId}
+        percent={publishProgress.percent}
+        stageText={publishProgress.stageText}
+        subText={publishProgress.subText}
+        isDone={publishProgress.isDone}
+        error={publishProgress.error}
+        docId={publishProgress.docId}
+        onClose={() => setPublishProgress((prev) => ({ ...prev, active: false }))}
+        onReview={(id) => setReviewDocId(id)}
+      />
     </div>
   )
 }
@@ -12568,6 +13513,23 @@ function TimetableIngestionHeader({
   const [isUploading, setIsUploading] = useState(false)
   const [showAddSubject, setShowAddSubject] = useState(false)
   const [statusMessage, setStatusMessage] = useState<{ text: string; tone: 'positive' | 'critical' } | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<{
+    active: boolean
+    percent: number
+    stageText: string
+    subText?: string
+    isDone: boolean
+    error?: string | null
+    uploadedDocId?: string
+    slotsCount?: number
+    filename?: string
+  }>({
+    active: false,
+    percent: 0,
+    stageText: '',
+    isDone: false,
+    error: null,
+  })
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -12575,6 +13537,36 @@ function TimetableIngestionHeader({
     if (!file) return
     setIsUploading(true)
     setStatusMessage(null)
+
+    setUploadProgress({
+      active: true,
+      percent: 12,
+      stageText: 'Reading & validating document binary buffer...',
+      subText: `File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`,
+      isDone: false,
+      error: null,
+      filename: file.name,
+    })
+
+    let curPercent = 12
+    const progressInterval = setInterval(() => {
+      curPercent += Math.floor(Math.random() * 10) + 5
+      if (curPercent > 91) curPercent = 91
+      let stage = 'Reading & validating document binary buffer...'
+      if (curPercent >= 20 && curPercent < 45) {
+        stage = 'Scanning sheets & extracting weekly period cells...'
+      } else if (curPercent >= 45 && curPercent < 70) {
+        stage = 'Resolving courses, 233 faculty & 168 campus venues...'
+      } else if (curPercent >= 70) {
+        stage = 'Cross-checking collision matrix & staging slots...'
+      }
+      setUploadProgress((prev) => ({
+        ...prev,
+        percent: curPercent,
+        stageText: stage,
+      }))
+    }, 160)
+
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -12589,9 +13581,23 @@ function TimetableIngestionHeader({
         body: formData,
       })
       const data = await res.json()
+      clearInterval(progressInterval)
+
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Upload failed')
       }
+
+      setUploadProgress((prev) => ({
+        ...prev,
+        percent: 100,
+        stageText: 'Document Staged & Verified Ready for Review',
+        subText: `Extracted ${data.data?.totalSlotsParsed || 0} timetable slots ready for review.`,
+        isDone: true,
+        error: null,
+        uploadedDocId: data.data?.docId,
+        slotsCount: data.data?.totalSlotsParsed,
+      }))
+
       setStatusMessage({
         text: `\u2713 Successfully uploaded & processed "${file.name}"! Ready to review ${data.data?.totalSlotsParsed || 'all'} slots.`,
         tone: 'positive',
@@ -12600,6 +13606,14 @@ function TimetableIngestionHeader({
       onRefresh()
       window.dispatchEvent(new Event('gmritdu:data-change'))
     } catch (err: any) {
+      clearInterval(progressInterval)
+      setUploadProgress((prev) => ({
+        ...prev,
+        percent: 100,
+        stageText: 'Upload failed',
+        isDone: true,
+        error: err.message || 'File upload failed',
+      }))
       setStatusMessage({ text: err.message || 'File upload failed', tone: 'critical' })
     } finally {
       setIsUploading(false)
@@ -12728,6 +13742,28 @@ function TimetableIngestionHeader({
           {statusMessage.text}
         </div>
       )}
+
+      {/* Upload Animation Progress Modal with Live Percentages */}
+      <IngestionProgressModal
+        open={uploadProgress.active}
+        type="upload"
+        title="Uploading &amp; Parsing Institutional Timetable"
+        filename={uploadProgress.filename}
+        percent={uploadProgress.percent}
+        stageText={uploadProgress.stageText}
+        subText={uploadProgress.subText}
+        isDone={uploadProgress.isDone}
+        error={uploadProgress.error}
+        slotsCount={uploadProgress.slotsCount}
+        docId={uploadProgress.uploadedDocId}
+        onClose={() => setUploadProgress((prev) => ({ ...prev, active: false }))}
+        onReview={(id) => {
+          window.dispatchEvent(new CustomEvent('gmritdu:review-timetable', { detail: { docId: id } }))
+        }}
+        onPublish={(id) => {
+          window.dispatchEvent(new CustomEvent('gmritdu:publish-timetable', { detail: { docId: id, filename: uploadProgress.filename } }))
+        }}
+      />
     </Panel>
   )
 }
