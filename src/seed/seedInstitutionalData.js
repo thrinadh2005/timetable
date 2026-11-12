@@ -133,11 +133,14 @@ async function seedInstitutionalData(tx) {
 
   console.log('[Institutional Seed] Loading official verified GMRIT Deemed to be University datasets...');
 
-  // 1. Password Hashes (generalized initial passwords that can be changed later)
+  // 1. Password Hashes (generalized initial passwords configurable via environment variables)
   const salt = bcrypt.genSaltSync(10);
-  const adminPasswordHash = bcrypt.hashSync('Admin@GMRIT2026', salt);
-  const facultyPasswordHash = bcrypt.hashSync('Faculty@GMRIT2026', salt);
-  const studentPasswordHash = bcrypt.hashSync('Student@GMRIT2026', salt);
+  const adminPassword = process.env.INITIAL_ADMIN_PASSWORD || 'Admin@GMRIT2026';
+  const facultyPassword = process.env.INITIAL_FACULTY_PASSWORD || 'Faculty@GMRIT2026';
+  const studentPassword = process.env.INITIAL_STUDENT_PASSWORD || 'Student@GMRIT2026';
+  const adminPasswordHash = bcrypt.hashSync(adminPassword, salt);
+  const facultyPasswordHash = bcrypt.hashSync(facultyPassword, salt);
+  const studentPasswordHash = bcrypt.hashSync(studentPassword, salt);
 
   // 2. Schools Registry (4 verified Schools)
   const schools = [

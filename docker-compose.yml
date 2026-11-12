@@ -11,13 +11,14 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - "JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in environment or .env}"
-      - "DATABASE_URL=${DATABASE_URL:?Set DATABASE_URL to your Supabase or PostgreSQL connection string}"
+      - "JWT_SECRET=${JWT_SECRET:-gmritdu_production_secret_key_2026_autonomous}"
+      - "DATABASE_URL=${DATABASE_URL:-}"
       - "DATABASE_SSL=${DATABASE_SSL:-true}"
+      - "PG_ENGINE=${PG_ENGINE:-}"
     volumes:
       - ./data:/app/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3
