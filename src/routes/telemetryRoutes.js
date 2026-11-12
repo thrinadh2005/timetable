@@ -16,10 +16,24 @@ router.get('/health', (req, res) => {
   });
 });
 
-// Full Telemetry Dashboard API (Super Admin / Dean only)
-router.get('/', requireAuth, requireRole(['SUPER_ADMIN', 'DEAN']), async (req, res) => {
+// Full Telemetry Dashboard API (Super Admin / Dean / HOD full access; safe metrics for other authenticated roles)
+router.get('/', requireAuth, async (req, res) => {
   try {
+    const isGovernor = ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN'].includes(req.user.role);
     const data = await getTelemetryData();
+    if (!isGovernor) {
+      return res.json({
+        success: true,
+        timestamp: new Date().toISOString(),
+        data: {
+          systemSnapshot: data.systemSnapshot,
+          dbStats: data.dbStats,
+          recentRequests: [],
+          securityEvents: [],
+          auditLogs: []
+        }
+      });
+    }
     res.json({
       success: true,
       timestamp: new Date().toISOString(),

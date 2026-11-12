@@ -172,12 +172,8 @@ export function getAcademicEndpoint(
         ...(school ? { school } : { department: dept }),
       })}`
     case 'bookings':
-      return '/api/v1/laboratories/all-bookings'
     case 'approvals':
-      // Super Admin & Dean receive school/global approval queues; HOD receives department requests across all statuses.
-      return user.role === 'SUPER_ADMIN' || user.role === 'DEAN'
-        ? '/api/v1/laboratories/pending-requests?status=ALL'
-        : `/api/v1/laboratories/pending-requests${query({ department: dept, status: 'ALL' })}`
+      return '/api/v1/laboratories/all-bookings'
     case 'people':
       return `/api/v1/staff${query({ school })}`
     case 'substitutions':

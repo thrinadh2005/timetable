@@ -489,7 +489,7 @@ const navCatalog: Record<AcademicScreen, NavItem> = {
   labs: { id: 'labs', label: 'Laboratories & Practicals', icon: FlaskConical },
   availability: { id: 'availability', label: 'Facility Availability', icon: Building2 },
   bookings: { id: 'bookings', label: 'Laboratory Bookings', icon: FileClock },
-  approvals: { id: 'approvals', label: 'HOD Approvals', icon: ClipboardCheck },
+  approvals: { id: 'bookings', label: 'Laboratory Bookings', icon: FileClock },
   people: { id: 'people', label: 'Faculty Directory & Workload', icon: Users },
   substitutions: { id: 'substitutions', label: 'Leave & Substitutions', icon: UserCheck },
   recommendations: { id: 'recommendations', label: 'Schedule Optimization', icon: Sliders },
@@ -506,7 +506,7 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'calendar',
     'labs',
     'availability',
-    'approvals',
+    'bookings',
     'people',
     'substitutions',
     'recommendations',
@@ -521,7 +521,6 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'labs',
     'availability',
     'bookings',
-    'approvals',
     'people',
     'substitutions',
     'users',
@@ -536,11 +535,11 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'labs',
     'availability',
     'bookings',
-    'approvals',
     'people',
     'substitutions',
     'users',
     'feedback',
+    'telemetry',
   ],
   COORDINATOR: [
     'overview',
@@ -549,6 +548,7 @@ const roleNavigation: Record<BackendRole, AcademicScreen[]> = {
     'calendar',
     'labs',
     'availability',
+    'bookings',
     'people',
     'substitutions',
     'users',
@@ -630,16 +630,16 @@ const screenCopy: Record<
     empty: 'No facility records match your search criteria.',
   },
   bookings: {
-    title: 'Laboratory Booking Requests',
-    subtitle: 'Multi-period practical workshops, exams, guest sessions, and maintenance bookings',
+    title: 'Laboratory Bookings & HOD Approvals',
+    subtitle: 'Multi-period practical workshops, exams, guest sessions, and real-time authorization queue',
     action: 'New Lab Booking',
     empty: 'No active or historical laboratory bookings found for your profile.',
   },
   approvals: {
-    title: 'Administrative Approval Center',
-    subtitle: 'Pending laboratory booking requests and faculty substitutions awaiting HOD decisions',
-    action: 'Process Queue',
-    empty: 'All pending requests have been reviewed and approved.',
+    title: 'Laboratory Bookings & HOD Approvals',
+    subtitle: 'Multi-period practical workshops, exams, guest sessions, and real-time authorization queue',
+    action: 'New Lab Booking',
+    empty: 'No active or historical laboratory bookings found for your profile.',
   },
   people: {
     title: 'Faculty Workload & Assignments',
@@ -13139,7 +13139,7 @@ function ContinuousActivityLogMonitor() {
             )}
           </div>
           <h3 className="mt-1.5 text-sm font-bold text-[#003135] dark:text-[#f4f9fb]">
-            Super Admin Continuous Activity &amp; Security Log Stream
+            Continuous Institutional Activity &amp; Security Telemetry Stream
           </h3>
           <p className="text-xs text-[#647376] dark:text-[#a6bcc9]">
             Automatic live monitoring across governance changes, sign-in security notices, and institutional workspace actions.
@@ -13495,7 +13495,7 @@ function SystemHealthAuditTableView({
           </tbody>
         </table>
       </div>
-      {user?.role === 'SUPER_ADMIN' && <ContinuousActivityLogMonitor />}
+      {Boolean(user?.role && ['SUPER_ADMIN', 'DEAN', 'DEPT_ADMIN'].includes(user.role)) && <ContinuousActivityLogMonitor />}
     </div>
   )
 }
@@ -15037,7 +15037,7 @@ function DeptAdminOverviewDeck({
             {totalPendingRequests > 0 && (
               <button
                 type="button"
-                onClick={() => onNavigate('approvals')}
+                onClick={() => onNavigate('bookings')}
                 className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-[#003135] hover:bg-amber-300 transition cursor-pointer"
               >
                 {totalPendingRequests} Pending {totalPendingRequests === 1 ? 'Request' : 'Requests'} →
@@ -15397,7 +15397,7 @@ function DeptAdminOverviewDeck({
                 </h3>
                 <button
                   type="button"
-                  onClick={() => onNavigate('approvals')}
+                  onClick={() => onNavigate('bookings')}
                   className="text-[11px] text-[#08747c] dark:text-[#55d6dc] font-semibold hover:underline cursor-pointer"
                 >
                   Approvals ({pendingBookings.length}) →
@@ -15465,7 +15465,7 @@ function DeptAdminOverviewDeck({
                 </div>
                 <button
                   type="button"
-                  onClick={() => onNavigate('approvals')}
+                  onClick={() => onNavigate('bookings')}
                   className="font-bold text-[#08747c] dark:text-[#55d6dc] hover:underline cursor-pointer"
                 >
                   HOD Requests →
@@ -16357,10 +16357,10 @@ function SuperAdminOverviewDeck({
               </div>
               <button
                 type="button"
-                onClick={() => onNavigate(pendingBookingsCount > 0 ? 'approvals' : 'users')}
+                onClick={() => onNavigate(pendingBookingsCount > 0 ? 'bookings' : 'users')}
                 className="px-2.5 py-1 rounded-lg border border-[#d6dfde] dark:border-[#175259] bg-white dark:bg-[#072a2f] text-[11px] font-bold text-[#003135] dark:text-[#55d6dc] hover:bg-[#edf2f1] cursor-pointer"
               >
-                {pendingBookingsCount > 0 ? 'Approvals' : 'Users'}
+                {pendingBookingsCount > 0 ? 'Bookings' : 'Users'}
               </button>
             </div>
 
@@ -16663,8 +16663,8 @@ function ResourceScreen({
           clockState={clockState}
           onInspectFaculty={(id, name) => setInspectedFaculty({ id, name })}
         />
-      ) : screen === 'approvals' ? (
-        <HODApprovalsCenterView
+      ) : screen === 'bookings' || screen === 'approvals' ? (
+        <LabBookingsTableView
           records={normalized?.data ?? []}
           user={user}
           onRefresh={() => resource.retry()}
@@ -16684,12 +16684,6 @@ function ResourceScreen({
             onNavigate('availability')
           }}
           onNavigate={onNavigate}
-        />
-      ) : screen === 'bookings' ? (
-        <LabBookingsTableView
-          records={normalized?.data ?? []}
-          user={user}
-          onRefresh={() => resource.retry()}
         />
       ) : screen === 'calendar' ? (
         <AcademicCalendarTableView
@@ -17524,7 +17518,7 @@ const pathToScreen: Record<string, AcademicScreen | 'profile'> = {
   '/substitutions': 'substitutions',
   '/calendar': 'calendar',
   '/bookings': 'bookings',
-  '/approvals': 'approvals',
+  '/approvals': 'bookings',
   '/adjustments': 'recommendations',
   '/recommendations': 'recommendations',
   '/users': 'users',
@@ -17544,7 +17538,7 @@ const screenToPath: Record<string, string> = {
   substitutions: '/substitutions',
   calendar: '/calendar',
   bookings: '/bookings',
-  approvals: '/approvals',
+  approvals: '/bookings',
   recommendations: '/recommendations',
   users: '/users',
   feedback: '/feedback',
@@ -17753,7 +17747,8 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
   const allowedScreens = roleNavigation[user.role] || ['overview']
   const resolveAllowedScreen = (candidate: AcademicScreen | 'profile'): AcademicScreen | 'profile' => {
     if (candidate === 'profile') return 'profile'
-    const normalized = candidate === 'timetable' ? 'overview' : candidate
+    let normalized = candidate === 'timetable' ? 'overview' : candidate
+    if (normalized === 'approvals') normalized = 'bookings'
     return allowedScreens.includes(normalized) ? normalized : 'overview'
   }
 
@@ -17811,7 +17806,8 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
   }, [toast])
 
   const setActiveScreen = (screen: AcademicScreen | 'profile') => {
-    const s = screen === 'timetable' ? 'overview' : screen
+    let s = screen === 'timetable' ? 'overview' : screen
+    if (s === 'approvals') s = 'bookings'
     setActiveScreenState(s)
     if (typeof window !== 'undefined') {
       const targetPath = screenToPath[s] || '/overview'
@@ -17923,6 +17919,50 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
 
   const unreadNotices = noticesResource.data?.data || []
 
+  // Continuous Live Telemetry Heartbeat Streaming (polls every 5s across entire session)
+  const [telemetryHeartbeat, setTelemetryHeartbeat] = useState<{
+    healthy: boolean
+    uptimeSeconds?: number
+    memoryRssMb?: number
+    lastPing: Date
+  }>({
+    healthy: true,
+    lastPing: new Date(),
+  })
+
+  useEffect(() => {
+    let mounted = true
+    const checkTelemetry = async () => {
+      try {
+        const res = await backendFetch('/api/v1/telemetry/health')
+        const data = await res.json().catch(() => null)
+        if (res.ok && mounted) {
+          setTelemetryHeartbeat({
+            healthy: data?.status === 'HEALTHY',
+            uptimeSeconds: data?.uptimeSeconds,
+            memoryRssMb: data?.memoryRssMb,
+            lastPing: new Date(),
+          })
+        }
+      } catch {
+        if (mounted) {
+          setTelemetryHeartbeat((prev) => ({
+            ...prev,
+            healthy: false,
+            lastPing: new Date(),
+          }))
+        }
+      }
+    }
+
+    void checkTelemetry()
+    const timer = window.setInterval(checkTelemetry, 5000)
+    return () => {
+      mounted = false
+      window.clearInterval(timer)
+    }
+  }, [])
+
   useEffect(() => {
     setNow(new Date())
     const interval = window.setInterval(() => setNow(new Date()), 1000)
@@ -17960,7 +18000,7 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
       if (notice) {
         const hay = `${notice.title || ''} ${notice.message || ''}`.toLowerCase()
         let target: AcademicScreen | null = null
-        if (hay.includes('approv')) target = 'approvals'
+        if (hay.includes('approv')) target = 'bookings'
         else if (hay.includes('booking') || hay.includes('lab')) target = 'bookings'
         else if (hay.includes('substitut') || hay.includes('leave')) target = 'substitutions'
         else if (hay.includes('feedback') || hay.includes('ticket')) target = 'feedback'
@@ -18077,6 +18117,27 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
               </small>
             </div>
           </div>
+
+          {/* Continuous Live Telemetry Heartbeat Pill */}
+          <button
+            type="button"
+            onClick={() => allowedScreens.includes('telemetry') && handleNavigate('telemetry')}
+            className={`hidden md:inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition cursor-pointer ${
+              telemetryHeartbeat.healthy
+                ? 'border-emerald-200/90 dark:border-emerald-800/60 bg-emerald-50/90 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100/90 dark:hover:bg-emerald-900/40'
+                : 'border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300'
+            }`}
+            title={`Real-Time Telemetry Stream: ${telemetryHeartbeat.healthy ? 'Active & Healthy' : 'Connecting...'} (Last sync: ${telemetryHeartbeat.lastPing.toLocaleTimeString()})`}
+            aria-label="Real-time Institutional Telemetry"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${telemetryHeartbeat.healthy ? 'bg-emerald-400 opacity-75' : 'bg-amber-400'}`} />
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${telemetryHeartbeat.healthy ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+            </span>
+            <span className="font-mono text-[10px] tracking-wide uppercase font-bold hidden lg:inline">
+              Live Telemetry
+            </span>
+          </button>
 
           <button
             type="button"
@@ -18225,6 +18286,17 @@ function OperationsAppShell({ user }: { user: BackendUser }) {
             </button>
           ))}
         </nav>
+
+        {/* Live Telemetry Streaming Status Badge */}
+        <div className="my-2.5 px-3 py-2 rounded-xl bg-black/25 border border-white/10 flex items-center justify-between text-[11px]">
+          <span className="flex items-center gap-2 text-[#9bbec0]">
+            <span className={`h-2 w-2 rounded-full ${telemetryHeartbeat.healthy ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+            Live Telemetry
+          </span>
+          <span className="font-mono text-[10px] font-bold text-[#55d6dc]">
+            {telemetryHeartbeat.healthy ? 'STREAMING' : 'CONNECTING'}
+          </span>
+        </div>
 
         <div className="border-t border-white/10 pt-3 space-y-1">
           <button
