@@ -1,0 +1,29 @@
+# GMRITDU Autonomous Academic Timetable & Facilities Architecture
+# Canonical Domain: https://timetable.gmrit.edu.in
+# Institutional Host: GMR Institute of Technology Deemed to be University, Rajam, Andhra Pradesh, India
+
+User-agent: *
+Allow: /
+Allow: /overview
+Allow: /timetable
+Allow: /availability
+Allow: /labs
+Allow: /departments
+Allow: /people
+Allow: /substitutions
+Allow: /calendar
+Allow: /notices
+Allow: /bookings
+Allow: /feedback
+Allow: /sitemap.xml
+
+# Disallow sensitive internal mutation APIs and ingestion endpoints from indexing
+Disallow: /api/v1/auth/
+Disallow: /api/v1/audit/ledger/rebuild
+Disallow: /api/v1/timetables/ingest
+Disallow: /api/v1/staging/
+
+# Crawl delay and canonical sitemap reference
+Crawl-delay: 1
+Sitemap: https://timetable.gmrit.edu.in/sitemap.xml
+

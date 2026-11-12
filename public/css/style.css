@@ -1,0 +1,427 @@
+:root {
+  color-scheme: light;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f3f6f5;
+  color: #172326;
+  font-synthesis: none;
+}
+
+html.dark, body.dark {
+  color-scheme: dark;
+  background-color: #01191c;
+  color: #e2f0ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background-color: #f3f6f5;
+  -webkit-text-size-adjust: 100%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #f3f6f5;
+  color: #172326;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body.dark {
+  background-color: #01191c;
+  color: #e2f0ef;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid #08747c;
+  outline-offset: 2px;
+}
+
+/* Institutional Inverse Panels & Hero Banners */
+.panel-inverse,
+[data-tone="inverse"],
+section.panel-inverse {
+  background-color: #003135 !important;
+  color: #ffffff !important;
+  border-color: #084147 !important;
+}
+
+html.dark .panel-inverse,
+html.dark [data-tone="inverse"],
+body.dark .panel-inverse,
+body.dark [data-tone="inverse"] {
+  background-color: #002226 !important;
+  color: #ffffff !important;
+  border-color: #084147 !important;
+}
+
+/* Dark Mode Overrides for Panels and Cards */
+body.dark .bg-white {
+  background-color: #062327 !important;
+  color: #e2f0ef !important;
+}
+
+body.dark .bg-\[\#f3f6f5\],
+body.dark .bg-\[\#f5f7f6\],
+body.dark .bg-\[\#f7f9f9\],
+body.dark .bg-\[\#f8faf9\],
+body.dark .bg-\[\#f9fbfa\] {
+  background-color: #021a1d !important;
+  color: #e2f0ef !important;
+}
+
+body.dark .border-\[\#dce4e3\],
+body.dark .border-\[\#d6dfde\],
+body.dark .border-\[\#e0e7e6\],
+body.dark .border-\[\#e1e7e6\],
+body.dark .border-\[\#e3e9e8\],
+body.dark .border-\[\#e8efee\],
+body.dark .border-\[\#edf2f1\] {
+  border-color: #124349 !important;
+}
+
+body.dark .text-\[\#003135\] {
+  color: #55d6dc !important;
+}
+
+body.dark .text-\[\#172326\] {
+  color: #e2f0ef !important;
+}
+
+body.dark .text-\[\#526164\],
+body.dark .text-\[\#647376\],
+body.dark .text-\[\#718083\],
+body.dark .text-\[\#7a898c\],
+body.dark .text-\[\#8a9799\] {
+  color: #8da4a2 !important;
+}
+
+body.dark select,
+body.dark input,
+body.dark textarea {
+  background-color: #072a2f !important;
+  color: #e2f0ef !important;
+  border-color: #175259 !important;
+}
+
+body.dark select option {
+  background-color: #072a2f;
+  color: #e2f0ef;
+}
+
+body.dark .hover\:bg-\[\#edf2f1\]:hover,
+body.dark .hover\:bg-\[\#f3f6f5\]:hover,
+body.dark .hover\:bg-\[\#f5f7f6\]:hover,
+body.dark .hover\:bg-\[\#fafcfc\]:hover {
+  background-color: #0a363d !important;
+}
+
+/* Animations & Enterprise Micro-Interactions */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes row-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(22, 133, 101, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(22, 133, 101, 0);
+  }
+}
+
+@keyframes ambient-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) scale(1.02);
+  }
+}
+
+.view-enter {
+  animation: view-enter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.view-card-enter {
+  animation: panel-rise 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 35ms);
+}
+
+.row-enter {
+  animation: row-fade-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--stagger, 0) * 20ms);
+}
+
+.modal-panel {
+  animation: modal-panel-enter 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.modal-backdrop {
+  animation: backdrop-enter 180ms ease-out both;
+}
+
+.toast-enter {
+  animation: toast-slide-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.live-pulse-dot {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+.ambient-float {
+  animation: ambient-float 8s ease-in-out infinite;
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(226, 234, 232, 0.5) 25%, rgba(240, 246, 245, 0.9) 50%, rgba(226, 234, 232, 0.5) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}
+
+body.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(10, 53, 59, 0.45) 25%, rgba(16, 78, 86, 0.75) 50%, rgba(10, 53, 59, 0.45) 75%);
+  background-size: 200% 100%;
+}
+
+.card-interactive {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -10px rgba(0, 49, 53, 0.14);
+}
+
+body.dark .card-interactive:hover {
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.55);
+}
+
+.btn-interactive {
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.btn-interactive:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@keyframes drawer-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dropdown-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes metric-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.drawer-enter {
+  animation: drawer-slide-left 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dropdown-enter {
+  transform-origin: top right;
+  animation: dropdown-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.metric-pop {
+  animation: metric-pop 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Automatic staggered entrance delays for multi-card grids, metrics, and table rows */
+.stagger-grid > * {
+  animation: panel-rise 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.stagger-grid > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-grid > *:nth-child(2) { animation-delay: 45ms; }
+.stagger-grid > *:nth-child(3) { animation-delay: 90ms; }
+.stagger-grid > *:nth-child(4) { animation-delay: 135ms; }
+.stagger-grid > *:nth-child(5) { animation-delay: 180ms; }
+.stagger-grid > *:nth-child(6) { animation-delay: 225ms; }
+.stagger-grid > *:nth-child(7) { animation-delay: 270ms; }
+.stagger-grid > *:nth-child(8) { animation-delay: 315ms; }
+.stagger-grid > *:nth-child(9) { animation-delay: 360ms; }
+.stagger-grid > *:nth-child(n+10) { animation-delay: 400ms; }
+
+.stagger-table tbody tr {
+  animation: row-fade-in 0.22s ease-out both;
+}
+.stagger-table tbody tr:nth-child(1) { animation-delay: 20ms; }
+.stagger-table tbody tr:nth-child(2) { animation-delay: 45ms; }
+.stagger-table tbody tr:nth-child(3) { animation-delay: 70ms; }
+.stagger-table tbody tr:nth-child(4) { animation-delay: 95ms; }
+.stagger-table tbody tr:nth-child(5) { animation-delay: 120ms; }
+.stagger-table tbody tr:nth-child(6) { animation-delay: 145ms; }
+.stagger-table tbody tr:nth-child(7) { animation-delay: 170ms; }
+.stagger-table tbody tr:nth-child(8) { animation-delay: 195ms; }
+.stagger-table tbody tr:nth-child(n+9) { animation-delay: 220ms; }
+
+.delay-75 { animation-delay: 75ms; animation-fill-mode: both; }
+.delay-150 { animation-delay: 150ms; animation-fill-mode: both; }
+.delay-225 { animation-delay: 225ms; animation-fill-mode: both; }
+.delay-300 { animation-delay: 300ms; animation-fill-mode: both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile Viewport & Overflow Protection */
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
+}
+
+.table-responsive-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.table-responsive-container::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive-container::-webkit-scrollbar-track {
+  background: rgba(0, 49, 53, 0.05);
+  border-radius: 4px;
+}
+.table-responsive-container::-webkit-scrollbar-thumb {
+  background: #08747c;
+  border-radius: 4px;
+}
+
+/* Institutional Printing Overrides */
+@media print {
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, nav, aside, button, .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  .print-clean {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+  }
+}
+

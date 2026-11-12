@@ -1,0 +1,55 @@
+{
+  "name": "gmritdu-timetable-management-system",
+  "version": "1.0.0",
+  "description": "GMRITDU Centralized Class, Laboratory, and Faculty Schedule Architecture",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "build:frontend": "node frontend/build.cjs",
+    "typecheck": "tsc --noEmit --project frontend/tsconfig.json",
+    "seed": "node src/seed/seedData.js",
+    "db:migrate": "node -e \"require('dotenv').config(); const { initializeSchema, closePool } = require('./src/config/database'); initializeSchema().then(() => closePool()).then(() => console.log('Schema applied successfully.')).catch(e => { console.error(e); process.exit(1); })\"",
+    "db:transfer": "node scripts/migrate_sqlite_to_postgres.js",
+    "mobile": "cd mobile && npx expo start",
+    "mobile:web": "cd mobile && npx expo start --web",
+    "mobile:android": "cd mobile && npx expo start --android"
+  },
+  "keywords": [
+    "timetable",
+    "gmrit",
+    "scheduling",
+    "education",
+    "express",
+    "postgresql",
+    "supabase"
+  ],
+  "author": "GMRIT Autonomous Institutional Portal",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.2",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.5.0",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.23.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^13.0.3"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "esbuild": "^0.28.2",
+    "lucide-react": "^1.71.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2"
+  }
+}

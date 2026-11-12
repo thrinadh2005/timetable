@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Institutional Shield Backdrop -->
+  <rect width="64" height="64" rx="14" fill="#003135"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" stroke="#08747c" stroke-width="2" stroke-opacity="0.4"/>
+  
+  <!-- Central Institutional Crest & Timetable Grid Vector -->
+  <!-- Top Academic Cap / Roof -->
+  <path d="M32 12L15 21L32 30L49 21L32 12Z" fill="#55d6dc"/>
+  <path d="M44 24.5V36C44 38.5 38.6 40.5 32 40.5C25.4 40.5 20 38.5 20 36V24.5L32 31L44 24.5Z" fill="#08747c"/>
+  
+  <!-- Academic Tassel -->
+  <path d="M49 21V33L47 34.5" stroke="#55d6dc" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Timetable Matrix Columns -->
+  <rect x="18" y="44" width="6" height="8" rx="2" fill="#55d6dc" fill-opacity="0.9"/>
+  <rect x="29" y="44" width="6" height="8" rx="2" fill="#0fa4af"/>
+  <rect x="40" y="44" width="6" height="8" rx="2" fill="#55d6dc" fill-opacity="0.9"/>
+</svg>

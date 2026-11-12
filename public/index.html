@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+
+  <!-- Primary Document Metadata -->
+  <title id="page-title">GMRITDU | Autonomous Academic Management System</title>
+  <meta name="description" id="meta-description"
+    content="GMRITDU Centralized Class, Laboratory, and Faculty Schedule Platform across academic schools, departments, and official institutional laboratories." />
+  <link rel="canonical" id="canonical-tag" href="https://timetable.gmrit.edu.in/" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="GMR Institute of Technology Deemed to be University" />
+  <meta name="theme-color" content="#003135" />
+
+  <!-- Icons & Web App Manifest -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph / Facebook Protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GMRITDU Academic Platform" />
+  <meta property="og:url" id="og-url" content="https://timetable.gmrit.edu.in/" />
+  <meta property="og:title" id="og-title" content="GMRITDU Academic Platform | Autonomous Academic Operations" />
+  <meta property="og:description" id="og-desc"
+    content="Autonomous Academic Timetable, Facility Vacancy, and Laboratory Governance Platform at GMR Institute of Technology Deemed to be University." />
+  <meta property="og:image" content="https://timetable.gmrit.edu.in/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter Card Protocol -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@GMRIT_Official" />
+  <meta name="twitter:title" id="twitter-title" content="GMRITDU Academic Platform" />
+  <meta name="twitter:description" id="twitter-desc"
+    content="Autonomous Academic Timetable, Facility Vacancy, and Laboratory Governance Platform." />
+  <meta name="twitter:image" content="https://timetable.gmrit.edu.in/og-image.png" />
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    (function () {
+      var saved = localStorage.getItem('gmritdu-theme');
+      if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#003135',
+              dark: '#002528',
+              accent: '#08747c',
+              teal: '#0fa4af',
+              light: '#f3f6f5',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom Academic Styling & System Tokens -->
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Structured Data: EducationalOrganization & LocalBusiness Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollegeOrUniversity",
+    "name": "GMR Institute of Technology Deemed to be University",
+    "alternateName": "GMRITDU",
+    "url": "https://timetable.gmrit.edu.in",
+    "logo": "https://timetable.gmrit.edu.in/og-image.png",
+    "image": "https://timetable.gmrit.edu.in/og-image.png",
+    "description": "GMRIT Autonomous Academic Management System orchestrating class schedules, multi-period laboratory allocations, and institutional facility governance.",
+    "telephone": "+91-8941-251592",
+    "email": "registrar@gmrit.edu.in",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "GMR Nagar",
+      "addressLocality": "Rajam",
+      "addressRegion": "Andhra Pradesh",
+      "postalCode": "532127",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 18.4608,
+      "longitude": 83.6631
+    },
+    "hasCredential": "NAAC A Grade Accredited",
+    "department": [
+      { "@type": "Organization", "name": "Department of Computer Science and Engineering" },
+      { "@type": "Organization", "name": "Department of Artificial Intelligence and Data Science" },
+      { "@type": "Organization", "name": "Department of Artificial Intelligence and Machine Learning" },
+      { "@type": "Organization", "name": "Department of Cyber Security" },
+      { "@type": "Organization", "name": "Department of Electronics and Communication Engineering" },
+      { "@type": "Organization", "name": "Department of Electrical and Electronics Engineering" },
+      { "@type": "Organization", "name": "Department of Information Technology" },
+      { "@type": "Organization", "name": "Department of Mechanical Engineering" },
+      { "@type": "Organization", "name": "Department of Civil Engineering" }
+    ]
+  }
+  </script>
+
+  <!-- Structured Data: WebApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "GMRITDU Academic Timetable & Facilities Architecture",
+    "url": "https://timetable.gmrit.edu.in",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "All modern browsers (Chrome, Edge, Safari, Firefox)",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "INR"
+    },
+    "browserRequirements": "Requires JavaScript. Requires HTML5."
+  }
+  </script>
+</head>
+
+<body class="bg-[#f3f6f5] dark:bg-[#01191c] text-[#172326] dark:text-[#e0f2fe] antialiased">
+  <div id="root"></div>
+  <script src="/js/bundle.js?v=4.5.1794484031134"></script>
+</body>
+
+</html>

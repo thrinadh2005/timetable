@@ -1,0 +1,24 @@
+services:
+  timetable-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gmritdu-timetable:latest
+    container_name: gmritdu-timetable-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - "JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in environment or .env}"
+      - "DATABASE_URL=${DATABASE_URL:?Set DATABASE_URL to your Supabase or PostgreSQL connection string}"
+      - "DATABASE_SSL=${DATABASE_SSL:-true}"
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

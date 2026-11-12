@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#002528"/>
+      <stop offset="50%" stop-color="#003135"/>
+      <stop offset="100%" stop-color="#024950"/>
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#55d6dc"/>
+      <stop offset="100%" stop-color="#0fa4af"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle Institutional Architectural Pattern -->
+  <g opacity="0.06" stroke="#ffffff" stroke-width="1.5">
+    <line x1="80" y1="0" x2="80" y2="630"/>
+    <line x1="240" y1="0" x2="240" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="560" y1="0" x2="560" y2="630"/>
+    <line x1="720" y1="0" x2="720" y2="630"/>
+    <line x1="880" y1="0" x2="880" y2="630"/>
+    <line x1="1040" y1="0" x2="1040" y2="630"/>
+    <line x1="0" y1="90" x2="1200" y2="90"/>
+    <line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="270" x2="1200" y2="270"/>
+    <line x1="0" y1="360" x2="1200" y2="360"/>
+    <line x1="0" y1="450" x2="1200" y2="450"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+  </g>
+
+  <!-- Top Badge -->
+  <rect x="80" y="80" width="340" height="38" rx="19" fill="#08747c" fill-opacity="0.5" stroke="#55d6dc" stroke-width="1.5" stroke-opacity="0.6"/>
+  <circle cx="102" cy="99" r="5" fill="#55d6dc"/>
+  <text x="118" y="104" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#ffffff" letter-spacing="1.5">AUTONOMOUS ACADEMIC PLATFORM</text>
+
+  <!-- University Title & Headings -->
+  <text x="80" y="180" font-family="Inter, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#ffffff" letter-spacing="-1">
+    GMRITDU Timetable Architecture
+  </text>
+  <text x="80" y="235" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="500" fill="#55d6dc">
+    Autonomous Academic Scheduling, Facility Vacancy & Laboratory Governance
+  </text>
+  <text x="80" y="280" font-family="Inter, -apple-system, sans-serif" font-size="16" font-weight="400" fill="#a4c2c5">
+    GMR Institute of Technology Deemed to be University · Rajam, Andhra Pradesh, India
+  </text>
+
+  <!-- Institutional KPI Cards -->
+  <g transform="translate(80, 340)">
+    <!-- KPI 1 -->
+    <rect x="0" y="0" width="235" height="130" rx="16" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.5"/>
+    <text x="24" y="52" font-family="JetBrains Mono, monospace" font-size="36" font-weight="700" fill="#55d6dc">9</text>
+    <text x="24" y="84" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff">Autonomous Departments</text>
+    <text x="24" y="104" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="400" fill="#8ea5a3">AI, Computing, Core Engg</text>
+
+    <!-- KPI 2 -->
+    <rect x="255" y="0" width="235" height="130" rx="16" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.5"/>
+    <text x="279" y="52" font-family="JetBrains Mono, monospace" font-size="36" font-weight="700" fill="#55d6dc">10,080</text>
+    <text x="279" y="84" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff">Master Timetable Slots</text>
+    <text x="279" y="104" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="400" fill="#8ea5a3">8 Semesters · 32 Cohorts</text>
+
+    <!-- KPI 3 -->
+    <rect x="510" y="0" width="235" height="130" rx="16" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.5"/>
+    <text x="534" y="52" font-family="JetBrains Mono, monospace" font-size="36" font-weight="700" fill="#55d6dc">21</text>
+    <text x="534" y="84" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff">Specialized Laboratories</text>
+    <text x="534" y="104" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="400" fill="#8ea5a3">1,430+ Workstations</text>
+
+    <!-- KPI 4 -->
+    <rect x="765" y="0" width="235" height="130" rx="16" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1.5"/>
+    <text x="789" y="52" font-family="JetBrains Mono, monospace" font-size="36" font-weight="700" fill="#55d6dc">PoA</text>
+    <text x="789" y="84" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff">Cryptographic Ledger</text>
+    <text x="789" y="104" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="400" fill="#8ea5a3">Immutable Audit Chain</text>
+  </g>
+
+  <!-- Bottom Strip -->
+  <line x1="80" y1="530" x2="1120" y2="530" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>
+  <text x="80" y="570" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#ffffff">
+    timetable.gmrit.edu.in
+  </text>
+  <text x="1120" y="570" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#8ea5a3" text-anchor="end">
+    Verified Institutional Production Build · NAAC 'A' Grade Autonomous University
+  </text>
+</svg>
+
