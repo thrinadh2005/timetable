@@ -1,0 +1,1682 @@
+﻿regulation,program,branch,semester_or_group,sno,course_code,course_title,L,T,P,credits,weekly_hours,course_type
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),1,23PYX01,Engineering Physics,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),1,23CYX01 23CYX02,"Chemistry (EEE, ECE, CSE, AIML, AIDS, IT) Engineering Chemistry (CE, ME)",N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),2,23MAX01,Linear Algebra& Calculus,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),2,23MAX01,Linear Algebra& Calculus,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),3,23BEX01,Basic Electrical and Electronics Engineering,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),3,23BEX02,Basic Civil & Mechanical Engineering,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),4,23BEX03,Introduction to Programming,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),4,23BEX03,Introduction to Programming,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),5,23BEX04,Engineering Graphics,N/A,N/A,N/A,3,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),5,23HSX01,Communicative English,N/A,N/A,N/A,2,,Theory
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),6,23PYX02,Engineering Physics Lab,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),6,23CYX03 23CYX04,"Chemistry Lab (EEE, ECE, CSE, AIML, AIDS, IT) Engineering Chemistry Lab (CE, ME)",N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),7,23BEX05,Electrical & Electronics Engineering Workshop,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),7,23BEX06,Engineering Workshop,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),8,23BEX07,Computer Programming Lab,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),8,23BEX07,Computer Programming Lab,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-I (A-H),9,23BEX08,IT Workshop,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,First Semester - Pattern-II (I-P),9,23HSX02,Communicative English Lab,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),1,23CYX01 23CYX02,"Chemistry (EEE, ECE, CSE, AIML, AIDS, IT) Engineering Chemistry (CE, ME)",N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),1,23PYX01,Engineering Physics,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),2,23MAX02,DIFFERENTIAL EQUATIONS AND VECTOR CALCULUS,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),2,23MAX02,DIFFERENTIAL EQUATIONS AND VECTOR CALCULUS,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),3,23BEX02,Basic Civil & Mechanical Engineering,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),3,23BEX01,Basic Electrical and Electronics Engineering,N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),4,23ME201 23CS201 23EE201 23EC201 (Branch Specific Theory),"Engineering Mechanics (Civil, Mech) ; Data Structures (CSE, CSE- AI&DS, CSE-AI&ML, IT) ; Electrical Circuit Analysis- 1 (EEE); Network Analysis (ECE);",N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),4,23ME201 23CS201 23EE201 23EC201 (Branch Specific Theory),"Engineering Mechanics (Civil, Mech) ; Data Structures (CSE, CSE- AI&DS, CSE-AI&ML, IT) ; Electrical Circuit Analysis-1 (EEE); Network Analysis (ECE);",N/A,N/A,N/A,3,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),5,23HSX01,Communicative English,N/A,N/A,N/A,2,,Theory
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),5,23BEX04,Engineering Graphics,N/A,N/A,N/A,3,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),6,23CYX03 23CYX04,"Chemistry Lab (EEE, ECE, CSE, AIML, AIDS, IT) Engineering Chemistry Lab (CE, ME)",N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),6,23PYX02,Engineering Physics Lab,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),7,23BEX06,Engineering Workshop,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),7,23BEX05,Electrical & Electronics Engineering Workshop,N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),8,23CE201 23CS202 23EE202 23EC202 23ME202 (Branch Specific Lab),"Engineering Mechanics and Building Practices Lab (Civil); Data Structures Lab (CSE, CSE-AI&DS, CSE-AI&ML, IT); Electrical Circuits Lab (EEE); Network Analysis Lab (ECE); Engineering Mechanics Lab (Mech);",N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),8,23CE201 23CS202 23EE202 23EC202 23ME202 (Branch Specific Lab),"Engineering Mechanics and Building Practices Lab (Civil); Data Structures Lab (CSE, CSE-AI&DS, CSE-AI&ML, IT); Electrical Circuits Lab(EEE); Network Analysis Lab(ECE); Engineering Mechanics Lab (Mech);",N/A,N/A,N/A,1.5,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),9,23HSX02,Communicative English Lab,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-II (I-P),9,23BEX08,IT Workshop,N/A,N/A,N/A,1,,Lab
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),10,23HSX11,ECA (Yoga / Sports),N/A,N/A,N/A,0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,ECE,Second Semester - Pattern-I (A-H),11,23HSX12,CCA (NSS/NCC/Community Service),N/A,N/A,N/A,0.5,,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE,Semester I,1,26EN101T,Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester I,2,26MA101T,Linear Algebra & Calculus,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester I,3,26PH101T,Wave Optics and Quantum Physics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester I,4,26CS101T,Programming for Problem Solving,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester I,5,26EE101T,Basics of Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester I,6,26EN101L,Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester I,7,26PH101L,Wave Optics and Quantum Physics Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester I,8,26CS101L,Programming for Problem Solving Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester I,9,26ME102L,Engineering Workshop Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester I,10,26HS101V,"Sports, Yoga, NCC and NSS",0,0,2,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE,Semester 2,1,26EN102T,Advanced Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 2,2,26MA103T,Differential Equations & Discrete Mathematical Structures,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 2,3,26CH102T,Applied Chemistry for Computing,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 2,4,26CS102T,Python Programming,2,0,0,2,2,Theory
+AR26,B.Tech,CSE,Semester 2,5,26CS103T,Data Structures,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 2,6,26EN102L,Advanced Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 2,7,26CH102L,Applied Chemistry for Computing Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 2,8,26CS102L,Python Programming Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 2,9,26CS103L,Data Structures lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 2,10,26ME101L,Engineering Graphics Lab,0,1,2,2,3,Lab
+AR26,B.Tech,CSE,Semester 3,1,26CS201T,Web Technologies,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,2,26CS202T,Database Management Systems,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,3,26CS203T,Object Oriented Programming through JAVA,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,4,26CS204T,Digital Logic & Computer Organization,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,5,26EC241T,Introduction to Internet of Things,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,6,26MA201T,Probability and Statistics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 3,7,26CS201L,Web Technologies Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 3,8,26CS202L,Database Management Systems Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 3,9,26CS203L,Object Oriented Programming through JAVA Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 3,10,26EC241L,Internet of Things Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 3,11,26HS201V,Environmental Science,2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE,Semester 4,1,26CS205T,Design and Analysis of Algorithms,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 4,2,26CS206T,Operating Systems,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 4,3,26CS207T,Theory of Computation,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 4,4,,Core Elective-1 / Career Path Elective-1,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE,Semester 4,5,,Open Elective-1/ Sequential OE-1,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE,Semester 4,6,26SC201Q,Quantitative Aptitude 1,2,0,0,1,2,Theory
+AR26,B.Tech,CSE,Semester 4,7,26SC201E,Soft Skills 1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 4,8,26CS205L,Design and Analysis of Algorithms Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 4,9,26CS206L,Operating Systems with Linux Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 4,10,,Core Elective Lab-1 / Career Path Elective Lab-1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 4,11,,Open Elective Lab-1/ Sequential OE Lab-1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 4,12,26HS202V,Value Added Course (Human Values & Ethics),2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE,Semester 5,1,26CS301T,Microprocessors and Microcontrollers,2,0,0,2,2,Theory
+AR26,B.Tech,CSE,Semester 5,2,26CS302T,Computer Networks,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 5,3,26CS303T,Artificial Intelligence & Machine Learning,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 5,4,26CS304T,Generative AI and LLM,2,0,0,2,2,Theory
+AR26,B.Tech,CSE,Semester 5,5,,Core Elective-2 / Career Path Elective-2,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE,Semester 5,6,,Open Elective-2/ Sequential OE-2,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE,Semester 5,7,26SC301S,Summer Internship-I,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE,Semester 5,8,26SC301Q,Quantitative Aptitude-2,2,0,0,1,2,Theory
+AR26,B.Tech,CSE,Semester 5,9,26SC301E,Soft Skills-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 5,10,26CS302L,Computer Networks Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 5,11,26CS303L,Artificial Intelligence & Machine Learning Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 5,12,,Core Elective Lab-2 / Career Path Elective Lab-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 5,13,,Open Elective Lab-2/ Sequential OE Lab-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 6,1,26CS305T,Software Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 6,2,26CS306T,Compiler Design,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 6,3,26CS307T,Cryptography & Network Security,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 6,4,,Core Elective Lab-3 / Career Path Elective Lab-3,2,0,0,2,2,Lab
+AR26,B.Tech,CSE,Semester 6,5,,Open Elective Lab-3/ Sequential OE Lab-3,2,0,0,2,2,Lab
+AR26,B.Tech,CSE,Semester 6,6,26SC304Q,Quantitative Aptitude-3,2,0,0,1,2,Theory
+AR26,B.Tech,CSE,Semester 6,7,26SC305E,Soft Skills-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 6,8,26SC306P,Innovative Design Project,0,0,4,2,4,Internship / Project
+AR26,B.Tech,CSE,Semester 6,9,26CS305L,Software Engineering Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 6,10,,Core Elective Lab-3 / Career Path Elective Lab-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 6,11,,Open Elective Lab-3/ Sequential OE Lab-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE,Semester 7,1,26CS401T,Software Project Management,3,0,0,3,3,Internship / Project
+AR26,B.Tech,CSE,Semester 7,2,,Core Elective -4,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE,Semester 7,3,26MG401T,Engineering Economics and Project Management,3,0,0,3,3,Internship / Project
+AR26,B.Tech,CSE,Semester 7,4,26SC401P/ 26SC401F,Project-1/FSI-1,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CSE,Semester 7,5,26SC401S,Summer Internship-II,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE,Semester 8,1,26CS402T,Design Patterns,3,0,0,3,3,Theory
+AR26,B.Tech,CSE,Semester 8,2,,Core Elective -5,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE,Semester 8,3,26SC402P/ 26SC402F,Project-2/FSI-2,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester I,1,26EN101T,Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester I,2,26MA101T,Linear Algebra & Calculus,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester I,3,26PH101T,Wave Optics and Quantum Physics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester I,4,26CS101T,Programming for Problem Solving,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester I,5,26EE101T,Basics of Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester I,6,26EN101L,Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester I,7,26PH101L,Wave Optics and Quantum Physics Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester I,8,26CS101L,Programming for Problem Solving Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester I,9,26ME102L,Engineering Workshop Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester I,10,26HS101V,"Sports, Yoga, NCC and NSS",0,0,2,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&DS),Semester 2,1,26EN102T,Advanced Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 2,2,26MA103T,Differential Equations & Discrete Mathematics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 2,3,26CH102T,Applied Chemistry for Computing,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 2,4,26CS102T,Python Programming,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 2,5,26CS103T,Data Structures,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 2,6,26EN102L,Advanced Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 2,7,26CH102L,Applied Chemistry for Computing Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 2,8,26CS102L,Python Programming Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 2,9,26CS103L,Data Structures lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 2,10,26ME101L,Engineering Graphics Lab,0,1,2,2,3,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 3,1,26DS201T,Artificial Intelligence and Data Science,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,2,26CS201T,Web Technologies,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,3,26CS203T,Object Oriented Programming through JAVA,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,4,26CS204T,Digital Logic and Computer Organization,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,5,26EC241T,Introduction to Internet of Things,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,6,26MA201T,Probability and Statistics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 3,7,26DS201L,Artificial Intelligence and Data Science Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 3,8,26CS201L,Web Technologies Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 3,9,26CS203L,Object Oriented Programming through JAVA Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 3,10,26EC241L,Introduction to Internet of Things Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 3,11,26HS201V,Value Added Course (Environmental Science),2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&DS),Semester 4,1,26CS205T,Design and Analysis of Algorithms,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 4,2,26CS206T,Operating Systems,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 4,3,26CS202T,Database Management Systems,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 4,4,,Core Elective-1/Career Path Elective -1,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 4,5,,Open Elective -1 /Sequential Open Elective –1,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 4,6,26SC201Q,Quantitative Aptitude -1,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 4,7,26SC201E,Soft skills -1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 4,8,26CS205L,Design and Analysis of Algorithms Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 4,9,26CS202L,Database Management Systems Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 4,10,,Core Elective Lab-1/Career Path Elective Lab-1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 4,11,,Open Elective Lab-1 /Sequential Open Elective Lab–1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 4,12,26HS202V,Value Added Course (Professional Ethics and Human Values),2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&DS),Semester 5,1,26DS301T,Knowledge Discovery and Machine Learning,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 5,2,26DS302T,Big Data Analytics and Visualization Techniques,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 5,3,26DS303T,Computer Networks &Cloud Infrastructure,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 5,4,26ML303T,Software Engineering Principles,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 5,5,,Core Elective-2/Career Path Elective -2,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 5,6,,Open Elective -2 /Sequential Open Elective –2,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 5,7,26SC301S,Summer Internship- I,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester 5,8,26SC301Q,Quantitative Aptitude -2,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 5,9,26SC301E,Soft skills -2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 5,10,26DS301L,Knowledge Discovery and Machine Learning Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 5,11,26DS302L,Big Data Analytics and Visualization Techniques Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 5,12,,Core Elective Lab-2/Career Path Elective Lab-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 5,13,,Open Elective Lab-2 /Sequential Open Elective Lab–2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 6,1,26ML305T,Automata Theory and Language Processing,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 6,2,26DS304T,Data Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 6,3,26DS305T,Neural Networks and Deep Learning,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 6,4,,Core Elective-3/Career Path Elective -3,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 6,5,,Open Elective -3 /Sequential Open Elective –3,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 6,6,26SC302Q,Quantitative Aptitude-3,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 6,7,26SC302E,Soft skills -3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 6,8,26SC301P,Mini Project,0,0,4,2,4,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester 6,9,26DS305L,Neural Networks and Deep Learning Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 6,10,,Core Elective Lab-3/Career Path Elective Lab-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 6,11,,Open Elective Lab-3 /Sequential Open Elective Lab–3,0,0,2,-,2,Lab
+AR26,B.Tech,CSE (AI&DS),Semester 7,1,26DS401T,MLOPS and AI System Deployment,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 7,2,,Core Elective 4,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 7,3,26DS402T,Software Project Management,3,0,0,3,3,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester 7,4,26SC401P / 26SC401F,Project-1/ FSI-1,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester 7,5,26SC401S,Summer Internship II,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE (AI&DS),Semester 8,1,26DS403T,Generative and Responsible AI,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (AI&DS),Semester 8,2,,Core Elective- 5,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (AI&DS),Semester 8,3,26SC402P / 26SC402F,Project- 2/ FSI -2,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 1,1,26EN101T,Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 1,2,26MA101T,Linear Algebra & Calculus,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 1,3,26PH101T,Wave Optics and Quantum Physics,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 1,4,26CS101T,Programming for Problem Solving,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 1,5,26EE101T,Basics of Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 1,6,26EN101L,Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 1,7,26PH101L,Wave Optics and Quantum Physics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 1,8,26CS101L,Programming for Problem Solving Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 1,9,26ME102L,Engineering Workshop Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 1,10,26HS101V,"Sports, Yoga, NCC and NSS",-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&ML),Semester 2,1,26EN102T,Advanced Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 2,2,26MA103T,Differential Equations & Discrete Mathematics,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 2,3,26CH102T,Applied Chemistry for Computing,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 2,4,26CS102T,Python Programming,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 2,5,26CS103T,Data Structures,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 2,6,26EN102L,Advanced Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 2,7,26CH102L,Applied Chemistry for Computing Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 2,8,26CS102L,Python Programming Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 2,9,26CS103L,Data Structures lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 2,10,26ME101L,Engineering Graphics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 3,1,26CS201T,Web Technologies,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,2,26ML201T,Introduction to Artificial Intelligence & Machine Learning,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,3,26CS203T,Object Oriented Programming through JAVA,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,4,26CS204T,Digital Logic & Computer Organization,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,5,26EC241T,Introduction to Internet of Things,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,6,26MA201T,Probability and Statistics,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 3,7,26CS201L,Web Technologies Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 3,8,26ML201L,Introduction to AI&ML Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 3,9,26CS203L,Object Oriented Programming through JAVA Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 3,10,26EC241L,Internet of Things Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 3,11,26HS201V,Value Added Course(Environmental Science),-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&ML),Semester 4,1,26CS202T,Database Management Systems,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 4,2,26CS205T,Design and Analysis of Algorithms,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 4,3,26CS206T,Operating Systems,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 4,4,,Core Elective-1/ Career Path Elective-1,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 4,5,,Open Elective-1/Sequential Open Elective-1,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 4,6,26SC201Q,Quantitative Aptitude-1,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 4,7,26SC201E,Soft Skills-1,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 4,8,26CS202L,Database Management Systems Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 4,9,26CS205L,Design and Analysis of Algorithms Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 4,10,,Core Elective Lab-1/ Career Path Elective Lab-1,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 4,11,,Open Elective Lab-1/Sequential Open Elective Lab-1,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 4,12,26HS202V,Value Added Course (Professional Ethics & Human Values),-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (AI&ML),Semester 5,1,26ML301T,Neural Networks,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,2,26CS302T,Computer Networks,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,3,26ML302T,Data Analytics and Visualization Techniques,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,4,26ML303T,Software Engineering Principles,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,5,,Core Elective-2 / Career Path Elective-2,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 5,6,,Open Elective-2/Sequential Open Elective-2,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 5,7,26SC301S,Summer Internship-I -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 5,8,26SC301Q,Quantitative Aptitude-2,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,9,26SC301E,Soft Skills-2,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 5,10,26ML301L,Neural Networks Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 5,11,26ML302L,Data Analytics and Visualization Techniques Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 5,12,,Core Elective Lab-2/ Career Path Elective Lab-2,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 5,13,,Open Elective Lab-2/Sequential Open Elective Lab-2,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 6,1,26CS304T,Deep Learning,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 6,2,26ML305T,Automata Theory and Language Processors,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 6,3,26ML306T,Natural Language Processing,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 6,4,,Core Elective-3 / Career Path Elective-3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 6,5,,Open Elective-3/Sequential Open Elective-3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 6,6,26SC302Q,Quantitative Aptitude-3,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 6,7,26SC302E,Soft Skills-3,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 6,8,26SC301P,Mini project,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 6,9,26ML304L,Deep Learning Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 6,10,,Core Elective Lab-3/ Career Path Elective Lab-3,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 6,11,,Open Elective Lab-3/Sequential Open Elective Lab-3,-,-,-,-,0,Lab
+AR26,B.Tech,CSE (AI&ML),Semester 7,1,26ML401T,Generative AI and Large Language Models,-,-,-,-,0,Theory
+AR26,B.Tech,CSE (AI&ML),Semester 7,2,,Core Elective-4,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 7,3,26MG401T,Engineering Economics and Project Management,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 7,4,26SC401P/ 26SC401F,Project-1/FSI-1,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 7,5,26SC401S,Summer Internship-II -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 8,1,26CS401T,Software Project Management,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (AI&ML),Semester 8,2,,Core Elective-5,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CSE (AI&ML),Semester 8,3,26SC402P/ 26SC402F,Project-2/FSI-2,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 1,1,26EN101T,Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 1,2,26MA101T,Linear Algebra & Calculus,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 1,3,26PH101T,Wave Optics and Quantum Physics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 1,4,26CS101T,Programming for Problem Solving,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 1,5,26EE101T,Basics of Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 1,6,26EN101L,Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 1,7,26PH101L,Wave Optics and Quantum Physics Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 1,8,26CS101L,Programming for Problem Solving Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 1,9,26ME102L,Engineering Workshop Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 1,10,26HS101V,"Sports, Yoga, NCC and NSS",0,0,2,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (Cyber Security),Semester 2,1,26EN102T,Advanced Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 2,2,26MA103T,Differential Equations & Discrete Mathematical Structures,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 2,3,26CH102T,Applied Chemistry for Computing,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 2,4,26CS102T,Python Programming,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 2,5,26CS103T,Data Structures,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 2,6,26EN102L,Advanced Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 2,7,26CH102L,Applied Chemistry for Computing Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 2,8,26CS102L,Python Programming Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 2,9,26CS103L,Data Structures lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 2,10,26ME101L,Engineering Graphics Lab,0,1,2,2,3,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 3,1,26CY201T,Data Communications and Computer Networks,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,2,26CS202T,Database Management Systems,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,3,26CS203T,Object Oriented Programming through JAVA,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,4,26CS204T,Digital Logic & Computer Organization,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,5,26EC241T,Introduction to Internet of Things,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,6,26MA201T,Probability and Statistics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 3,7,26CY201L,Data Communications and Computer Networks Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 3,8,26CS202L,Database Management Systems Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 3,9,26CY203L,Object Oriented Programming through JAVA Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 3,10,26EC241L,Internet of Things Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 3,11,26HS201V,Value Added Course (Environmental Science),2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (Cyber Security),Semester 4,1,26CS205T,Design and Analysis of Algorithms,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 4,2,26CS201T,Web Technologies,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 4,3,26CY202T,Cryptography and Network Security,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 4,4,,Core Elective-1/Career Path Elective -1,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 4,5,,Open Elective -1 /Sequential Open Elective –1,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 4,6,26SC201Q,Quantitative Aptitude-1,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 4,7,26SC201E,Soft Skills-1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 4,8,26CS205L,Design and Analysis of Algorithms Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 4,9,26CS201L,Web Technologies Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 4,10,,Core Elective Lab-1/Career Path Elective Lab-1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 4,11,,Open Elective Lab-1 /Sequential Open Elective Lab–1,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 4,12,26HS202V,Value Added Course (Professional Ethics & Human Values),2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CSE (Cyber Security),Semester 5,1,26CS206T,Operating Systems,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 5,2,26CY301T,Fundamentals of Cyber Security,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 5,3,26CS303T,Artificial Intelligence & Machine Learning,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 5,4,26CY302T,Cloud Computing Essentials,2,0,0,2,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 5,5,,Core Elective-2/Career Path Elective -2,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 5,6,,Open Elective -2 /Sequential Open Elective –2,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 5,7,26SC301S,Summer Internship-I,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 5,8,26SC301Q,Quantitative Aptitude-2,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 5,9,26SC301E,Soft Skills-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 5,10,26CY301L,Fundamentals of Cyber Security Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 5,11,26CS303L,Artificial Intelligence & Machine Learning Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 5,12,,Core Elective Lab-2/Career Path Elective Lab-2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 5,13,,Open Elective Lab-2 /Sequential Open Elective Lab–2,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 6,1,26CS305T,Software Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 6,2,26CY303T,Ethical Hacking & Cyber Forensics,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 6,3,26ML305T,Automata Theory & Language Processors,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 6,4,,Core Elective-3/Career Path Elective -3,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 6,5,,Open Elective -3 /Sequential Open Elective –3,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 6,6,26SC302Q,Quantitative Aptitude-3,2,0,0,1,2,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 6,7,26SC302E,Soft Skills-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 6,8,26SC301P,Mini Project,0,0,4,2,4,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 6,9,26CY303L,Ethical Hacking & Cyber Forensics Lab,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 6,10,,Core Elective Lab-3/Career Path Elective Lab-3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 6,11,,Open Elective Lab-3 /Sequential Open Elective Lab–3,0,0,2,1,2,Lab
+AR26,B.Tech,CSE (Cyber Security),Semester 7,1,26CY401T,Cloud Security,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 7,2,,Core Elective 4,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 7,3,26MG401T,Engineering Economics and Project Management,3,0,0,3,3,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 7,4,26SC401P/ 26SC401F,Project-1/FSI-1,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 7,5,26SC401S,Summer Internship-II,-,-,-,2,0,Internship / Project
+AR26,B.Tech,CSE (Cyber Security),Semester 8,1,26CY402T,Blockchain Security & Applications,3,0,0,3,3,Theory
+AR26,B.Tech,CSE (Cyber Security),Semester 8,2,,Core Elective -5,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,CSE (Cyber Security),Semester 8,3,26SC402P/ 26SC402F,Project-2/FSI2,0,0,16,8,16,Internship / Project
+AR26,B.Tech,ECE,Semester 1,1,26EN101T,Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 1,2,26MA101T,Linear Algebra & Calculus,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 1,3,26CH101T,Engineering Chemistry,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 1,4,26CS101T,Programming for Problem Solving,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 1,5,26EE101T,Basics of Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 1,6,26EN101L,Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 1,7,26CH101L,Engineering Chemistry Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 1,8,26CS101L,Programming for Problem Solving Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 1,9,26ME101L,Engineering Graphics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 1,10,26HS101V,"Sports, Yoga, NCC and NSS",-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,ECE,Semester 2,1,26EN102T,Advanced Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 2,2,26MA102T,Differential Equations & Numerical Techniques,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 2,3,26PH102T,Applied Physics,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 2,4,26CS102T,Python programming,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 2,5,26EC101T,Electronic Devices and Circuits,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 2,6,26EN102L,Advanced Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 2,7,26PH102L,Applied Physics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 2,8,26CS102L,Python Programming Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 2,9,26EC101L,Electronic Devices and Circuits Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 2,10,26ME102L,Engineering Workshop Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 3,1,26MA201T,Engineering Mathematics-III,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,2,26CS231T,OOPS Through JAVA,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,3,26EC201T,Analog Electronic Circuits,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,4,26EC202T,Digital Logic Design,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,5,26EC203T,Signals and Systems,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,6,26EC204T,Network Analysis,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 3,7,26CS231L,OOPS Thorugh JAVA Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 3,8,26EC201L,Analog Electronic Circuits Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 3,9,26EC202L,Digital Logic Design Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 3,10,26EC203L,Signals and Systems Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 3,11,26HS201V,Environmental Science,-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,ECE,Semester 4,1,26EC205T,Analog and Digital Communications,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 4,2,26EC206T,Electromagnetic Waves & Transmission Lines,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 4,3,26EC207T,VLSI Design,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 4,4,,Core Elective-1/Career Path Elective -1,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 4,5,,Open Elective -1/Sequential Open Elective -1 2/3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 4,6,26EC204L,Analog and Digital Communications Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 4,7,26EC205L,VLSI Design lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 4,8,,Core Elective-1 Lab/Career Path Elective - 1 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 4,9,,Open Elective - 1 Lab/Sequential Open Elective -1 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 4,10,26SC201Q,Quantitative Aptitude -1,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 4,11,26SC201E,Soft Skills -1,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 4,12,26HS202V,Professional Ethics and Human Values,-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,ECE,Semester 5,1,26EC301T,Microprocessors and Microcontrollers,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 5,2,26EC302T,Linear and Digital IC Applications,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 5,3,26EC303T,Linear Control Systems,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 5,4,26EC304T,Electronic Measurements and Instrumentation,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 5,5,,Core Elective-2/Career Path Elective- 2,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 5,6,,Open Elective- 2/Sequential Open Elective- 2 2/3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 5,7,26EC301L,Microprocessors and Microcontrollers Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 5,8,26EC302L,Linear and Digital IC Applications Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 5,9,,Core Elective-2 Lab/Career Path Elective - 2 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 5,10,,Open Elective -2 Lab/Sequential Open Elective -2 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 5,11,26SC301S,Summer Internship- 1 -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,ECE,Semester 5,12,26SC301Q,Quantitative Aptitude- 2,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 5,13,26SC301E,Soft Skills- 2,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 6,1,26EC308T,Antennas and Microwave Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 6,2,26EC309T,Cellular and Mobile Communications,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 6,3,26EC310T,Digital Signal Processing,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 6,4,,Core Elective-3/Career Path Elective - 3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 6,5,,Open Elective -3/Sequential Open Elective -23 2/3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 6,6,26EC306L,Digital Signal Processing Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 6,7,,Core Elective- 3 Lab/Career Path Elective- 3 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 6,8,,Open Elective-3 Lab/Sequential Open Elective- 3 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,ECE,Semester 6,9,26SC301P,Mini Project,-,-,-,-,0,Internship / Project
+AR26,B.Tech,ECE,Semester 6,10,26SC302Q,Quantitative Aptitude- 3,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 6,11,26SC302E,Soft Skills- 3,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 7,1,26EC401T,Digital Image Processing,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 7,2,,Core Elective-4,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 7,3,26MG401T,Engineering Economics and Project Management,-,-,-,-,0,Internship / Project
+AR26,B.Tech,ECE,Semester 7,4,26SC401P/ 26SC401F,Project- 1/FSI- 1,-,-,-,-,0,Internship / Project
+AR26,B.Tech,ECE,Semester 7,5,26SC401S,Summer Internship- 2 -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,ECE,Semester 8,1,26EC405T,UHF and EHF Communication Systems,-,-,-,-,0,Theory
+AR26,B.Tech,ECE,Semester 8,2,,Core Elective - 5,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,ECE,Semester 8,3,26SC402P/ 26SC402F,Project - 2/ FSI- 2,-,-,-,-,0,Internship / Project
+AR26,B.Tech,EEE,Semester 1,1,26EN101T,Communicative English,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 1,2,26MA101T,Linear Algebra & Calculus,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 1,3,26CH101T,Engineering Chemistry,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 1,4,26CS101T,Programming for Problem Solving,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 1,5,26EE101T,Basics of Engineering,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 1,6,26EN101L,Communicative English Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 1,7,26CH101L,Engineering Chemistry Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 1,8,26CS101L,Programming for Problem Solving Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 1,9,26ME101L,Engineering Graphics Lab,-,-,-,2,0,Lab
+AR26,B.Tech,EEE,Semester 1,10,26HS101V,"Sports,Yoga, NCC and NSS,",-,-,-,1,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,EEE,Semester 2,1,26EN102T,Advanced Communicative English,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 2,2,26MA102T,Differential Equations & Numerical Techniques,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 2,3,26PH102T,Applied Physics,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 2,4,26CS102T,Python programming,-,-,-,2,0,Theory
+AR26,B.Tech,EEE,Semester 2,5,26EE102T,Electrical Circuit Analysis,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 2,6,26EN102L,Advanced Communicative English Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 2,7,26PH102L,Applied Physics lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 2,8,26CS102L,Python programming lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 2,9,26EE101L,Electrical Circuits and Simulation Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 2,10,26ME102L,Engineering Workshop lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 3,1,26MA201T,Engineering Mathematics-III,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,2,26CS231T,OOPS Through JAVA,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,3,26EE201T,DC Machines and Transformers,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,4,26EE202T,Semiconductor Devices & Circuits,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,5,26EE203T,Smart Sensors and Instrumentation,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,6,26EE204T,Electromagnetic Field Theory,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 3,7,26CS231L,OOPS Thorugh JAVA lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 3,8,26EE201L,DC Machines Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 3,9,26EE202L,Semiconductor Devices & Circuits Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 3,10,26EE203L,Smart Sensors and Instrumentation lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 3,11,26HS201V,Environmental science,-,-,-,1,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,EEE,Semester 4,1,26EE205T,AC Machines,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 4,2,26EE206T,Linear & Digital Integrated Circuits,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 4,3,26EE207T,Power Electronics,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 4,4,,Core Elective - 1/Career Path Elective - 1,-,-,-,3,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 4,5,,Open Elective -1/Sequential Open Elective - 1,-,-,-,2,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 4,6,26EE204L,AC Machines lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 4,7,26EE205L,Linear & Digital Integrated Circuits lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 4,8,,Core Elective – 1 Lab/Career Path Elective - 1 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 4,9,,Open Elective -1 Lab/Sequential Open Elective - 1 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 4,10,26SC201Q,Quantitative Aptitude - 1,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 4,11,26SC201E,Soft Skills -1,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 4,12,26HS202V,Professional Ethics and Human Values,-,-,-,1,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,EEE,Semester 5,1,26EE301T,Electrical Drives,-,-,-,2,0,Theory
+AR26,B.Tech,EEE,Semester 5,2,26EE302T,Power Generation Transmission and Distribution,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 5,3,26EE303T,Control Systems,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 5,4,26EE304T,Signal and Systems Theory,-,-,-,2,0,Theory
+AR26,B.Tech,EEE,Semester 5,5,,Core Elective -2/Career Path Elective -2,-,-,-,3,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 5,6,,Open Elective -2/Sequential Open Elective -2,-,-,-,2,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 5,7,26SC301S,Summer Internship-I -,-,-,-,2,0,Internship / Project
+AR26,B.Tech,EEE,Semester 5,8,26SC301Q,Quantitative Aptitude - 2,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 5,9,26SC301E,Soft Skills - 2,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 5,10,26EE301L,Power Electronics & Electrical Drives Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 5,11,26EE302L,Control Systems Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 5,12,,Core Elective -2 Lab/Career Path Elective -2 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 5,13,,Open Elective -2 Lab/Sequential Open Elective -2 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 6,1,26EE321T,Power System Analysis and Control,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 6,2,26EE306T,Power System Protection,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 6,3,26EE307T,Micro processors and Micro Controllers,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 6,4,,Core Elective -3/Career Path Elective -3,-,-,-,2,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 6,5,,Open Elective -3/Sequential Open Elective -3,-,-,-,2,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 6,6,26SC302Q,Quantitative Aptitude - 3,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 6,7,26SC302E,Soft Skills - 3,-,-,-,1,0,Theory
+AR26,B.Tech,EEE,Semester 6,8,26SC301P,Mini Project,-,-,-,2,0,Internship / Project
+AR26,B.Tech,EEE,Semester 6,9,26EE303L,Power System Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 6,10,,Core Elective -3 Lab/Career Path Elective -3 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 6,11,,Open Elective -3 Lab/Sequential Open Elective -3 Lab,-,-,-,1,0,Lab
+AR26,B.Tech,EEE,Semester 7,1,26EE401T,Utilization of Electrical Energy,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 7,2,,Core Elective -4,-,-,-,3,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 7,3,26MG401T,Engineering Economics and Project Management,-,-,-,3,0,Internship / Project
+AR26,B.Tech,EEE,Semester 7,4,26SC401P/26SC401F,Project -1/FSI - 1,-,-,-,8,0,Internship / Project
+AR26,B.Tech,EEE,Semester 7,5,26SC401S,Summer Internship-II -,-,-,-,2,0,Internship / Project
+AR26,B.Tech,EEE,Semester 8,1,26EE403T,Energy Audit Conservation and Management,-,-,-,3,0,Theory
+AR26,B.Tech,EEE,Semester 8,2,,Core Elective -5,-,-,-,3,0,Elective Placeholder
+AR26,B.Tech,EEE,Semester 8,3,26SC402P/26SC402F,Project - 2/FSI - 2,-,-,-,8,0,Internship / Project
+AR26,B.Tech,MECH,Semester 1,1,26EN101T,Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 1,2,26MA101T,Linear Algebra & Calculus,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 1,3,26CH101T,Engineering Chemistry,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 1,4,26CS101T,Programming for Problem Solving,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 1,5,26EE101T,Basics of Engineering,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 1,6,26EN101L,Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 1,7,26CH101L,Engineering Chemistry Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 1,8,26CS101L,Programming for Problem Solving Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 1,9,26ME101L,Engineering Graphics Lab,0,1,2,2,3,Lab
+AR26,B.Tech,MECH,Semester 1,10,26HS101V,"Sports, Yoga, NCC and NSS,",0,0,2,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,MECH,Semester 2,1,26EN102T,Advanced Communicative English,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 2,2,26MA102T,Differential Equations & Numerical Techniques,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 2,3,26PH102T,Applied Physics,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 2,4,26CS102T,Python programming,2,0,0,2,2,Theory
+AR26,B.Tech,MECH,Semester 2,5,26ME101T,Engineering Mechanics,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 2,6,26EN102L,Advanced Communicative English Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 2,7,26PH102L,Applied Physics lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 2,8,26CS102L,Python programming lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 2,9,26ME102L,Engineering Workshop lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 2,10,26ME103L,Basic Mechanical Engineering Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 3,1,26MA201T,Engineering Mathematics-III,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,2,26ME201T,Computer Aided Machine Drawing,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,3,26ME202T,Engineering Materials & Manufacturing Technology,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,4,26ME203T,Fluid Mechanics,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,5,26ME204T,Kinematics of Machinery,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,6,26ME205T,Thermodynamics,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 3,7,26MA201L,Computational Mathematics Lab for Engineering Applications,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 3,8,26ME201L,Engineering Materials Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 3,9,26ME202L,Fluid Mechanics Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 3,10,26ME203L,Manufacturing Technology Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 3,11,26HS201V,Environmental science,2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,MECH,Semester 4,1,26ME206T,Applied Thermodynamics,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 4,2,26ME207T,Dynamics of Machinery,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 4,3,26ME208T,Mechanics of Solids,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 4,4,,Elective ( Core/ CP)-1,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 4,5,,Sequential Open Elective course-1,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 4,6,26ME204L,Mechanics of Solids Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 4,7,26ME205L,Thermal Engineering Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 4,8,,Elective ( Core/ CP)-1 Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 4,9,26SC201Q,Quantitative Aptitude - 1,2,0,0,1,2,Theory
+AR26,B.Tech,MECH,Semester 4,10,26SC201E,Soft Skills -1,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 4,11,26HS202V,Professional Ethics and Human Values,2,0,0,1,2,Value-Added / Audit / Co-curricular
+AR26,B.Tech,MECH,Semester 5,1,26ME301T,Design of Machine Elements-I,2,0,0,2,2,Theory
+AR26,B.Tech,MECH,Semester 5,2,26ME302T,Metal Cutting and Machine Tools,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 5,3,26ME303T,Steam & Gas Turbines,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 5,4,26ME304T,Mechanical Measurements & Metrology,2,0,0,2,2,Theory
+AR26,B.Tech,MECH,Semester 5,5,,Core Elective -2/Career Path Elective -2,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 5,6,,Open Elective -2/Sequential Open Elective -2,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 5,7,26SC301S,Summer Internship-I,-,-,-,2,0,Internship / Project
+AR26,B.Tech,MECH,Semester 5,8,26SC301Q,Quantitative Aptitude - 2,2,0,0,1,2,Theory
+AR26,B.Tech,MECH,Semester 5,9,26SC301E,Soft Skills - 2,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 5,10,26ME301L,Machine Tool Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 5,11,26ME302L,Metrology Laboratory,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 5,12,,Core Elective -2 Lab/Career Path Elective -2 Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 6,1,26ME305T,CAD & CAM,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 6,2,26ME306T,Design of Machine Elements-II,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 6,3,26ME307T,Heat Transfer,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 6,4,,Core Elective -3/Career Path Elective -3,2,0,0,2,2,Elective Placeholder
+AR26,B.Tech,MECH,Semester 6,5,,Open Elective -3/Sequential Open Elective -3,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 6,6,26SC302Q,Quantitative Aptitude - 3,2,0,0,1,2,Theory
+AR26,B.Tech,MECH,Semester 6,7,26SC302E,Soft Skills - 3,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 6,8,26SC301P,Mini Project,0,0,4,2,4,Internship / Project
+AR26,B.Tech,MECH,Semester 6,9,26ME303L,Heat Transfer Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 6,10,,Core Elective -3 Lab/Career Path Elective -3 Lab,0,0,2,1,2,Lab
+AR26,B.Tech,MECH,Semester 7,1,26ME401T,Finite Element Methods,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 7,2,,Core Elective -4,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 7,3,,Minor elective,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 7,4,26SC401P/ 26SC401F,Project -1/FSI - 1,0,0,16,8,16,Internship / Project
+AR26,B.Tech,MECH,Semester 7,5,26SC401S,Summer Internship-II,-,-,-,2,0,Internship / Project
+AR26,B.Tech,MECH,Semester 8,1,26ME402T,Refrigeration and Air Conditioning,3,0,0,3,3,Theory
+AR26,B.Tech,MECH,Semester 8,2,,Core Elective -5,3,0,0,3,3,Elective Placeholder
+AR26,B.Tech,MECH,Semester 8,3,26SC402P/ 26SC402F,Project - 2/FSI - 2,0,0,16,8,16,Internship / Project
+AR26,B.Tech,CIVIL,Semester 1,1,26EN101T,Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 1,2,26MA101T,Linear Algebra and Calculus,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 1,3,26CH101T,Engineering Chemistry,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 1,4,26CS101T,Programming for Problem Solving,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 1,5,26EE101T,Basics of Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 1,6,26EN101L,Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 1,7,26CH101L,Engineering Chemistry Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 1,8,26CS101L,Programming for Problem Solving Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 1,9,26ME101L,Engineering Graphics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 1,10,26HS101V,"Sports, Yoga, NCC and NSS",-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CIVIL,Semester 2,1,26EN102T,Advanced Communicative English,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 2,2,26MA102T,Differential Equations & Numerical Techniques,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 2,3,26PH102T,Applied Physics,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 2,4,26CS102T,Python programming,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 2,5,26CE101T,Engineering Mechanics for Civil Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 2,6,26EN102L,Advanced Communicative English Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 2,7,26PH102L,Applied Physics lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 2,8,26CS102L,Python programming lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 2,9,26CE101L,Building Practices Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 2,10,26ME102L,Engineering Workshop lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 3,1,26MA201T,Engineering Mathematics-III,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,2,26CE201T,Data Science for Civil Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,3,26CE202T,Building Materials and Concrete Technology,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,4,26CE203T,Solid Mechanics I,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,5,26CE204T,Surveying,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,6,26CE205T,Fluid Mechanics,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 3,7,26CE202L,Concrete Technology Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 3,8,26CE203L,Solid Mechanics Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 3,9,26CE204L,Surveying Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 3,10,26CE206L,Building Planning and Drawing Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 3,11,26HS201V,Environmental science,-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CIVIL,Semester 4,1,26CE207T,Solid Mechanics II,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 4,2,26CE208T,Soil Mechanics,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 4,3,26CE209T,Hydraulics and Hydraulic Machinery,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 4,4,,Core Elective 1/Career Path Elective 1,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 4,5,,Open Elective 1/Sequential Open Elective 1,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 4,6,26CE208L,Soil Mechanics Laboratory,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 4,7,26CE209L,Fluid Mechanics and Hydraulic Machinery Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 4,8,,Core Elective 1/Career Path Elective 1 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 4,9,,Open Elective 1/Sequential Open Elective 1 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 4,10,26SC201Q,Quantitative Aptitude - 1,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 4,11,26SC201E,Soft skills - 1,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 4,12,26HS202V,Professional Ethics and Human Values,-,-,-,-,0,Value-Added / Audit / Co-curricular
+AR26,B.Tech,CIVIL,Semester 5,1,26CE301T,Environmental Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,2,26CE302T,Structural Analysis,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,3,26CE303T,Design and Detailing of RC Structures,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,4,26CE304T,Foundation Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,5,,Core Elective 2/Career Path Elective 2,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 5,6,,Open Elective 2/Sequential Open Elective 2,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 5,7,26CE301L,Environmental Engineering Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 5,8,26CE302L,Structural Analysis Lab (Staad.Pro),-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 5,9,,Core Elective 2 Lab/Career Path Elective 2 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 5,10,,Open Elective 2 Lab/Sequential Open Elective 2 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 5,11,26SC302Q,Quantitative Aptitude - 2,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,12,26SC302E,Soft skills - 2,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 5,13,26SC301S,Summer Internship-I -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CIVIL,Semester 6,1,26CE315T,Transportation Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 6,2,26CE316T,Design of Steel Structures,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 6,3,26CE317T,Estimation and costing,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 6,4,,Core Elective 3/Career Path Elective 3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 6,5,,Open Elective 3/Sequential Open Elective 3,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 6,6,26CE315L,Transportation Engineering Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 6,7,,Core Elective 3 Lab/Career Path Elective 3 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 6,8,,Open Elective 3 Lab/Sequential Open Elective 3 Lab,-,-,-,-,0,Lab
+AR26,B.Tech,CIVIL,Semester 6,9,26SC301P,Mini Project,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CIVIL,Semester 6,10,26SC303Q,Quantitative Aptitude-3,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 6,11,26SC303E,Soft skills 3,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 7,1,26CE401T,Irrigation and Water Resources Engineering,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 7,2,,Core Elective 4,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 7,3,26MG401T,Engineering Economics and Project Management,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CIVIL,Semester 7,4,26SC401P/ 26SC401F,Project -1/FSI-1,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CIVIL,Semester 7,5,26SC401S,Summer Internship-II -,-,-,-,-,0,Internship / Project
+AR26,B.Tech,CIVIL,Semester 8,1,26CE412T,Construction Management,-,-,-,-,0,Theory
+AR26,B.Tech,CIVIL,Semester 8,2,,Core Elective 5,-,-,-,-,0,Elective Placeholder
+AR26,B.Tech,CIVIL,Semester 8,3,26SC402P/ 26SC402F,Project-2/FSI-2,-,-,-,-,0,Internship / Project
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,1,26MTVL101T,Analog and Digital IC Design,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,2,26MTVL102T,Advanced Microcontrollers and Processors,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,3,,Major Core elective I (VLSI),-,-,-,-,0,Elective Placeholder
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,4,,Major Core elective II (ES),-,-,-,-,0,Elective Placeholder
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,5,26MTUC101T,Research Methodology and IPR,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,6,26MTVL101L,Embedded Systems Lab,-,-,-,-,0,Lab
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 1,7,26MTVL102L,Analog and Digital IC Design Lab,-,-,-,-,0,Lab
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,1,26MTVL109T,Physical Design Automation,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,2,26MTVL110T,IoT System Design,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,3,,Major Core elective III (ES),-,-,-,-,0,Elective Placeholder
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,4,,Major Core elective IV (VLSI),-,-,-,-,0,Elective Placeholder
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,5,26MTSC101T,Advanced Optimization Techniques ** Minor (open elective),-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,6,,Audit Course,-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,7,26MTVL103L,Physical Design Automation Lab,-,-,-,-,0,Lab
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 2,8,26MTVL104L,IoT System Design Lab,-,-,-,-,0,Lab
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 3,1,26MTSC201T,Industrial Training (8 weeks),-,-,-,-,0,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 3,2,26MTSC201P,Project 1 (8 weeks),-,-,-,-,0,Internship / Project
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Semester 4,1,26MTSC202P,Project 2 (Dissertation),-,-,-,-,0,Internship / Project
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective I (VLSI),1,26MTVL103T,AIML Hardware accelerators,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective I (VLSI),2,26MTVL104T,Digital Design through VERILOG,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective I (VLSI),3,26MTVL105T,VLSI Signal Processing,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective II (ES),1,26MTVL106T,Embedded Software Design,3,-,-,3,3,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective II (ES),2,26MTVL107T,DSP Processors and Architectures,3,-,-,3,3,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective II (ES),3,26MTVL108T,CPLD and FPGA Architectures & Applications,3,-,-,3,3,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective III (ES),1,26MTVL111T,Embedded and Real Time Systems,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective III (ES),2,26MTVL112T,Hardware Software Co-design,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective III (ES),3,26MTVL113T,Embedded Networking,4,-,-,4,4,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective IV (VLSI),1,26MTVL114T,Low Power VLSI Design,3,-,-,3,3,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective IV (VLSI),2,26MTVL115T,System Verilog Programming for Verification,3,-,-,3,3,Theory
+AR26,M.Tech,ECE (VLSI & Embedded Systems),Major Core Elective IV (VLSI),3,26MTVL116T,Memory Architectures,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),1,23PYX01/ 23CYX01,"Engineering Physics/Chemistry 1,2,7,10,12/1, 2,6,7,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),2,23MAX01/ 23MAX02,"Linear Algebra& Calculus/Differential Equations and Vector calculus 1,2,3,4,12/1,2, 3,4,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),3,23BEX01/ 23BEX02,"Basic Electrical and Electronics Engineering/ Basic Civil & Mechanical Engineering 1,3,6,7,9,12/1, 2,3,6,7,8,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),4,23BEX03,Introduction to Programming,3,0,0,3,3,Theory
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),5,23BEX04/ 23HSX01,"Engineering Graphics/Communicative English 1,5,10,12/1,9, 10,11,12",2/2,0,2/0,3/2,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),6,23PYX02/ 23CYX03,"Engineering Physics Lab/Chemistry Lab 4,6,9,11,12/1, 6,7,9,12",0,0,2/2,1/1,,Lab
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),7,23BEX05/ 23BEX06,"Electrical & Electronics Engineering workshop/Engineering Workshop 4,5,6,9,12/1,9, 12",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),8,23BEX07,Computer Programming Lab,0,0,3,1.5,3,Lab
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),9,23HSX11,-/ECA (Yoga / Sports) -,-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),10,23HSX12,-/CCA (NSS/NCC/Community Service) -,-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),11,23BEX08,IT Workshop/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE,First Semester (Pattern-I/Pattern-II),12,23HSX02,- /Communicative English Lab,0,0,-/2,/1,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),1,23HSX01/ 23BEX04,"Communicative English/ Engineering Graphics 10,12/1,5,10",2/2,0,0/2,2/3,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),2,23MAX02/ 23MAX01,"Differential Equations and Vector calculus/Linear Algebra & Calculus 1,2,3,4,12/1,2, 3,4,12/",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),3,23CYX01/ 23PYX01,"Chemistry /Engineering Physics 1,2,6,7,12/1,2, 7,10,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),4,23BEX02/ 23BEX01,"Basic Civil & Mechanical Engineering/ Basic Electrical and Electronics Engineering 1,2,3,6,7,8,12/ 1,3,6,7,9,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),5,23CS201,"Data Structures (CSE, CSE-AI&DS, CSE-AI&ML, IT)",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),6,23CYX03/ 23PYX02,"Chemistry Lab / Engineering Physics Lab 1,6,7,9,12/4,6, 9,11,12",0,0,2/2,1/1,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),7,23BEX06/ 23BEX05,"Engineering Workshop/Electrical & Electronics Engineering workshop 1,9,12/1,4,5",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),8,23BEX08,IT Workshop/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),9,23HSX02,Communicative English Lab/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),10,23CS202,"Data Structures Lab (CSE, CSE-AI&DS, CSE-AI&ML, IT)",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),11,23HSX11,-/ECA (Yoga/ Sports) -,-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE,Second Semester(Pattern-I/Pattern-II),12,23HSX12,-/CCA (NSS/NCC/Community Service) -,-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE,Third Semester,1,23CS301,Problem solving using Python,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Third Semester,2,23HSX10,Engineering Economics and Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,CSE,Third Semester,3,23CS303,Design and Analysis of Algorithms,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Third Semester,4,23CS304,Digital Logic Design,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Third Semester,5,23CS305,Discrete Mathematical Structures,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Third Semester,6,23CS306,Object Oriented Programming with JAVA,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Third Semester,7,23CS307,Design and Analysis of Algorithms Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Third Semester,8,23CS308,JAVA Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Third Semester,9,23ESX01,Employability Skills I,0,-,2,-,2,Lab
+AR23,B.Tech,CSE,Fourth Semester,1,23IT304,Database Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fourth Semester,2,23IT403,Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fourth Semester,3,23CS403,Computer Organization and Architecture,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fourth Semester,4,23MA404,Probability and Statistics using Python,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Fourth Semester,5,23CS405,Web Coding and Development,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fourth Semester,6,23IT308,Database Management Systems Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Fourth Semester,7,23CS407,Web Coding and Development Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Fourth Semester,8,23ESX01,Employability Skills I,0,-,2,2,2,Lab
+AR23,B.Tech,CSE,Fifth Semester,1,23EC502,Microprocessors and Microcontrollers (Integrated),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Fifth Semester,2,23CS502,Artificial Intelligence and Machine Learning,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fifth Semester,3,23CS503,Computer Networks (Integrated),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Fifth Semester,4,23CS504,Theory of Computation,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Fifth Semester,5,,Elective I (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Fifth Semester,6,,Elective II (Open Elective I),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Fifth Semester,7,23CS507,Artificial Intelligence and Machine Learning Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE,Fifth Semester,9,23ESX02,Employability Skills II,0,-,2,-,2,Lab
+AR23,B.Tech,CSE,Fifth Semester,10,23SIX01,Summer Internship I,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE,Sixth Semester,1,23CS601,Compiler Design,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Sixth Semester,2,23CS602,Cryptography and Network Security,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Sixth Semester,3,23CS603,Software Engineering,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Sixth Semester,4,,Elective III (Professional Elective),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,CSE,Sixth Semester,5,,Elective IV (Open Elective II),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Sixth Semester,6,23CS606,Case Tools Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE,Sixth Semester,7,23MPX01,Mini Project All POs & PSOs,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE,Sixth Semester,8,23ESX02,Employability Skills II,0,-,2,2,2,Lab
+AR23,B.Tech,CSE,Sixth Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Sixth Semester,10,23ATX02,Professional Ethics and Human Values ----,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Sixth Semester,11,23ATX03,Indian Knowledge Systems ----,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Sixth Semester,12,,23ATX--- Audit Course ----,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Seventh Semester,1,,Elective V (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Seventh Semester,2,,Elective VI (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Seventh Semester,3,,Elective VII (Open Elective III),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE,Seventh Semester,4,23SIX02,Summer Internship II,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE,Seventh Semester,5,23PWX01,Project All POs& PSOs,-,-,16,8,16,Internship / Project
+AR23,B.Tech,CSE,Eighth Semester,1,,Elective VIII (Professional Elective),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,CSE,Eighth Semester,2,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,CSE,Eighth Semester,3,23FIX01,Full Semester Internship (FSI),-,-,-,8,0,Internship / Project
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",1,23CSC11,Artificial Neural Networks ( AI&ML),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",2,23CSC21,Backend Programming Languages (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",3,23ITC31,Fundamentals of Security (Cyber Security),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",4,23MLC31,Fundamentals of Cloud Computing (Cloud Computing),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",5,23CS004,Principles of Programming Languages,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",6,23CS005,Mobile Computing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core Electives",7,23CS006,Distributed Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Open Electives,1,,23O0511 Data Wrangling and Preprocessing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",1,23CSC12,Deep Learning (AI&ML),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",2,23CSC22,Web Application Framework (Full Stack Developer),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",3,23ITC32,Cybernet Security (Cyber Security),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",4,23MLC32,Cloud Services using AWS(Cloud Computing ),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",5,23CS007,Cloud Computing Essentials,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",6,23CS008,Internet of Things,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE,Open Electives,1,,23O0512 Data Visualization Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",1,23CSC13,Natural Language Processing (AI&ML),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",2,23CSC23,Web Application Databases (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",3,23ITC33,Cloud Security (Cyber Security),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",4,23MLC33,Cloud Security Essentials (Cloud Computing ),3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",5,23IT010,Social Network Analysis,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",6,23CS011,Optimization Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,"Career Path I ,II,III and other Core electives",7,23CS012,Wireless Adhoc Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Elective VI: Professional Elective,1,23CS014,Green Computing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Elective VI: Professional Elective,2,23CS015,Software Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,CSE,Elective VI: Professional Elective,3,23CS016,Soft Computing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE,Open Electives,1,,23O0513 Time series Analysis and Forecasting,3,-,-,3,3,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE,Elective VIII: Professional Elective,1,23CS017,Fundamentals of Social Network Analysis,-,-,-,3,0,Theory
+AR23,B.Tech,CSE,Elective VIII: Professional Elective,2,23CS018,Information Retrieval Systems,-,-,-,3,0,Theory
+AR23,B.Tech,CSE,Elective VIII: Professional Elective,3,23CS019,Fundamentals of Devops,-,-,-,3,0,Theory
+AR23,B.Tech,CSE,Open Electives,1,,23O0514 AI for Business Intelligence,2,-,-,2,2,Theory
+AR23,B.Tech,CSE,Audit Course,1,23AT001,Communication Etiquette in Workplaces -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,2,23AT002,"Contemporary India: Economy, Policy and Society -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,3,23AT003,Design The Thinking -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,4,23AT004,Ethics and Integrity -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,5,23AT005,Indian Heritage and Culture -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,6,23AT006,Intellectual Property Rights and Patents -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,7,23AT007,Introduction to Journalism -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,8,23AT008,Mass Media Communication -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,9,23AT009,"Science, Technology and Development -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,10,23AT010,Social Responsibility -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,11,23AT011,The Art of Photography and Film Making -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,12,23AT012,Gender Equality for Sustainability -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,13,23AT013,Women in Leadership -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,14,23AT014,Introduction to Research Methodology -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,15,23AT015,Climate Change and Circular Economy -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE,Audit Course,1,23CSH11,Advanced Data Structures,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,2,23CSH12,Advanced Databases,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,3,23CSH13,"Programming, Data Structures and Algorithms Using Python",4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,4,23CSH14,Bioinformatics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,5,,MOOCs,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,1,23CSH21,DevOps,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,2,23CSH22,Design Patterns,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,3,23CSH23,Advanced Software Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,4,23CSH24,Robotic Process Automation,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,5,,MOOCs,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,1,23CSH31,Computer Systems Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,2,23CSH32,Python Programming for Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,3,23CSH33,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,4,23CSH34,Computer Forensics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,5,,MOOCs,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,1,23CSH41,Computer Graphics,4,-,-,4,4,Lab
+AR23,B.Tech,CSE,Audit Course,2,23CSH42,Multimedia Systems,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,3,23CSH43,Human Computer Interaction,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,4,23CSH44,Mobile Programming,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,Audit Course,5,,MOOCs,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,B. Tech. (Minors),1,23CSM01,Data Structures and Algorithms Using Python --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,B. Tech. (Minors),2,23CSM02,Fundamentals of Data Base Management System --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,B. Tech. (Minors),3,23CSM03,Fundamentals of Computer Networks & Operating Systems --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,B. Tech. (Minors),4,23CSM04,Foundations of Software Engineering --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE,B. Tech. (Minors),5,23CSM05,Fundamentals of Web Development(MOOCs) --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),First Semester,1,23PYX01 23CYX01,"Engineering Physics/Chemistry 1,2,7,10,12/ 1,2,6,7,12",3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&DS),First Semester,2,23MAX01 23MAX02,"Linear Algebra& Calculus/Differential Equations and Vector calculus 1,2,3,4,12/ 1,2,3,4,12",3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&DS),First Semester,3,23BEX01/ 23BEX02,"Basic Electrical and Electronics Engineering/ Basic Civil & Mechanical Engineering 1,3,6,7,9,12/ 1,2,3,6,7,8,12",3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&DS),First Semester,4,23BEX03,Introduction to Programming,3,0,0,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),First Semester,5,23BEX04/ 23HSX01,"Engineering Graphics/Communicative English 1,5,10,12/ 1,3,6,9,12",2,0,2/0,3/2,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),First Semester,6,,"23PYX02/ 23CYX03/ Engineering Physics Lab/Chemistry Lab 4,6,9,11,12/ 1,6,7,9,12",-,0,2/2,1/1,,Lab
+AR23,B.Tech,CSE (AI&DS),First Semester,7,23BEX05/ 23BEX06,"Electrical & Electronics Engineering workshop/Engineering Workshop 4,5,6,9,12/ 1,9,12",-,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE (AI&DS),First Semester,8,23BEX07,Computer Programming Lab,-,0,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),First Semester,9,23HSX11,-/ECA (Yoga / Sports) -,-,0,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&DS),First Semester,10,23HSX12,-/CCA (NSS/NCC/Community Service) -,-,0,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&DS),First Semester,11,23BEX08,IT Workshop/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&DS),First Semester,12,23HSX02,- /Communicative English Lab,0,0,-/2,/1,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,1,23HSX01/ 23BEX04,"Communicative English/ Engineering Graphics 1,9,10,11,12/ 1,5,10,12",2/2,0,0/2,2/3,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Second Semester,2,23MAX02/ 23MAX01,"Differential Equations and Vector calculus/Linear Algebra& Calculus 1,2,3,4,12/ 1,2,3,4,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&DS),Second Semester,3,23CYX01/ 23PYX01,"Chemistry /Engineering Physics 1,2,6,7,12/1,2, 7,10,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&DS),Second Semester,4,23BEX02/ 23BEX01,"Basic Civil & Mechanical Engineering/ Basic Electrical and Electronics Engineering 1,2,3,6,7,8,12/ 1,3,6,9,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&DS),Second Semester,5,23CS201,"Data Structures(CSE,CSE-AI&DS,CSE- AI&ML, IT)",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&DS),Second Semester,6,23CYX03/ 23PYX02,"Chemistry Lab / Engineering Physics Lab 1,6,7,9,12/4,6,9, 11,12",0,0,2/2,1/1,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,7,23BEX06/ 23BEX05,"Engineering Workshop/Electrical & Electronics Engineering workshop 1,9,12/4,5,6,9, 12",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,8,23BEX08,IT Workshop/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,9,23HSX02,Communicative English Lab/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,10,23CS202,"Data Structures Lab (CSE, CSE-AI&DS, CSE-AI&ML, IT)",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE (AI&DS),Second Semester,11,23HSX11,-/ECA (Yoga/ Sports),-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&DS),Second Semester,12,23HSX12,-/CCA (NSS/NCC/Community Service),-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&DS),Third Semester,1,23CS301,Problem Solving using Python,-,-,2,4,2,Lab
+AR23,B.Tech,CSE (AI&DS),Third Semester,2,23ML302,Artificial Intelligence,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&DS),Third Semester,3,23CS303,Design and Analysis of Algorithms,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&DS),Third Semester,4,23CS304,Digital Logic Design,-,-,2,4,2,Lab
+AR23,B.Tech,CSE (AI&DS),Third Semester,5,23DS305,Mathematical Foundation for Data Science,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&DS),Third Semester,6,23CS306,Object Oriented Programming with JAVA,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Third Semester,7,23CS307,Design and Analysis of Algorithms Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Third Semester,8,23CS308,JAVA Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Third Semester,9,23BEA01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Third Semester,10,23ESX01,Employability Skills I,0,-,2,-,2,Lab
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,1,23IT304,Database Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,2,23IT403,Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,3,23CS403,Computer Organization and Architecture,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,4,23MA404,Probability and Statistics using python,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,5,23DS405,Foundations of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,6,23IT308,Database Management Systems Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,7,23DS407,Foundations of Data Science Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Fourth Semester,8,23ESX01,Employability Skills I,0,-,2,2,2,Lab
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,1,23IT405,Web Technologies,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,2,23DS502,Deep Learning for Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,3,23DS503,Data Analytics &Visualization Techniques,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,4,23ML504,Computer Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,5,,Elective I (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,6,,Elective II (Open Elective I),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,7,23DS507,Deep Learning Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,9,23ESX02,Employability Skills II,0,-,2,-,2,Lab
+AR23,B.Tech,CSE (AI&DS),Fifth Semester,11,23SIX01,Summer Internship I All PO’s & PSO’s,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Six Semester,1,23DS601,Optimization Techniques for ML,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Six Semester,2,23ML602,Automata Theory and Language Processors,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Six Semester,3,23CS603,Software Engineering,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Six Semester,4,,Elective III (Professional Elective),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Six Semester,5,,Elective IV (Open Elective II),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Six Semester,6,23DS606,Optimization Techniques for ML Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&DS),Six Semester,7,23MPX01,Mini Project All POs & PSOs,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Six Semester,8,23ESX02,Employability Skills II,0,-,2,2,2,Lab
+AR23,B.Tech,CSE (AI&DS),Six Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Six Semester,10,23ATX02,Professional Ethics and Human Values ----,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Six Semester,11,,23ATX--- Audit Course,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Seventh Semester,1,,Elective V (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Seventh Semester,2,,Elective VI (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Seventh Semester,3,,Elective VII (Open Elective III),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Seventh Semester,4,23SIX02,Summer Internship II All PO’s & PSO’s,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Seventh Semester,5,23PWX01,Project Work All PO’s & PSO’s,-,-,16,8,16,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Eighth Semester,1,,Elective VIII (Professional Elective),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Eighth Semester,2,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,CSE (AI&DS),Eighth Semester,3,23FIX01,Full Semester Internship (FSI) All PO’s & PSO’s,-,-,-,8,0,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Language Electives,1,23HSX03,Advanced Communicative English,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,2,23HSX04,Communicative German,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,3,23HSX05,Communicative French,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,4,23HSX06,Communicative Japanese,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,5,23HSX07,Communicative Spanish,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,6,23HSX08,Communicative Korean,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Language Electives,7,23HSX09,Communicative Hindi,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,1,23MLC11,Computer Vision & Pattern Recognition(ML Ops),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,2,23CSC21,Backend Programming Languages (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,3,23MLC31,Fundamentals of Cloud Computing (Cloud Computing),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,4,23CS004,Principles of Programming Languages,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,5,23CS005,Mobile Computing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path I,6,23CS006,Distributed Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path II,1,23MLC12,Machine Learning for Business Intelligence(ML Ops),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Career Path II,2,23CSC22,Web Application Frameworks(Full Stack Developer),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Career Path II,3,23MLC32,Cloud Services using AWS(Cloud Computing),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Career Path II,4,23CS007,Cloud Computing Essentials,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Career Path II,5,23CS008,Cryptography and Network Security,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&DS),Career Path III,1,23MLC13,Conversational AI(ML Ops),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path III,2,23CSC23,Web Application Databases (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path III,3,23MLC33,Cloud Security Essentials(Cloud Computing),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path III,4,23IT010,Social Network Analysis,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path III,5,23ML001,Human Computer Interaction,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Career Path III,6,23CS012,Wireless Adhoc Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Elective VI,1,23DS002,Data Visualization with Power BI,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Elective VI,2,23CS015,Software Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,CSE (AI&DS),Elective VI,3,23ML003,Reinforcement Learning,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&DS),Elective VIII: Professional Elective,1,23CS018,Information Retrieval Systems,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&DS),Elective VIII: Professional Elective,2,23CS019,Fundamentals of Devops,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,1,23AT001,Communication Etiquette in Workplaces -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,2,23AT002,"Contemporary India: Economy, Policy and Society -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,3,23AT003,Design The Thinking -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,4,23AT004,Ethics and Integrity -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,5,23AT005,Indian Heritage and Culture -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,6,23AT007,Intellectual Property Rights and Patents -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,7,23AT008,Introduction to Journalism -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,8,23AT009,Mass Media Communication -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,9,23AT010,"Science, Technology and Development -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,10,23AT011,Social Responsibility -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,11,23AT012,The Art of Photography and Film Making -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,12,23AT013,Gender Equality for Sustainability -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,13,23AT014,Women in Leadership -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,14,23AT015,Introduction to Research Methodology -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,15,23AT016,Climate Change and Circular Economy -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,01,23CSH11,Advanced Data Structures,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,02,23CSH12,Advanced Databases,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,03,23CSH13,"Programming, Data Structures and Algorithms Using Python",4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,04,23CSH14,Bioinformatics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,01,23CSH21,DevOps,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,02,23CSH22,Design Patterns,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,03,23CSH23,Advanced Software Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,04,23CSH24,Robotic Process Automation,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,01,23CSH31,Computer Systems Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,02,23CSH32,Python Programming for Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,03,23CSH33,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,04,23CSH34,Computer Forensics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,01,23CSH41,Computer Graphics,4,-,-,4,4,Lab
+AR23,B.Tech,CSE (AI&DS),Audit Course,02,23CSH42,Multimedia Systems,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,03,23CSH43,Human Computer Interaction,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),Audit Course,04,23CSH44,Mobile Programming,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),B. Tech. (Minors),1,23DSM01,Fundamentals of Data Science --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),B. Tech. (Minors),2,23DSM02,Principles of Artificial Intelligence --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),B. Tech. (Minors),3,23DSM03,Statistics for Data Science using Python --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),B. Tech. (Minors),4,23DSM04,Deep Learning --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&DS),B. Tech. (Minors),5,23DSM05,Natural Language Processing(MOOCs) --,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),First Semester,1,23PYX01 23CYX01,Engineering Physics/Chemistry 3/3,3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&ML),First Semester,2,23MAX01 23MAX02,Linear Algebra& Calculus/Differential Equations and Vector calculus 3/3,3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&ML),First Semester,3,23BEX01/ 23BEX02,Basic Electrical and Electronics Engineering/ Basic Civil & Mechanical Engineering 3/3,3,0,0,3/3,3,Theory
+AR23,B.Tech,CSE (AI&ML),First Semester,4,23BEX03,Introduction to Programming,3,0,0,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),First Semester,5,23BEX04/ 23HSX01,Engineering Graphics/Communicative English 2/2,2,0,2/0,3/2,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),First Semester,6,,23PYX02/ 23CYX03/ Engineering Physics Lab/Chemistry Lab,2,0,2/2,1/1,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),First Semester,7,23BEX05/ 23BEX06,"Electrical & Electronics Engineering workshop/Engineering Workshop 1,9,10/1,5,10",2,0,3/3,1.5/1.5,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),First Semester,8,23BEX07,Computer Programming Lab,2,0,3,1.5,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),First Semester,9,23HSX11,-/ECA (Yoga / Sports) -,-,0,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&ML),First Semester,10,23HSX12,-/CCA (NSS/NCC/Community Service) -,-,0,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&ML),First Semester,11,23BEX08,IT Workshop/-,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&ML),First Semester,12,23HSX02,- /Communicative English Lab,0,0,-/2,/1,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,1,23HSX01/ 23BEX04,Communicative English/ Engineering Graphics,2/2,0,0/2,2/3,,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Second Semester,2,23MAX02/ 23MAX01,Differential Equations and Vector calculus/Linear Algebra& Calculus,3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&ML),Second Semester,3,23CYX01/ 23PYX01,Chemistry /Engineering Physics 1/1,3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&ML),Second Semester,4,23BEX02/ 23BEX01,"Basic Civil & Mechanical Engineering/ Basic Electrical and Electronics Engineering 1,12/1,12",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&ML),Second Semester,5,23CS201,"Data Structures(CSE,CSE-AI&DS,CSE-AI&ML, IT)",3/3,0,0,3/3,,Theory
+AR23,B.Tech,CSE (AI&ML),Second Semester,6,23CYX03/ 23PYX02,Chemistry Lab / Engineering Physics Lab,0,0,2/2,1/1,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,7,23BEX06/ 23BEX05,"Engineering Workshop/Electrical & Electronics Engineering workshop 1,9,10/1,5,1 0",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,8,23BEX08,IT Workshop/- 4/4,0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,9,23HSX02,"Communicative English Lab/- -/10,12",0,0,2/-,1/-,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,10,23CS202,"Data Structures Lab (CSE, CSE-AI&DS, CSE-AI&ML, IT)",0,0,3/3,1.5/1.5,,Lab
+AR23,B.Tech,CSE (AI&ML),Second Semester,11,23HSX11,-/ECA (Yoga/ Sports),-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&ML),Second Semester,12,23HSX12,-/CCA (NSS/NCC/Community Service),-,-,-/1,/0.5,,Value-Added / Audit / Co-curricular
+AR23,B.Tech,CSE (AI&ML),Third Semester,1,23CS301,Problem Solving using Python,-,-,2,4,2,Lab
+AR23,B.Tech,CSE (AI&ML),Third Semester,2,23ML302,Artificial Intelligence,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Third Semester,3,23CS303,Design and Analysis of Algorithms,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Third Semester,4,23CS304,Digital Logic Design,-,-,2,4,2,Lab
+AR23,B.Tech,CSE (AI&ML),Third Semester,5,23DS305,Mathematical Foundation for Data Science,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Third Semester,6,23CS306,Object Oriented Programming with JAVA,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Third Semester,7,23CS307,Design and Analysis of Algorithms Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Third Semester,8,23CS308,JAVA Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Third Semester,9,23BEA01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Third Semester,10,23ESX01,Employability Skills I,-,-,2,-,2,Lab
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,1,23IT304,Database Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,2,23IT403,Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,3,23CS403,Computer Organization and Architecture,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,4,23MA404,Probability and Statistics using python,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,5,23ML405,Foundations of Machine learning,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,6,23IT308,Database Management Systems Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,7,23ML407,Foundations of Machine learning Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Fourth Semester,8,23ESX01,Employability Skills I,0,-,2,2,2,Lab
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,1,23IT405,Web Technologies,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,2,23ML502,Neural Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,3,23DS503,Data Analytics &Visualization Techniques,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,4,23ML504,Computer Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,5,,Elective I (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,6,,Elective II (Open Elective I),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,7,23ML507,Neural Networks Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,9,23ESX02,Employability Skills II,0,-,2,-,2,Lab
+AR23,B.Tech,CSE (AI&ML),Fifth Semester,10,23SIX01,Summer Internship I All PO’s & PSO’s,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,1,23ML601,Deep Learning Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,2,23ML602,Automata Theory and Language Processors,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,3,23CS603,Software Engineering,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,4,,Elective III (Professional Elective),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,5,,Elective IV (Open Elective II),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,6,23ML606,Deep Learning Techniques Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,7,23MPX01,Mini Project All POs & PSOs,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,8,23ESX02,Employability Skills II,0,-,2,2,2,Lab
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,10,23ATX02,Professional Ethics and Human Values ----,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Sixth Semester,11,,23ATX--- Audit Course,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Seventh Semester– AI & ML,1,,Elective V (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Seventh Semester– AI & ML,2,,Elective VI (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Seventh Semester– AI & ML,3,,Elective VII (Open Elective III),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Seventh Semester– AI & ML,4,23SIX02,Summer Internship II All PO’s & PSO’s,-,-,-,1,0,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Seventh Semester– AI & ML,5,23PWX01,Project All PO’s & PSO’s,-,-,16,8,16,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Eighth Semester-AI & ML,1,,Elective VIII (Professional Elective),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Eighth Semester-AI & ML,2,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,CSE (AI&ML),Eighth Semester-AI & ML,3,23FIX01,Full Semester Internship (FSI) All PO’s & PSO’s,-,-,-,8,0,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Language Electives,1,23HSX03,Advanced Communicative English,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,2,23HSX04,Communicative German,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,3,23HSX05,Communicative French,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,4,23HSX06,Communicative Japanese,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,5,23HSX07,Communicative Spanish,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,6,23HSX08,Communicative Korean,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Language Electives,7,23HSX09,Communicative Hindi,2,-,-,2,2,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,1,23MLC11,Computer Vision & Pattern Recognition(ML Ops),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,2,23CSC21,Backend Programming Languages (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,3,23MLC31,Fundamentals of Cloud Computing (Cloud Computing),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,4,23CS004,Principles of Programming Languages,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,5,23CS005,Mobile Computing,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path I,6,23CS006,Distributed Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path II,1,23MLC12,Machine Learning for Business Intelligence(ML Ops),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Career Path II,2,23CSC22,Web Application Frameworks(Full Stack Developer),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Career Path II,3,23MLC32,Cloud Services using AWS(Cloud Computing),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Career Path II,4,23CS007,Cloud Computing Essentials,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Career Path II,5,23CS008,Cryptography and Network Security,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,CSE (AI&ML),Career Path III,1,23MLC13,Conversational AI(ML Ops),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path III,2,23CSC23,Web Application Databases (Full Stack Developer),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path III,3,23MLC33,Cloud Security Essentials(Cloud Computing),3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path III,4,23IT017,Social Network Analysis,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path III,5,23ML001,Human Computer Interaction,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Career Path III,6,23CS012,Wireless Adhoc Networks,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Elective VI,1,23ML002,Large Language Models,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Elective VI,2,23CS015,Software Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,CSE (AI&ML),Elective VI,3,23ML003,Reinforcement Learning,3,-,-,3,3,Theory
+AR23,B.Tech,CSE (AI&ML),Elective VIII: Professional Elective,1,23CS018,Information Retrieval Systems,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Elective VIII: Professional Elective,2,23CS019,Fundamentals of Devops,-,-,-,3,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,1,23AT001,Communication Etiquette in Workplaces -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,2,23AT002,"Contemporary India: Economy, Policy and Society -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,3,23AT003,Design The Thinking -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,4,23AT004,Ethics and Integrity -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,5,23AT005,Indian Heritage and Culture -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,6,23AT007,Intellectual Property Rights and Patents -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,7,23AT008,Introduction to Journalism -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,8,23AT009,Mass Media Communication -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,9,23AT010,"Science, Technology and Development -",-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,10,23AT011,Social Responsibility -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,11,23AT012,The Art of Photography and Film Making -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,12,23AT013,Gender Equality for Sustainability -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,13,23AT014,Women in Leadership -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,14,23AT015,Introduction to Research Methodology -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,15,23AT016,Climate Change and Circular Economy -,-,-,-,-,0,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,1,23CSH11,Advanced Data Structures,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,2,23CSH12,Advanced Databases,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,3,23CSH13,"Programming, Data Structures and Algorithms Using Python",4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,4,23CSH14,Bioinformatics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,1,23CSH21,DevOps,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,2,23CSH22,Design Patterns,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,3,23CSH23,Advanced Software Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,4,23CSH24,Robotic Process Automation,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,1,23CSH31,Fundamentals of Systems Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,2,23CSH32,Python Programming for Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,3,23CSH33,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,4,23CSH34,Computer Forensics,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,1,23CSH41,Computer Graphics,4,-,-,4,4,Lab
+AR23,B.Tech,CSE (AI&ML),Audit Course,2,23CSH42,Multimedia Systems,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,3,23CSH43,Human Computer Interaction,4,-,-,4,4,Theory
+AR23,B.Tech,CSE (AI&ML),Audit Course,4,23CSH44,Mobile Programming,4,-,-,4,4,Theory
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),1,23PYX01/ 23CYX01,"Engineering Physics/Chemistry 1,2,7,10,12/1, 2,6,7,12",3,0,0,3,3,Theory
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),2,23MAX01/ 23MA02,"Linear Algebra/Calculus/Differential Equations and Vector calculus 1,2,3,4,12/1,2 , 3,4,12",3,0,0,3,3,Theory
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),3,23BEX01/ 23BEX02,"Basic Electrical and Electronics Engineering/ Basic Civil & Mechanical Engineering 1,3,6,7,9,12/1 ,2,3,6,7,8,12",3,0,0,3,3,Theory
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),4,23BEX03,Introduction to Programming,3,0,0,3,3,Theory
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),5,23BEX04/ 23KS01,"Engineering Graphics/Communicative English 1,5,10,12/1,9, 10,11",2,0,2,3/2,4,Integrated (Theory + Lab)
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),6,23PYX02/ 23CYX03,"Engineering Physics Lab/Chemistry 4,6,9,11/1,2,6 ,7,9,12",0,2,2,1,4,Lab
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),7,23BEX05/ 23BEX06,"Electrical & Electronics Engineering workshop/Engineering Workshop 4,5,6,9/12/1, 9,12",0,3,3,1.5/1.5,6,Lab
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),8,23BEX07,Computer Programming Lab,0,0,3,1.5,3,Lab
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),9,23HSX11,-/ECA (Yoga / Sports) -,-,-,-,0.5,0,Value-Added / Audit / Co-curricular
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),10,23HSX12,-/CCA (NSS/NCC/Community) -,-,-,-,0.5,0,Value-Added / Audit / Co-curricular
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),11,23BEX08,IT Workshop/-,0,0,2,1,2,Lab
+AR23,B.Tech,IT,First Semester(Pattern-I/Pattern-II),12,23HSX02,-/Communicative English Lab,0,0,2,1,2,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),1,23HSX01/ 23BEX04,"Communicative English/Engineering Graphics 10,12/1,5,10",2/2,0,0,2/3,,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),2,23MAX02/ 23MAX01,"Differential Equations and Vector calculus/Linear Algebra & Calculus 1,2,3,4/12/1, 2, 3,4,12",3,0,0,3,3,Theory
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),3,23CYX01/ 23PYX01,"Chemistry/Engineering Physics 1,2,6,7/12/1, 7,10,12",3,0,0,3,3,Theory
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),4,23BEX02/ 23BEX01,"Basic Civil & Mechanical Engineering/Basic Electrical and Electronics Engineering 1,2,3,6,7,8/12 /1,3,6,7,9,12",3,0,-,3,3,Theory
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),5,23CS201,"Data Structures (CSE, CSE- AI&DS, CSE-AI&ML, IT)",3,0,0,3,3,Theory
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),6,23CYX03/ 23PYX02,"Chemistry Lab/Engineering Physics Lab 1,6,7,9/12/4, 6, 9,11,12",0,2,2,1,4,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),7,23BEX06/ 23BEX05,"Engineering Workshop/Electrical & Electronics Engineering workshop 9,12/1,4,5",0,3,3,1.5/1.5,6,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),8,23BEX08,IT Workshop/-,0,0,2,1,2,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),9,23BEX02,Communicative English Lab/-,0,0,2,1,2,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),10,23CS202,"Data Structures Lab (CSE, CSE- AI&DS, CSE-AI&ML, IT)",0,3,3,1.5/1.5,6,Lab
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),11,23HSX11,-/ECA (Yoga / Sports) -,-,-,-,0.5,0,Value-Added / Audit / Co-curricular
+AR23,B.Tech,IT,Second Semester(Pattern-I/Pattern-II),12,23HSX12,-/CCA (NSS/NCC/Community Service) -,-,-,-,0.5,0,Value-Added / Audit / Co-curricular
+AR23,B.Tech,IT,Third Semester,1,23IT301,Python Programming and Applications,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Third Semester,2,23CS304,Digital Logic Design,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,Third Semester,3,23CS305,Discrete Mathematical Structures,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Third Semester,4,23IT304,Database Management Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Third Semester,5,23IT305,Data Communication Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Third Semester,6,23IT306,Object Oriented Programming through Java,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,Third Semester,7,23IT307,Python Programming and Applications Laboratory,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Third Semester,8,23IT308,Database Management Systems Laboratory,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Third Semester,9,23ESX01,Employability Skills I,-,-,2,-,2,Lab
+AR23,B.Tech,IT,Fourth Semester,1,23MA405,Probability and Statistics,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Fourth Semester,2,23CS403,Computer Organization and Architecture,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Fourth Semester,3,23IT403,Operating Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Fourth Semester,4,23CS303,Design and Analysis of Algorithms,3,-,-,3,3,Theory
+AR23,B.Tech,IT,Fourth Semester,5,23IT405,Web Technologies,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,Fourth Semester,6,23CS307,Design and Analysis of Algorithms Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Fourth Semester,7,23IT407,Operating Systems Laboratory,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Fourth Semester,8,23ESXO1,Employability Skills I,-,-,2,2,2,Lab
+AR23,B.Tech,IT,Fifth Semester,1,23IT501,Computer Networking,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,Fifth Semester,2,23IT502,Artificial Intelligence,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Fifth Semester,3,,231T503 Cloud Computing,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Fifth Semester,4,23IT504,Software Engineering Principles,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,Fifth Semester,5,,Elective I(Professional Elective),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Fifth Semester,6,,Elective II (Open Elective I),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Fifth Semester,7,23IT507,Cloud Computing Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,IT,Fifth Semester,9,23ESX02,Employability Skills II,-,-,2,-,2,Lab
+AR23,B.Tech,IT,Sixth Semester,1,23HSX10,Engineering Economics and Project Management,3,0,-,3,3,Internship / Project
+AR23,B.Tech,IT,Sixth Semester,2,23IT602,Automata and Compiler Design,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Sixth Semester,3,23IT603,Machine Learning,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Sixth Semester,4,,Elective III (Professional Elective),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,IT,Sixth Semester,5,,Elective IV (Open Elective II),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Sixth Semester,6,23IT606,Machine Learning Lab using Python,-,-,3,1.5,3,Lab
+AR23,B.Tech,IT,Sixth Semester,7,23MPX01,Mini Project All,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,IT,Sixth Semester,8,23ESX02,Employability Skills II,-,-,2,2,2,Lab
+AR23,B.Tech,IT,Sixth Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,IT,Sixth Semester,10,23ATX02,Professional Ethics and Human Values -----------------,-,-,-,-,0,Theory
+AR23,B.Tech,IT,Sixth Semester,11,,Audit Course ----,-,-,-,-,0,Theory
+AR23,B.Tech,IT,Seventh Semester,1,,Elective V(Professional Elective),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Seventh Semester,2,,Elective VI (Professional Elective ),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Seventh Semester,3,,Elective VII (Open Elective III),3,0,-,3,3,Elective Placeholder
+AR23,B.Tech,IT,Seventh Semester,4,23PWX01,Project All,-,-,16,8,16,Internship / Project
+AR23,B.Tech,IT,Seventh Semester,5,23SIX02,Summer Internship #II,-,-,-,1,0,Internship / Project
+AR23,B.Tech,IT,Eighth Semester,1,,Elective VIII (Professional Elective ),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,IT,Eighth Semester,2,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,IT,Eighth Semester,3,23FIX01,Full Semester Internship (FSI),-,-,-,8,0,Internship / Project
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",1,23CSC11,Artificial Neural Networks(AI&ML),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",2,23CSC21,Backend Programming Languages (Full Stack Developer),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",3,23ITC31,Fundamentals of Security (Cyber Security),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",4,23IT004,Computer Graphics and Multimedia,3,0,-,3,3,Lab
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",5,23IT005,Information Theory and Coding,3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",6,23IT006,Data Warehousing and Data Mining,3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",7,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",1,23CSC12,Deep Learning (AI&ML),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",2,23CSC22,Web Application Frameworks (Full Stack Developer),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",3,23ITC32,Cybernet Security (Cyber Security),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",4,23IT007,The Internet of Things,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",6,23IT009,User Interface/ User Experience,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",1,23CSC13,Natural Language Processing (AI & ML),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",2,23CSC23,Web Application Databases (Full Stack Developer),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",3,23ITC33,Cloud Security (Cyber Security),3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",4,23EC602,Digital Signal Processing,3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",5,23IT010,Information Retrieval Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",6,23CS005,Mobile Computing,3,0,-,3,3,Theory
+AR23,B.Tech,IT,"Career Path I, II, III and Other Core Electives",7,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,IT,Elective VI,1,23IT017,Social Network Analysis,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,2,23IT011,Real Time Operating Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,3,23IT012,Digital Image Processing,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,4,23IT014,Distributed Systems,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,5,23CS012,Wireless Ad hoc Networks,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,6,23CS015,Software Project Management,3,0,-,3,3,Internship / Project
+AR23,B.Tech,IT,Elective VI,7,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,IT,Elective VI,8,23BS004,Advanced Materials of Renewable Energy,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VI,9,23BS005,Applied Linear Algebra for Engineers,3,0,-,3,3,Theory
+AR23,B.Tech,IT,Elective VIII: Professional Elective,1,23CS014,Green Computing,-,-,-,3,0,Theory
+AR23,B.Tech,IT,Elective VIII: Professional Elective,1,23IT013,Design Patterns,-,-,-,3,0,Theory
+AR23,B.Tech,IT,Elective VIII: Professional Elective,3,23IT016,Professional Ethics,-,-,-,3,0,Theory
+AR23,B.Tech,IT,Elective VIII: Professional Elective,4,,MOOCs -,-,-,-,3,0,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",1,23CE001,Disaster Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",2,23EE001,"Electrical Installation, Safety and Auditing",3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",3,23ME001,Fundamentals of Optimization Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",4,23EC001,Sensors for Engineering Applications,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",5,23CS001,Fundamentals of Artificial Intelligence,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",6,23CH001,Energy Conversion and Storage Devices,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",7,23IT001,Fundamentals of Multimedia,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",8,23BS001,Nano Materials and Technology,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",9,23DS001,Fundamentals of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",10,23CE002,Air Pollution and Environmental Impact Assessment,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",11,23EE002,Renewable Energy Sources,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",12,23ME002,Principles of Entrepreneurship,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",13,23EC002,Electronics for Agriculture,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",14,23CS002,Fundamentals of Machine Learning,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",15,23CH002,Industrial Safety and Hazard Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",16,23IT002,Fundamentals of Cloud Computing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",17,23BS002,Advanced Numerical Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",18,23BS003,Functional Materials and Applications,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",19,23CE003,Solid Waste Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",20,23EE003,Fundamentals of Electrical Vehicle Technology,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",21,23ME003,Industrial Engineering and Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",22,23CS003,Interfacing and Programming with Arduino,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",23,23DS003,Data Science for Engineering Applications,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",24,23CH003,Industrial Ecology for Sustainable Development,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",25,23IT003,Fundamentals of Mobile Computing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",26,23BS004,Advanced Materials for Renewable Energy,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",27,23BS005,Applied Linear Algebra for Engineers,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",28,23CE019,Green Buildings,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",29,23EE017,Sustainable Energy,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",30,23ME019,Total Quality Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",31,23EC011,Communication Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",32,23CS020,Applications of Artificial Intelligence,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",33,23CH016,Green Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",34,23IT015,Human Computer Interaction,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",35,23BS006,Handling of Industrial waste and waste water,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",36,23OE001,Robotics and Automation,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",37,23OE002,Introduction to IoT,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",38,23OE003,Fundamentals of Image Processing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",39,23OE004,Fundamentals of Data Acquisition Systems,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",40,23OE005,Airport Operations Management,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",41,23OE006,Fundamentals of Embedded Systems,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",42,23OE007,Remote Sensing and GIS,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",43,23OE008,Big Data Analytics,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",44,23OE009,Fundamentals of Cyber Security,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",45,23OE010,Smart Cities,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",46,23OE011,Nano Materials and Thin Film Technology,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",47,23CSMC1,Cloud Computing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",48,23CSMC2,Ethical Hacking,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",49,23CSMC3,Fundamentals of Web Development,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",50,23OE012,Business Intelligence & Analytics,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",51,23OE013,Introduction to Industry 4.0 and Industrial IoT,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",52,23OE014,Natural Language Processing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",53,23OE015,Affective Computing,3,-,-,3,3,Theory
+AR23,B.Tech,IT,"Open Elective I, II, III, and IV (Elective II, IV, VII, and IX)",54,23OE016,Principles of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,IT,Audit Course,01,23ITH11,Advanced Computer Architecture,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,02,23ITH12,Micro Processors and Micro Controllers,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,03,23ITH13,Embedded Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,04,23ITH14,High Performance Computing,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,01,23CSH11,Advanced Data Structures,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,02,23CSH12,Advanced Databases,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,03,23CSH13,"Programming, Data Structures and Algorithms Using Python",4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,04,23CSH14,Bio-Informatics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,01,23CSH23,DevOps,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,02,23CSH22,Design Patterns,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,03,23CSH23,Advanced Software Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,04,23CSH24,Robotic Process Automation,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,01,23CSH31,Computer Systems Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,02,23CSH32,Python Programming for Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,03,23CSH33,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,Audit Course,04,23CSH34,Computer Forensics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),1,23CHM11,Foundation of Energy Science and Technology,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),2,23CHM12,Energy Generation from Waste,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),3,23CHM13,Energy Storage Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),4,23CHM14,Hydrogen Energy and Fuel Cells,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),5,23CHM23,Introduction and Characterization of Nano Materials,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),6,23CHM22,Carbon Nanostructures and Applications,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),7,23CHM23,"Energy, Environment & Biomedical Nanotechnology",4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),8,23CHM24,Industrial Applications of Nano Technology,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),9,23CEM11,Watershed Management,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),10,23CEM12,Industrial Pollution Control and Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),11,23CEM13,Solid and Hazardous Waste Management,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),12,23CEM14,Ecology and Environmental Assessment,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),13,23CSM11,Fundamentals of AI & Machine Learning,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),14,23CSM12,Feature Engineering for Machine Learning,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),15,23CSM13,Exploratory Data Analytics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),16,23CSM14,Deep Learning,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),17,23CSM23,Fundamentals of Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),18,23CSM22,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),19,23CSM23,Cyber Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),20,23CSM24,Cloud Security,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),21,23CSM31,Data Cleaning,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),22,23CSM32,Data Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),23,23CSM33,Text Analytics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),24,23CSM34,Social Network and Semantic Analysis,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),25,23CSM41,Programming Fundamentals,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),26,23CSM42,Data Structures & Algorithms,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),27,23CSM43,Fundamentals of Databases,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),28,23CSM44,Fundamentals of Computer Networks & Operating Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),29,23ECM11,Fundamentals of VLSI Design,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),30,23ECM12,Digital Design using HDL,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),31,23ECM13,FPGA Technology,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),32,23ECM14,Analog and Mixed Signal Design,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),33,23ECM23,Microcontrollers and Interfacing,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),34,23ECM22,Sensors and Data Acquisition System,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),35,23ECM23,Fundamentals of Labview,4,-,-,4,4,Lab
+AR23,B.Tech,IT,B. Tech. (Minors),36,23ECM24,Medical Robotics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),37,23ECM31,Principles of Communications,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),38,23ECM32,Coding Theory and Practice,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),39,23ECM33,Ad-hoc and Wireless Sensor Networks,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),40,23ECM34,Fundamentals of Multimedia Networking,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),41,23ECM41,Principles of Aerodynamics,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),42,23ECM42,Aircraft Electrical Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),43,23ECM43,Aircraft Instrument Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),44,23ECM44,Aircraft Communication and Navigational Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),45,23ECM51,Sensors and Sensing Technology,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),46,23ECM52,Geographic Information Systems,4,-,-,4,4,Theory
+AR23,B.Tech,IT,B. Tech. (Minors),47,23ECM53,Digital Image Processing,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Third Semester,1,23MA301,Complex Variables,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Third Semester,2,23EC301,Electronic Devices and Circuits,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Third Semester,3,23EC302,Python Programming,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,Third Semester,4,23EC303,Logic Circuit Design,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Third Semester,5,23EC304,Random Variables and Stochastic Processes,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Third Semester,6,23EC305,Signals & Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,Third Semester,7,23EC306,Electronic Devices and Circuits Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Third Semester,8,23EC307,Logic Circuit Design Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Third Semester,9,23ESX01,Employability Skills I,-,-,2,-,2,Lab
+AR23,B.Tech,ECE,Fourth Semester,1,23CSE01,Object Oriented Programming,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fourth Semester,2,23EC401,Analog and Digital Communications,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fourth Semester,3,23EC402,Analog Electronic Circuits,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,Fourth Semester,4,23EC403,Electromagnetic Waves & Transmission Lines,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fourth Semester,5,23EC404,Linear Control Systems,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fourth Semester,6,23CSE02,Object Oriented Programming Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Fourth Semester,7,23EC405,Analog and Digital Communications Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Fourth Semester,8,23ESX01,Employability Skills I,-,-,2,2,2,Lab
+AR23,B.Tech,ECE,Fifth Semester,1,23EC501,Linear and Digital IC Applications,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fifth Semester,2,23EC502,Microprocessors and Microcontrollers,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,Fifth Semester,3,23EC503,VLSI Design,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,Fifth Semester,4,23EC504,Antennas and Microwave Engineering,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Fifth Semester,5,,Elective I (Professional Elective ),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Fifth Semester,6,,Elective II (Open Elective I),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Fifth Semester,7,23EC505,Linear IC Applications Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,ECE,Fifth Semester,9,23ESX02,Employability Skills II,-,-,2,-,2,Lab
+AR23,B.Tech,ECE,Fifth Semester,10,23SIX01,Summer Internship I,-,-,-,1,0,Internship / Project
+AR23,B.Tech,ECE,Sixth Semester,1,23HSX10,Engineering Economics and Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,ECE,Sixth Semester,2,23EC601,Cellular and Mobile Communications,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Sixth Semester,3,23EC602,Digital Signal Processing,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Sixth Semester,4,,Elective III (Professional Elective ),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,ECE,Sixth Semester,5,,Elective IV (Open Elective II),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Sixth Semester,6,23EC603,Digital Signal Processing Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,ECE,Sixth Semester,7,23 MPX01,Mini Project ALL,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,ECE,Sixth Semester,8,23ESX02,Employability Skills II,-,-,2,2,2,Lab
+AR23,B.Tech,ECE,Sixth Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Sixth Semester,10,23ATX02,Human Values and Professional Ethics ------------------,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Sixth Semester,11,23ATX03,Indian Knowledge Systems ------------------,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Seventh Semester,1,23PWX01,Project Work ALL,-,-,16,8,16,Internship / Project
+AR23,B.Tech,ECE,Seventh Semester,2,,Elective V (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Seventh Semester,3,,Elective VI (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Seventh Semester,4,,Elective VII (Open Elective III),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,ECE,Seventh Semester,5,23SIX02,Summer Internship II,-,-,-,1,0,Internship / Project
+AR23,B.Tech,ECE,Eighth Semester,1,23FIX01,Full Semester Internship (FSI),-,-,-,8,0,Internship / Project
+AR23,B.Tech,ECE,Eighth Semester,2,,Elective VIII (Professional Elective ),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,ECE,Eighth Semester,3,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,ECE,Language Electives,1,23HSX03,Advanced Communicative English,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,2,23HSX04,Communicative German,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,3,23HSX05,Communicative French,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,4,23HSX06,Communicative Japanese,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,5,23HSX07,Communicative Spanish,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,6,23HSX08,Communicative Korean,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,Language Electives,7,23HSX09,Communicative Hindi,2,-,-,2,2,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",1,23ECC11,RTL Coding Techniques (Chip Design Career Path),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",2,23ECC21,IoT Architecture and Protocols (Embedded System Design Career Path),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",3,23ECC31,Coding Theory and Techniques (Advanced Communications),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",4,23IT304,Database Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",5,23CS201,Data Structures,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",6,23CS403,Computer Organization and Architecture,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",1,23ECC12,System Verilog for Verification (Chip Design Career Path),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",2,23ECC22,Embedded System Design and Real Time Operating System (Embedded System Design Career Path),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",3,23ECC32,Principles of MIMO-OFDM Communications (Advanced Communications),3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",4,23EC004,Virtual Instrumentation,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",5,23EC005,Cryptography and Network Security,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",6,23CS503,Computer Networks,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",1,23ECC13,VLSI Physical Design with Timing Analysis (Chip Design Career Path),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",2,23ECC23,ARM Processor (Embedded System Design Career Path),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",3,23ECC33,5G Communications (Advanced Communications),3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",4,23EC006,Wireless Sensor Networks,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",5,23IT403,Operating Systems,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",6,23CS603,Software Engineering,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,"Career Path I, II, III and Other Core Electives",,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,Elective VI,1,23EC007,Design for testability,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Elective VI,2,23EC008,Biomedical Signal Processing,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Elective VI,3,23EC009,Digital Image Processing,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Elective VI,4,23EC010,Neural Networks and Deep Learning,3,-,-,3,3,Theory
+AR23,B.Tech,ECE,Elective VI,,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,Elective VIII (Professional Elective ),1,23EC012,Real-Time Systems Design and Analysis,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,Elective VIII (Professional Elective ),2,23EC013,UHF and EHF communication systems,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,Elective VIII (Professional Elective ),3,23EC014,Computer Architecture,-,-,-,3,0,Theory
+AR23,B.Tech,ECE,Audit Course,1,23AT001,Communication Etiquette in Workplaces -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,2,23AT002,"Contemporary India: Economy, Policy and Society -",-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,3,23AT003,Design The Thinking -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,4,23AT004,Ethics and Integrity -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,5,23AT005,Indian Heritage and Culture -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,6,23AT006,Intellectual Property Rights and Patents -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,7,23AT007,Introduction to Journalism -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,8,23AT008,Mass Media Communication -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,9,23AT009,"Science, Technology and Development -",-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,10,23AT010,Social Responsibility -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,11,23AT011,The Art of Photography and Film Making -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,12,23AT012,Gender Equality for Sustanibity -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,13,23AT013,Women in Leadership -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,14,23AT014,Introduction to Research Methodology -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,15,23AT015,Climate Change and Circular Economy -,-,-,-,-,0,Theory
+AR23,B.Tech,ECE,Audit Course,01,23ECH11,System on Chip Design,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,02,23ECH12,CMOS Logic Circuit Design,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,03,23ECH13,Low Power VLSI Design,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,04,23ECH14,VLSI Fabrication Technology,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,01,23ECH21,Advanced Controllers,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,02,23ECH22,Robots and Control,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,03,23ECH23,Industrial Automation,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,Audit Course,04,23ECH24,Distributed Embedded systems,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,B. Tech. (Minors),01,23ECM11,Principles of Communications,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,B. Tech. (Minors),02,23ECM12,Coding Theory and Practice,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,B. Tech. (Minors),03,23ECM13,Ad-hoc and Wireless Sensor Networks,4,-,-,4,4,Theory
+AR23,B.Tech,ECE,B. Tech. (Minors),04,23ECM14,Fundamentals of Multimedia Networking,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,First Semester,1,23CYX01,Chemistry,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,First Semester,2,23MAX01,Linear Algebra& Calculus,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,First Semester,3,23BEX01,Basic Electrical and Electronics Engineering,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,First Semester,4,23BEX03,Introduction to Programming,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,First Semester,5,23BEX04,Engineering Graphics,2,0,2,3,4,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,First Semester,6,23CYX03,Chemistry Lab,0,0,2,1,2,Lab
+AR23,B.Tech,EEE,First Semester,7,23BEX05,Electrical & Electronics Engineering Workshop,0,0,3,1.5,3,Lab
+AR23,B.Tech,EEE,First Semester,8,23BEX07,Computer Programming Lab,0,0,3,1.5,3,Lab
+AR23,B.Tech,EEE,First Semester,9,23HSX12,CCA (NSS/NCC/Community Service),0,0,1,0.5,1,Value-Added / Audit / Co-curricular
+AR23,B.Tech,EEE,Second Semester,1,23MAX02,Differential Equations and Vector Calculus,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,Second Semester,2,23PYX02,Engineering Physics,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,Second Semester,3,23HSX01,Communicative English,2,0,0,2,2,Theory
+AR23,B.Tech,EEE,Second Semester,4,23BEX02,Basic Civil & Mechanical Engineering,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,Second Semester,5,23EE201,Electrical Circuit Analysis-I,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,Second Semester,6,23HSX02,Communicative English Lab,0,0,2,1,2,Lab
+AR23,B.Tech,EEE,Second Semester,7,23PYX02,Engineering Physics Lab,0,0,2,1,2,Lab
+AR23,B.Tech,EEE,Second Semester,8,23BEX08,IT workshop,0,0,2,1,2,Lab
+AR23,B.Tech,EEE,Second Semester,9,23BEX06,Engineering Workshop,0,0,3,1.5,3,Lab
+AR23,B.Tech,EEE,Second Semester,10,23EE202,Electrical Circuits Lab,0,0,3,1.5,3,Lab
+AR23,B.Tech,EEE,Second Semester,11,23HSX11,"Health and Wellness, Yoga and Sports",0,0,1,0.5,1,Value-Added / Audit / Co-curricular
+AR23,B.Tech,EEE,Third Semester,1,23MA302,Engineering Mathematics III,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,Third Semester,2,23EE302,DC Machines and Transformers,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Third Semester,3,23EE303,Electrical Circuit Analysis-II,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Third Semester,4,23EE304,Electromagnetic Field Theory,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Third Semester,5,23EE305,Measurements and Instrumentation,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Third Semester,6,23EE306,Semiconductor Devices and Circuits,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,Third Semester,7,23EE307,DC Machines Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Third Semester,8,23EE308,Python Programming lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Third Semester,9,23ESX01,Employability Skills I,-,-,2,-,2,Lab
+AR23,B.Tech,EEE,Fourth Semester,1,23EE401,AC Machines,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fourth Semester,2,23EE402,Linear and Digital Integrated Circuits,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,Fourth Semester,3,23EE403,Power Electronics,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fourth Semester,4,23EE404,"Power Generation, Transmission and Distribution",3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fourth Semester,5,23EE405,Signals and Systems Theory,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fourth Semester,6,23EE406,AC Machines Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Fourth Semester,7,23EE407,Measurements and Instrumentation Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Fourth Semester,8,23ESX01,Employability Skills I,-,-,2,2,2,Lab
+AR23,B.Tech,EEE,Fifth Semester,1,23IT306,Object Oriented Programming through Java,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,Fifth Semester,2,23EE502,Control Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,Fifth Semester,3,23EE503,Electrical Drives,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fifth Semester,4,23EE504,Power System Protection,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Fifth Semester,5,,Elective I (Professional Elective ),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Fifth Semester,6,,Elective II (Open Elective I),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Fifth Semester,7,23EE507,Power Electronics and Drives Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Fifth Semester,8,23TPX01,Term Paper,-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,EEE,Fifth Semester,9,23ESX02,Employability Skills II,-,-,2,-,2,Lab
+AR23,B.Tech,EEE,Sixth Semester,1,23HSX10,Engineering Economics and Project Management,3,-,-,3,3,Internship / Project
+AR23,B.Tech,EEE,Sixth Semester,2,23EE602,Power System Analysis and Control,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Sixth Semester,3,23EE603,Utilization of Electrical Energy,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Sixth Semester,4,,Elective III (Professional Elective ),3,-,2,4,5,Elective Placeholder
+AR23,B.Tech,EEE,Sixth Semester,5,,Elective IV (Open Elective II),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Sixth Semester,6,23EE606,Power Systems Lab,-,-,3,1.5,3,Lab
+AR23,B.Tech,EEE,Sixth Semester,7,23MPX01,"Mini Project 1 to12,PSO1,PSO2",-,-,3,1.5,3,Internship / Project
+AR23,B.Tech,EEE,Sixth Semester,8,23ESX02,Employability Skills II,-,-,2,2,2,Lab
+AR23,B.Tech,EEE,Sixth Semester,9,23ATX01,Environmental Studies,-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Sixth Semester,10,23ATX02,Professional Ethics and Human Values -----,-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Sixth Semester,11,23ATX03,Indian Knowledge Systems,-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Seventh Semester,1,,Elective V (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Seventh Semester,2,,Elective VI (Professional Elective),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Seventh Semester,3,,Elective VII (Open Elective III),3,-,-,3,3,Elective Placeholder
+AR23,B.Tech,EEE,Seventh Semester,4,23SIX02,Summer Internship II,-,-,-,1,0,Internship / Project
+AR23,B.Tech,EEE,Seventh Semester,5,23PWX01,"Project 1 to 12,PSO1,PSO2",-,-,16,8,16,Internship / Project
+AR23,B.Tech,EEE,Eighth Semester,1,,Elective VIII (Professional Elective),-,-,-,3,0,Elective Placeholder
+AR23,B.Tech,EEE,Eighth Semester,2,,Elective IX (Open Elective IV),-,-,-,2,0,Elective Placeholder
+AR23,B.Tech,EEE,Eighth Semester,3,23FIX01,Full Semester Internship (FSI),-,-,-,8,0,Internship / Project
+AR23,B.Tech,EEE,Language Electives,1,23HSX03,Advanced Communicative English,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,2,23HSX04,Communicative German,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,3,23HSX05,Communicative French,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,4,23HSX06,Communicative Japanese,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,5,23HSX07,Communicative Spanish,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,6,23HSX08,Communicative Korean,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,Language Electives,7,23HSX09,Communicative Hindi,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",1,23EEC11,Electrical Vehicle Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",2,23EEC21,Green Energy Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",3,23EEC31,Micro and Smart Grid Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",4,23EE017,Electrical Machine Design,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",5,23EE018,High Voltage DC Transmission,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",6,23EE019,Special Electrical Machines,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",7,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",1,23EEC12,Electric Vehicle Drive Train Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",2,23EEC22,Power Electronic Applications to Green Energy Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",3,23EEC32,Control and Instrumentation of Smart Grid Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",4,23EE020,Advanced Control Systems,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",5,23EE021,Discrete Signal Processing,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",6,23EE009,Machine Modelling and Steady State Analysis,3,-,2,4,5,Integrated (Theory + Lab)
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",1,23EEC13,Battery Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",2,23EEC23,Hybrid Renewable Energy Systems Design,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",3,23EEC33,Communication and Security in Smart Grid,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",4,23EE010,Electrical Distribution Systems,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",5,23EC401,Analog and Digital Communications,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",6,23IT304,Database Management Systems,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,"Career Path I, II, III and Other Core Electives",7,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VI,1,23EE011,"Energy Audit, Conservation and Managaement",3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Elective VI,2,23EE012,Microprocessors and Microcontroller Interfacing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Elective VI,3,23EE013,Programmable Logic Controllers,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,Elective VI,,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),1,23EE014,Power System Deregulation,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),2,23EE015,Power System Dynamics & Control,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),3,23EE016,High Voltage Engineering,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),4,,MOOCs,-,-,-,3,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),,,B. Tech. (Honors),-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),,,Domain I: AI in Electrical and Electronics Engineering,-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),01,23EEH11,Computational Intellegence in Electrical Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),02,23EEH12,Data analytics in Electrical Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),03,23EEH13,Internet of Things in Electrical Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),04,23EEH14,Introduction to Smart Cities,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),,,Domain II: Power Systems,-,-,-,-,0,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),01,23EEH21,Design and Layout of Power Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),02,23EEH22,Distributed Generation Technologies,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),03,23EEH23,Distribution System Planning and Automation,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),04,23EEH24,Power Quality,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),01,23EEH31,Adaptive Control Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),02,23EEH32,Introduction to Autonomous Vehicles,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),03,23EEH33,Introduction to Robust Control Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),04,21EEH34,Optimal Control Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),01,23EEH41,Advanced Power Electronics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),02,23EEH42,Flexible AC Transimission Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),03,23EEH43,Power Electronic Control of DC Drives,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,Elective VIII (Professional Elective),04,23EEH44,Power Electronic Control of AC Drives,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CHM11,Foundation of Energy Science and Technology,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CHM12,Energy Generation from Waste,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CHM13,Energy Storage Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CHM14,Hydrogen Energy and Fuel Cells,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CHM21,Introduction and Characterization of Nano Materials,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CHM22,Carbon Nanostructures and Applications,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CHM23,"Energy, Environment & Biomedical Nanotechnology",4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CHM24,Industrial Applications of Nano Technology,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CEM11,Watershed Management,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CEM12,Industrial Pollution Control and Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CEM13,Solid and Hazardous Waste Management,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CEM14,Ecology and Environmental Assessment,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CSM11,Fundamentals of AI & Machine Learning,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CSM12,Feature Engineering for Machine Learning,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CSM13,Exploratory Data Analytics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CSM14,Deep Learning,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CSM21,Fundamentals of Security,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CSM22,Management of Information Security,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CSM23,Cyber Security,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CSM24,Cloud Security,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CSM31,Data Cleaning,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CSM32,Data Engineering,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CSM33,Text Analytics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CSM34,Social Network and Semantic Analysis,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23CSM41,Programming Fundamentals,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23CSM41,Data Structures & Algorithms,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23CSM41,Fundamentals of Databases,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23CSM41,Fundamentals of Computer Networks & Operating Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ECM11,Fundamentals of VLSI Design,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ECM12,Digital Design using HDL,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ECM13,FPGA Technology,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ECM14,Analog and Mixed Signal Design,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ECM21,Microcontrollers and Interfacing,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ECM22,Sensors and Data Acquisition System,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ECM23,Fundamentals of Labview,4,-,-,4,4,Lab
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ECM24,Medical Robotics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ECM31,Principles of Communications,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ECM32,Coding Theory and Practice,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ECM33,Ad-hoc and Wireless Sensor Networks,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ECM34,Fundamentals of Multimedia Networking,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ECM41,Principles of Aerodynamics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ECM42,Aircraft Electrical Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ECM43,Aircraft Instrument Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ECM44,Aircraft Communication and Navigational Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ECM51,Sensors and Sensing Technology,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ECM52,Geographic Information Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ECM53,Digital Image Processing,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ECM54,Lidar Systems,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23ITM11,Introduction to Cloud Computing,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23ITM12,"Introduction to Web Development with HTML, CSS, JavaScript",4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23ITM13,Developing Cloud Native Applications,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23ITM14,Introduction to Cloud Computing,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23MEM11,Introduction to Robotics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23MEM12,Drives and Sensors,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23MEM13,Control Systems for Robotics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23MEM14,Machine Learning for Robotics,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),01,23MEM21,Industrial Management,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),02,23MEM22,Fundamentals of Operations Research,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),03,23MEM23,Enterprise Resource Planning,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),04,23MEM24,Production Planning and Control,4,-,-,4,4,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),1,,23O0411 Principles of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),2,,23O0412 Data Science for Engineering Applications,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),3,,23O0413 Computer Vision,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),4,,23O0414 Deep Learning for Computer Vision,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),5,,23O0421 Fundamentals of Machine Learning,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),6,,23O0422 Fundamentals of Deep Learning,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),7,,23O0423 Principles of Reinforcement Learning,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),8,,23O0424 Affective Computing,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),9,,"23O0431 Aerodynamics, Flight Controls and Aircraft Systems",3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),10,,23O0432 Aircraft Materials and Structures,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),11,,23O0433 Aircraft Gas Turbine Engines,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),12,,23O0434 Avionics Systems,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),13,,23O0111 Principles of Internet of Things,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),14,,23O0112 IoT Applications in Building Automation,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),15,,23O0113 IoT for Structural Health Monitoring,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),16,,23O0114 AI and ML for Data Analytics,2,0,0,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),17,,23O0121 Fundamentals of Data Science and Statistics,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),18,,23O0122 Database Management Systems for Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),19,,23O0123 Data Mining and Exploratory Data Analysis,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),20,,23O0124 Predictive Analytics and Machine Learning,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),21,,23O0131 Entrepreneurship Theory and Practice,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),22,,23O0132 Design Thinking and Innovation Management,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),23,,23O0133 Product Design and Innovation,3,0,0,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),24,,23O0134 Business Analytics for Entrepreneurship,2,0,0,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),25,,23O0141 Introduction to Smart Cities,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),26,,23O0142 Sustainable Urban Planning and Development,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),27,,23O0143 Remote Sensing and GIS for Smart Cities,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),28,,23O0144 Intelligent transportation systems,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),29,,23O0311 Principles of Safety Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),30,,23O0312 Occupational Health and Industrial Hygiene,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),31,,23O0313 Safety in Engineering Industries,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),32,,23O0314 Reliability Engineering and Integrated Management Systems,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),33,,23O0321 Fundamentals of Artificial Intelligence and Machine Learning,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),34,,23O0322 Fundamentals of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),35,,23O0323 Applications of Machine Learning,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),36,,23O0324 Data Science for Mechanical Systems,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),37,,23O0331 Entrepreneurship Theory and Practice,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),38,,23O0332 Design Thinking and Innovation Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),39,,23O0333 Product Design &Innovation,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),40,,23O0334 Business Analytics for Entrepreneurship,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),41,,23O0211 Fundamentals of VLSI Design,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),42,,23O0212 Digital Design with Verilog,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),43,,23O0213 Verification Using System Verilog,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),44,,23O0214 VLSI Design Flow: RTL to GDS,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),45,,23O0511 Data Wrangling and Preprocessing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),46,,23O0512 Data Visualization Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),47,,23O0513 Time Series Data Analysis and Modelling,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),48,,23O0514 AI for Business Intelligence,2,-,-,2,2,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),49,,23O0001 Disaster Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),50,,"23O0002 Electrical Installation, Safety and Auditing",3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),51,,23O0003 Fundamentals of Optimization Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),52,,23O0004 Sensors for Engineering Applications,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),53,,23O0005 Fundamentals of Artificial Intelligence,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),54,,23O0006 Energy Conversion and Storage Devices,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),55,,23O0007 Fundamentals of Multimedia,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),56,,23O0008 Nano Materials and Technology,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),57,,23O0009 Fundamentals of Data Science,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),58,,23O0010 Air Pollution and Environmental Impact Assessment,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),59,,23O0011 Renewable Energy Sources,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),60,,23O0012 Principles of Entrepreneurship,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),61,,23O0013 Electronics for Agriculture,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),62,,23O0014 Industrial Safety and Hazard Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),63,,23O0015 Basics of Cloud Computing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),64,,23O0016 Advanced Numerical Techniques,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),65,,23O0017 Functional Materials and Applications,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),66,,23O0018 Solid Waste Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),67,,23O0019 Fundamentals of Electrical Vehicle Technology,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),68,,23O0020 Industrial Engineering and Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),69,,23O0021 Interfacing and Programming with Arduino,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),70,,23O0022 Industrial Ecology for Sustainable Development,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),71,,23O0023 Fundamentals of Mobile Computing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),72,,23O0024 Advanced Materials of Renewable Energy,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),73,,23O0025 Applied Linear Algebra for Engineers,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),74,,23O0026 Green Buildings,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),75,,23O0027 Sustainable Energy,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),76,,23O0028 Total Quality Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),77,,23O0029 Communication Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),78,,23O0030 Applications of Artificial Intelligence,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),79,,23O0031 Green Technologies,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),80,,23O0032 Human Computer Interaction,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),81,,23O0033 Handling of Industrial waste and wastewater,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),82,,23O0034 Robotics and Automation,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),83,,23O0035 Introduction to IoT,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),84,,23O0036 Fundamentals of Image processing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),85,,23O0037 Fundamentals of Data Acquisition systems,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),86,,23O0038 Airport Operations Management,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),87,,23O0039 Fundamentals of Embedded Systems,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),88,,23O0040 Remote Sensing and GIS,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),89,,23O0041 Big Data Analytics,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),90,,23O0042 Fundamentals of Cyber Security,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),91,,23O0043 Smart Cities,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),92,,23O0044 Nano Materials and Thin Film Technology,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),93,,23O0045 Cloud computing,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),95,,23O0047 Fundamentals of Web Development,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),96,,23O0048 Business Intelligence & Analytics,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),97,,23O0049 Introduction To Industry 4.0 And Industrial IoT,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),98,,23O0050 Introduction to NLP,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),99,,23O0051 Data Structure and Algorithms using Java,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),100,,23O0052 The Joy of Computing Using Python,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),101,,23O0053 Programming in Modern C++,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),102,,23O0054 Data Analytics with python,3,-,-,3,3,Theory
+AR23,B.Tech,EEE,B. Tech. (Minors),103,,23O0055 Safety in Construction,3,-,-,3,3,Theory

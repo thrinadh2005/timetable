@@ -28,7 +28,7 @@ COPY --chown=node:node server.js ./
 COPY --chown=node:node src ./src
 COPY --chown=node:node supabase ./supabase
 COPY --chown=node:node public ./public
-COPY --chown=node:node mobile/dist ./mobile/dist
+COPY --chown=node:node institutional-data ./institutional-data
 
 RUN mkdir -p /app/data && chown node:node /app/data
 

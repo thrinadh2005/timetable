@@ -197,8 +197,18 @@ const db = {
 };
 
 async function initializeSchema() {
+  if (initialized) return;
   if (!fs.existsSync(MIGRATION_FILE)) {
     throw new Error(`PostgreSQL schema migration file missing at ${MIGRATION_FILE}`);
+  }
+  try {
+    const check = await db.get("SELECT COUNT(*)::int as cnt FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users'");
+    if (check && check.cnt > 0) {
+      initialized = true;
+      return;
+    }
+  } catch (e) {
+    // If check fails on clean DB, proceed with full schema execution
   }
   const sql = fs.readFileSync(MIGRATION_FILE, 'utf8');
   await db.exec(sql);

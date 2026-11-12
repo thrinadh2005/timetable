@@ -1,0 +1,169 @@
+﻿block,floor,ref_no,room_number,room_number_short,room_or_lab_name,room_category,owning_department,length_ft,width_ft,area_sqm,observed_capacity_or_stations,equipment_or_notes,source
+Block I,Ground Floor,1,1-G-01,1G01,Seminar hall,Seminar Hall,IT,32,21,62,NOT_PUBLISHED,Ground floor plan: 9.75 x 6.40 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,Ground Floor,3,,,Unix Lab,Laboratory,IT,32,21,62,NOT_PUBLISHED,Ground floor plan: 9.75 x 6.40 m,GMRIT_Buildings_certificate.pdf
+Block I,Ground Floor,4,,,NT Lab (Windows NT Lab),Laboratory,IT,43,36,144,NOT_PUBLISHED,Ground floor plan: 13.00 x 10.97 m,GMRIT_Buildings_certificate.pdf
+Block I,Ground Floor,5,,,Server Room,Server Room,COMMON,24,18,40,NOT_PUBLISHED,Ground floor plan: 5.45 x 7.15 m,GMRIT_Buildings_certificate.pdf
+Block I,Ground Floor,6,,,Language Lab (E-Learning/Language Lab),Laboratory,BS & H,35,28,88,NOT_PUBLISHED,Ground floor plan: 10.47 x 8.4 m,GMRIT_Buildings_certificate.pdf
+Block I,Ground Floor,8,,,Interactive Lab,Laboratory,IT,43,36,144,NOT_PUBLISHED,Ground floor plan: 10.97 x 13.00 m,GMRIT_Buildings_certificate.pdf
+Block I,First Floor,12,,,A Dean (A) Room / Dean Academics,Admin/Office,Central,20,20,37,,First floor plan: Dean Academics 4.49 x 4.25 m,GMRIT_Buildings_certificate.pdf
+Block I,First Floor,15,,,3D Specialization Lab,Laboratory,CSE,32,21,62,NOT_PUBLISHED,First floor plan: 9.75 x 6.40 m,GMRIT_Buildings_certificate.pdf
+Block I,First Floor,18,,,Principal Office,Admin/Office,Central,61,43,244,,First floor plan,GMRIT_Buildings_certificate.pdf
+Block I,First Floor,19,1-F-09,1F09,Programming Lab,Laboratory,CSE,43,36,144,NOT_PUBLISHED,First floor plan: 10.97 x 13.00 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,First Floor,20,Pool: 1-F-11,Pool: 1F11,Class Room / Dept. Library,Class Room / Dept. Library,IT,32,21,62,NOT_PUBLISHED,First floor plan: 6.40 x 9.75 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,First Floor,22,Pool: 1-F-11,Pool: 1F11,Class Room-1,Class Room,IT,32,21,62,NOT_PUBLISHED,First floor plan: 6.40 x 9.75 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,Second Floor,23,,,IT HOD Room,HOD Room,IT,20,20,37,,Second floor plan: 4.49 x 4.25 m,GMRIT_Buildings_certificate.pdf
+Block I,Second Floor,31,Pool: 1-S-11 / 1-S-12,Pool: 1S11 / 1S12,Class Room-2,Class Room,IT,32,21,62,NOT_PUBLISHED,Second floor plan: 6.40 x 9.75 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,Second Floor,33,Pool: 1-S-11 / 1-S-12,Pool: 1S11 / 1S12,Class Room-3,Class Room,IT,32,21,62,NOT_PUBLISHED,Second floor plan: 6.40 x 9.75 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block I,Second Floor,26-30,,,Examination Section (5 rooms),Exam Section,Central,32-43,21-36,416 (sum),,"Rooms 26,27,29,30 (62+144+70+70+70)",GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,1,,,Machine Tool Lab,Laboratory,Mechanical,100,30,279,NOT_PUBLISHED,Ground floor plan: 9.15 x 30.50 m,GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,2,,,Heat Transfer lab / ICS LAB,Laboratory,Mechanical,50,30,140,NOT_PUBLISHED,Ground floor plan: 15.10 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,3,,,FM & HM Lab (Fluid Mechanics Lab),Laboratory,Mechanical,75,30,209,NOT_PUBLISHED,Ground floor plan: 22.70 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,4,2-G-08,2G08,Class room-1 (GF),Class Room,Mechanical,12,30,33,NOT_PUBLISHED,Ground floor plan: 9.15 x 3.65 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Ground Floor,5,,,Metallurgy/Dynamics lab,Laboratory,Mechanical,37,30,103,NOT_PUBLISHED,Ground floor plan: 9.15 x 11.20 m,GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,6,,,Mechatronics and CAM Lab,Laboratory,Mechanical,25,30,70,NOT_PUBLISHED,Ground floor plan: 9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf
+Block II,Ground Floor,7,,,Metrology lab,Laboratory,Mechanical,25,30,70,NOT_PUBLISHED,Ground floor plan: 9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf
+Block II,First Floor,8,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 1 (CL-1),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,9,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 2 (CL-2),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,10,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 3 (CL-3),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,12,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),DEPT Library/PG Class Room,PG Class Room / Dept. Library,Mechanical,12,30,33,NOT_PUBLISHED,9.15 x 3.60 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,13,,,Dept. office/HOD Room,HOD Room,Mechanical,25,30,70,,7.40 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block II,First Floor,15,,,CAD Lab,Laboratory,Mechanical,52,30,145,NOT_PUBLISHED,15.10 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block II,First Floor,18,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 4 (CL-4),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,19,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 5 (CL-5),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,First Floor,20,Pool: 2-F-01 / 2-F-02 / 2-F-03 / 2-F-10 / 2-F-12 (Seminar Hall: 2-F-11),Pool: 2F01 / 2F02 / 2F03 / 2F10 / 2F12 (2F11),Class Room 6 (CL-6),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,21,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 7 (CL-1 on SF plan),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,22,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 8 (CL-2 on SF plan),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,23,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 9 (CL-3 on SF plan),Class Room,Mechanical,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,25,,,Dept. office/HOD Room,HOD Room,AIML,25,30,70,,7.40 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block II,Second Floor,26,,,3D Experience Lab / Computer Lab (2 rooms on SF plan),Laboratory,AIML,47,30,131,NOT_PUBLISHED,SF plan shows two computer labs (67+64=131 sqm),GMRIT_Buildings_certificate.pdf
+Block II,Second Floor,28,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 10 (CL-4 on SF plan),Class Room,AIML,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,29,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 11 (CL-5 on SF plan),Class Room,AIML,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,30,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 12 (CL-6 on SF plan),Class Room,AIML,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,31,Pool: 2-S-01 / 2-S-02 / 2-S-03 / 2-S-08 / 2-S-11 (2020 CRE Lab: 2-S-10),Pool: 2S01 / 2S02 / 2S03 / 2S08 / 2S11,Class Room 13 (CL-7 on SF plan),Class Room,AIML,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block II,Second Floor,32,,,DEPT Library,Dept. Library,AIML,12,30,33,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block III,Ground Floor,1,,,Ele. Machines Lab (Electrical Machines Lab),Laboratory,EEE,100,30,279,NOT_PUBLISHED,9.15 x 30.50 m,GMRIT_Buildings_certificate.pdf
+Block III,Ground Floor,2,,,EEE PID LAB,Laboratory,EEE,37,30,103,NOT_PUBLISHED,11.30 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,Ground Floor,3,,,PS LAB-1 (Power Systems Lab),Laboratory,EEE,43,30,120,NOT_PUBLISHED,13.15 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,Ground Floor,4,,,Drawing Hall,Drawing Hall,CIVIL (CE),43,30,120,NOT_PUBLISHED,13.15 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,Ground Floor,6,Pool: 3-G-04 / 3-G-07 / 3-G-08,Pool: 3G04 / 3G07 / 3G08,Class Room 1,Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Ground Floor,7,Pool: 3-G-04 / 3-G-07 / 3-G-08,Pool: 3G04 / 3G07 / 3G08,Class Room 2,Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Ground Floor,8,Pool: 3-G-04 / 3-G-07 / 3-G-08,Pool: 3G04 / 3G07 / 3G08,Class Room 3,Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Ground Floor,9,Pool: 3-G-04 / 3-G-07 / 3-G-08,Pool: 3G04 / 3G07 / 3G08,Class Room 4,Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,First Floor,10,Pool: 3-F-01 / 3-F-02 / 3-F-03,Pool: 3F01 / 3F02 / 3F03,Class Room 1 (FF),Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,First Floor,11,Pool: 3-F-01 / 3-F-02 / 3-F-03,Pool: 3F01 / 3F02 / 3F03,Class Room 2 (FF),Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,First Floor,12,Pool: 3-F-01 / 3-F-02 / 3-F-03,Pool: 3F01 / 3F02 / 3F03,Class Room 3 (FF),Class Room,CIVIL,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,First Floor,15,,,Dept. office/HOD Room,HOD Room,CIVIL,25,30,70,,7.40 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,First Floor,17,Pool: 3-F-01 / 3-F-02 / 3-F-03,Pool: 3F01 / 3F02 / 3F03,PG Class room/Research Room,PG Class Room,CIVIL,12,30,33,NOT_PUBLISHED,3.60 x 9.15 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,First Floor,19,,,CAAD Lab (CAD Lab),Laboratory,CIVIL,38,30,106,NOT_PUBLISHED,11.65 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,First Floor,20,,,SIMULATION LAB,Laboratory,EEE,43,30,120,80 Nos (shown on FF plan),9.15 x 12.60 m; plan labels 80 Nos,GMRIT_Buildings_certificate.pdf
+Block III,First Floor,21,3-F-10,3F10,SEMINAR HALL,Seminar Hall,CIVIL,50,30,140,NOT_PUBLISHED,9.15 x 15.15 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,22,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room 5,Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,23,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room 6,Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,24,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room 7,Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,26,,,Dept. office/HOD Room,HOD Room,EEE,25,30,70,,7.40 x 9.15 m,GMRIT_Buildings_certificate.pdf
+Block III,Second Floor,28,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room 8,Class Room,EEE,23,30,64,NOT_PUBLISHED,7.10 x 9.15 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,30,,,Computer Lab,Laboratory,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf
+Block III,Second Floor,31,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room (SF-1),Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,32,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room (SF-2),Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block III,Second Floor,33,Pool: 3-S-01 / 3-S-02 / 3-S-03 / 3-S-07 / 3-S-10 / 3-S-11 / 3-S-12,Pool: 3S01 / 3S02 / 3S03 / 3S07 / 3S10 / 3S11 / 3S12,Class Room (SF-3),Class Room,EEE,25,30,70,NOT_PUBLISHED,9.15 x 7.45 m,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block IV,Ground Floor,1,,,Board Room - 1,Board Room,Central,37,30,103,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block IV,Ground Floor,2,,,Board Room - 2,Board Room,Central,37,30,103,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block IV,Ground Floor,7,,,Auditorium A/c (+ Balcony ref 16: 173 sqm),Auditorium,Central,72,62,415 (+173 balcony),264 seats,"infrastructure.php: 264 seating, 17000W audio, AC",GMRIT_Buildings_certificate.pdf + infrastructure.php
+Block IV,First Floor,11,,,Digital Library,Digital Library,Central Library,24,36,80,50 Nos (shown on FF plan),Central Library total seating 500 (library.php),GMRIT_Buildings_certificate.pdf + library.php
+Block IV,First Floor,14,,,PG Class Room,PG Class Room,CIVIL,23,15,32,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block IV,First Floor,15,,,DEPT Library,Dept. Library,CIVIL,22,15,31,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block IV,Second Floor,22,,,EEE- Library & M.Tech (PG Class Room),PG Class Room / Dept. Library,EEE,14,30,39,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block IV,Second Floor,23,,,Seminar Hall,Seminar Hall,EEE,50,36,167,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block V,Ground Floor,1,,,BS & H Office,Admin/Office,BS & H,19,14,25,,,GMRIT_Buildings_certificate.pdf
+Block V,Ground Floor,2,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 1,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,3,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 2,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,4,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 3,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,5,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 4,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,6,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 5,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,11,5-G-09,5G09,Central computing centre (Computer Lab),Laboratory,BS & H / Central,24,55,123,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,12,5-G-08,5G08,Seminar hall/e-class room,Seminar Hall / E-Class Room,CSE,35,32,104,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,13,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 6,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,14,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 7,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,15,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 8,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,16,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 9,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Ground Floor,17,Pool: 5-G-03..5-G-07 & 5-G-12..5-G-16 (10 BS&H classrooms),Pool: 5G03..5G07 & 5G12..5G16,Class Room 10,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,20,,,Data Analytic Lab,Laboratory,CSE,55,30,153,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block V,First Floor,21,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 11,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,22,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 12,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,23,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 13,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,24,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 14,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,25,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 15,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,30,5-F-15,5F15,Drawing hall,Drawing Hall,CSE,55,24,123,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,31,,,CA Lab (Computer Lab),Laboratory,CSE,35,32,104,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block V,First Floor,32,,,Networks Lab,Laboratory,CSE,23,32,68,47 (TOTAL 47 Nos on FF plan),,GMRIT_Buildings_certificate.pdf
+Block V,First Floor,33,,,IoT Lab,Laboratory,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block V,First Floor,34,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 1 (CSE FF),Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,35,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 16,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,First Floor,36,Pool: 5-F-01..5-F-03 (CSE) & 5-F-10..5-F-14 (BS&H),Pool: 5F01..5F03 & 5F10..5F14,Class Room 17,Class Room,BS & H,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,39,5-S-14,5S14,Seminar hall,Seminar Hall,Central,71,30,198,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,40,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room (SF-1),Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,41,,,Dept. Library,Dept. Library,CSE,22,32,65,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Block V,Second Floor,42,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 4,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,43,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 5,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,44,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 6,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,45,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 7,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,48,,,CSE Dept Office/HoD Room,HOD Room,CSE,22,24,49,,,GMRIT_Buildings_certificate.pdf
+Block V,Second Floor,49,5-S-06,5S06,Project Lab,Laboratory,CSE,32,24,71,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,52,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 8,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,53,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 9,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block V,Second Floor,54,Pool: 5-S-02..5-S-04 & 5-S-10..5-S-12 (6 CSE classrooms),Pool: 5S02..5S04 & 5S10..5S12,Class Room 10,Class Room,CSE,23,32,68,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Ground Floor,1,,,Office Room & HoD Room,Admin/HOD Room,ECE,14+13,22+15,28+18,,,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,2,,,DSP Lab,Laboratory,ECE,51,30,142,NOT_PUBLISHED,15520 x 9150 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,4,,,Microprocessor Lab,Laboratory,ECE,38,30,107,NOT_PUBLISHED,11840 x 9150 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,7,,,EDC Lab,Laboratory,ECE,49,25,115,NOT_PUBLISHED,14800 x 7720 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,10,,,Microwave Lab,Laboratory,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,11,,,PDC Lab,Laboratory,ECE,36,30,101,NOT_PUBLISHED,10950 x 9260 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Ground Floor,12,,,ECE PROJECT Lab,Laboratory,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf
+Block VI,First Floor,14,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Dept. Library/PG Class Room,PG Class Room / Dept. Library,ECE,15,30,42,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,15,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 1,Class Room,ECE,28,30,78,NOT_PUBLISHED,8000 x 9760 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,16,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 2,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,17,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 3,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,19,6-F-11,6F11,E CAD Lab,Laboratory,ECE,51,30,142,NOT_PUBLISHED,15480 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,23,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class Room (FF-4),Class Room,ECE,14,25,33,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,25,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,PG Class Room,PG Class Room,ECE,15,30,42,NOT_PUBLISHED,8000 x 4570 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,26,,,AC/DC Lab (Analog & Digital Communications Lab),Laboratory,ECE,46,30,128,NOT_PUBLISHED,13830 x 9260 mm,GMRIT_Buildings_certificate.pdf
+Block VI,First Floor,27,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 5,Class Room,ECE,23,30,64,NOT_PUBLISHED,7020 x 9260 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,28,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 6,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,First Floor,29,Pool: 6-F-01 / 6-F-03..6-F-05 / 6-F-08 / 6-F-12 / 6-F-13,Pool: 6F01 / 6F03..6F05 / 6F08 / 6F12 / 6F13,Class room 7,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,30,6-S-12,6S12,Seminar Hall,Seminar Hall,ECE,43,30,120,NOT_PUBLISHED,8000 x 14880 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,31,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 8,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,32,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 9,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,34,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,PG Class Room,PG Class Room,ECE,25,30,70,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,35,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 10,Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,36,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class Room (SF-A),Class Room,ECE,15,30,42,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,38,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 11,Class Room,ECE,26,25,60,NOT_PUBLISHED,7840 x 7660 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,39,,,Broad Casting Lab/CRS,Laboratory,ECE,26,25,60,NOT_PUBLISHED,7840 x 7660 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Second Floor,40,,,Hod Office (SF),HOD Room,ECE,30,25,70,,7590 x 9260 mm,GMRIT_Buildings_certificate.pdf
+Block VI,Second Floor,42,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class Room (SF-B),Class Room,ECE,15,30,42,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,43,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 1 (SF),Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9150 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,44,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 2 (SF),Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Second Floor,45,Pool: 6-S-01..6-S-04 & 6-S-07..6-S-11,Pool: 6S01..6S04 & 6S07..6S11,Class room 3 (SF),Class Room,ECE,25,30,70,NOT_PUBLISHED,7620 x 9260 mm,GMRIT_Buildings_certificate.pdf; NAAC 4.1.1/4.1.3b
+Block VI,Ground/Open,52,,,Open Auditorium/Hall,Open Auditorium,ECE / Central,100,49,1367,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,1,,,Thermal Engg. Lab,Laboratory,Mechanical,58,42,227,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,2,,,Workshop & PT Lab,Laboratory / Workshop,Mechanical,116,42,453,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,3,,,Engg. Physics Lab,Laboratory,BS & H (Chemical/Physics),39,42,152,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,4,,,Engineering Geology Lab,Laboratory,CIVIL,39,42,152,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,5,,,Environmental Lab,Laboratory,CIVIL,39,32,116,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex I,Ground,6,,,Chemistry Lab,Laboratory,BS & H,58,32,173,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,1,,,Soil Mechanics Lab,Laboratory,CIVIL,39,32,116,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,2,,,Survey Stores,Lab Store,CIVIL,19,32,57,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,3,,,Transportation Lab,Laboratory,CIVIL,39,32,116,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,4,,,Concrete Technology Lab,Laboratory,CIVIL,39,32,116,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,5E,,,Power Electronics lab,Laboratory,MECH / EEE,23,43,90,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,6,,,Electrical Measurements Lab,Laboratory,EEE,23,43,90,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,7,,,Electronics Home Lab,Laboratory,MECH,23,43,90,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,8,,,Electrical Home Lab,Laboratory,MECH,27,43,108,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,9,,,Computer Based Training Lab,Laboratory,CSE,27,43,108,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,10,,,RAC Lab,Laboratory,CSE / MECH,27,43,108,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Workshop Complex II,Ground,11,,,Chemical Lab,Laboratory,CE / BS & H,27,43,108,NOT_PUBLISHED,,GMRIT_Buildings_certificate.pdf
+Research Center 1,Campus,-,,,Center for Advanced Materials and Manufacturing Technology,Research Lab,MECH / Research,-,-,-,NOT_PUBLISHED,"POD Testing Equipment (15L), Wire Cut EDM Machine (25L), Sinker EDM Machine (12L)",research-labs.php
+Research Center 2,Campus,-,,,Center for Material Recycling and Waste Management,Research Lab,CIVIL / Research,-,-,-,NOT_PUBLISHED,Concrete Crusher (5L),research-labs.php
+Research Center 3,Campus,-,,,Center for Nano Technology & Testing,Research Lab,Research,-,-,-,NOT_PUBLISHED,"Sputtering Machine (20L), UTM (12L)",research-labs.php
+Research Center 4,Campus,-,,,Center for Renewable Energy & Aero Space Applications,Research Lab,EEE / Research,-,-,-,NOT_PUBLISHED,OPAL-RT Hardware-in-loop testing (60L),research-labs.php
+Research Center 5,Campus,-,,,Center for Advanced Computation & Engineering Simulations,Research Lab,ECE / CSE / MECH,-,-,-,NOT_PUBLISHED,"CADENCE (15L), MATLAB & SIMULINK (10L), Vivado Software (5L), FEA ANSYS (5L), 3D Modeling Software (5L)",research-labs.php
+Research Center 6,Campus,-,,,Center for CLSI and IOT,Research Lab,ECE / CSE,-,-,-,NOT_PUBLISHED,NI Rio Boards (20L),research-labs.php

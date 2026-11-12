@@ -1,7 +1,5 @@
 # Dependencies
 node_modules/
-mobile/node_modules/
-.expo/
 
 # Environment / secrets
 .env

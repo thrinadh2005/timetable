@@ -1,0 +1,83 @@
+﻿room_number,room_number_short,block,floor,room_type,ict_enabled_naac_413,timetable_or_photo_assignment,source
+1-G-01,1G01,Block I,Ground Floor,Multipurpose Classroom,Yes,,NAAC Proof-4.1.3(b) P.3
+1-F-09,1F09,Block I,First Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),CSE - Programming Lab,AddInfo-4.1.1 P.61
+1-F-11,1F11,Block I,First Floor,Lecture Hall,Yes,"IT IV/7th & IV/8th Sem (AddInfo-4.1.1 TT P.98-99,173-174)",NAAC Proof-4.1.3(b) P.2
+1-S-11,1S11,Block I,Second Floor,Lecture Hall,Yes,"IT III/5th & III/6th Sem (AddInfo-4.1.1 TT P.96-97,171-172)",NAAC Proof-4.1.3(b) P.2
+1-S-12,1S12,Block I,Second Floor,Lecture Hall,Yes,"IT II/3rd & II/4th Sem (AddInfo-4.1.1 TT P.94-95,169-170) | Photo: IT Classroom (Gallery)",NAAC Proof-4.1.3(b) P.3; AddInfo-4.1.1 P.62
+2-G-03,2G03,Block II,Ground Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),ME - INST LAB-1,AddInfo-4.1.1 P.64
+2-G-08,2G08,Block II,Ground Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.10
+2-F-01,2F01,Block II,First Floor,Lecture Hall,Yes,"Mechanical II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.175,182)",NAAC Proof-4.1.3(b) P.7
+2-F-02,2F02,Block II,First Floor,Lecture Hall,Yes,"Mechanical II/3rd & II/4th Sec-B (AddInfo-4.1.1 TT P.176,183)",NAAC Proof-4.1.3(b) P.7
+2-F-03,2F03,Block II,First Floor,Lecture Hall,Yes,"Mechanical II/3rd & II/4th Sec-C (AddInfo-4.1.1 TT P.177,184) | Photo: ME Lecture Hall",NAAC Proof-4.1.3(b) P.8; AddInfo-4.1.1 P.64
+2-F-10,2F10,Block II,First Floor,Lecture Hall,Yes,"Mechanical III/5th & III/6th Sec-A (AddInfo-4.1.1 TT P.178,185)",NAAC Proof-4.1.3(b) P.9
+2-F-11,2F11,Block II,First Floor,Seminar Hall,Yes,,NAAC Proof-4.1.3(b) P.9
+2-F-12,2F12,Block II,First Floor,Lecture Hall,Yes,"Mechanical III/5th & III/6th Sec-B (AddInfo-4.1.1 TT P.179,186)",NAAC Proof-4.1.3(b) P.8
+2-S-01,2S01,Block II,Second Floor,Lecture Hall,Yes,"Mechanical IV/7th & IV/8th Sec-A & Chemical IV/8th Sec-A (TT P.138,180,187)",NAAC Proof-4.1.3(b) P.4
+2-S-02,2S02,Block II,Second Floor,Lecture Hall,Yes,Chemical III/5th & III/6th Sec-A (AddInfo-4.1.1 TT P.135-136),NAAC Proof-4.1.3(b) P.5
+2-S-03,2S03,Block II,Second Floor,Lecture Hall,Yes,Chemical II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.133-134) | Photo: CHE Lecture Hall,NAAC Proof-4.1.3(b) P.5; AddInfo-4.1.1 P.63
+2-S-08,2S08,Block II,Second Floor,Lecture Hall,Yes,Chemical IV/7th Sec-A (AddInfo-4.1.1 TT P.137),NAAC Proof-4.1.3(b) P.6
+2-S-10,2S10,Block II,Second Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),CHE - Chemical Reaction Engg Lab-1 (CRE Lab),AddInfo-4.1.1 P.63
+2-S-11,2S11,Block II,Second Floor,Lecture Hall,Yes,"Mechanical IV/7th & IV/8th Sec-B (AddInfo-4.1.1 TT P.181,188)",NAAC Proof-4.1.3(b) P.6
+3-G-04,3G04,Block III,Ground Floor,Lecture Hall,Yes,"Civil IV/7th & IV/8th Sec-B (AddInfo-4.1.1 TT P.144,150)",NAAC Proof-4.1.3(b) P.12
+3-G-07,3G07,Block III,Ground Floor,Lecture Hall,Yes,"Civil IV/7th & IV/8th Sec-A (AddInfo-4.1.1 TT P.143,149)",NAAC Proof-4.1.3(b) P.13
+3-G-08,3G08,Block III,Ground Floor,Lecture Hall,Yes,"Civil III/5th & III/6th Sec-A (AddInfo-4.1.1 TT P.141,147)",NAAC Proof-4.1.3(b) P.13
+3-F-01,3F01,Block III,First Floor,Lecture Hall,Yes,"Civil II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.139,145)",NAAC Proof-4.1.3(b) P.10
+3-F-02,3F02,Block III,First Floor,Lecture Hall,Yes,"Civil II/3rd & II/4th Sec-B (AddInfo-4.1.1 TT P.140,146)",NAAC Proof-4.1.3(b) P.11
+3-F-03,3F03,Block III,First Floor,Lecture Hall,Yes,"Civil III/5th & III/6th Sec-B (AddInfo-4.1.1 TT P.142,148) | Photo: CE Lecture Hall",NAAC Proof-4.1.3(b) P.11; AddInfo-4.1.1 P.74
+3-F-10,3F10,Block III,First Floor,Seminar Hall,Yes,CE Seminar Hall,NAAC Proof-4.1.3(b) P.12; AddInfo-4.1.1 P.73
+3-S-01,3S01,Block III,Second Floor,Lecture Hall,Yes,"EEE II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.92,100)",NAAC Proof-4.1.3(b) P.14
+3-S-02,3S02,Block III,Second Floor,Lecture Hall,Yes,"EEE II/3rd & II/4th Sec-B (AddInfo-4.1.1 TT P.93,101)",NAAC Proof-4.1.3(b) P.14
+3-S-03,3S03,Block III,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.15
+3-S-07,3S07,Block III,Second Floor,Lecture Hall,Yes,EEE Lecture Hall,NAAC Proof-4.1.3(b) P.15; AddInfo-4.1.1 P.74
+3-S-10,3S10,Block III,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.16
+3-S-11,3S11,Block III,Second Floor,Lecture Hall,Yes,EEE IV/8th Sec-A (AddInfo-4.1.1 TT P.102),NAAC Proof-4.1.3(b) P.16
+3-S-12,3S12,Block III,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.17
+5-G-03,5G03,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-A (AddInfo-4.1.1 TT P.103,118)",NAAC Proof-4.1.3(b) P.18
+5-G-04,5G04,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-B (AddInfo-4.1.1 TT P.104,119)",NAAC Proof-4.1.3(b) P.19
+5-G-05,5G05,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-C (AddInfo-4.1.1 TT P.105,120)",NAAC Proof-4.1.3(b) P.19
+5-G-06,5G06,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-D (AddInfo-4.1.1 TT P.106,121)",NAAC Proof-4.1.3(b) P.20
+5-G-07,5G07,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-E (AddInfo-4.1.1 TT P.107,131)",NAAC Proof-4.1.3(b) P.20
+5-G-08,5G08,Block V,Ground Floor,Seminar Hall/E-Learning Room,Yes,E Class Room / Seminar Hall,NAAC Proof-4.1.3(b) P.21; AddInfo-4.1.1 P.68
+5-G-09,5G09,Block V,Ground Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),Central Computing Centre / Computer Lab,AddInfo-4.1.1 P.67
+5-G-12,5G12,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-F (AddInfo-4.1.1 TT P.108,132)",NAAC Proof-4.1.3(b) P.21
+5-G-13,5G13,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-G (AddInfo-4.1.1 TT P.109,122)",NAAC Proof-4.1.3(b) P.22
+5-G-14,5G14,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-H (TT P.110,123; SWB_safety.pdf)",NAAC Proof-4.1.3(b) P.22
+5-G-15,5G15,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-I (TT P.111,124; SWB_safety.pdf)",NAAC Proof-4.1.3(b) P.23
+5-G-16,5G16,Block V,Ground Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-J (AddInfo-4.1.1 TT P.112,125)",NAAC Proof-4.1.3(b) P.23
+5-F-01,5F01,Block V,First Floor,Lecture Hall,Yes,"CSE IV/7th & IV/8th Sec-A (AddInfo-4.1.1 TT P.80,89)",NAAC Proof-4.1.3(b) P.26
+5-F-02,5F02,Block V,First Floor,Lecture Hall,Yes,"CSE IV/7th & IV/8th Sec-B (AddInfo-4.1.1 TT P.81,90)",NAAC Proof-4.1.3(b) P.27
+5-F-03,5F03,Block V,First Floor,Lecture Hall,Yes,"CSE IV/7th & IV/8th Sec-C (AddInfo-4.1.1 TT P.82,91)",NAAC Proof-4.1.3(b) P.27
+5-F-10,5F10,Block V,First Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-K (AddInfo-4.1.1 TT P.113,126)",NAAC Proof-4.1.3(b) P.24
+5-F-11,5F11,Block V,First Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-L (AddInfo-4.1.1 TT P.114,127)",NAAC Proof-4.1.3(b) P.24
+5-F-12,5F12,Block V,First Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-M (AddInfo-4.1.1 TT P.115,128) | Photo: BS&H Class Room",NAAC Proof-4.1.3(b) P.25; AddInfo-4.1.1 P.68
+5-F-13,5F13,Block V,First Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-N (AddInfo-4.1.1 TT P.116,129)",NAAC Proof-4.1.3(b) P.25
+5-F-14,5F14,Block V,First Floor,Lecture Hall,Yes,"BS&H I Year I/II Sem Sec-O (AddInfo-4.1.1 TT P.117,130)",NAAC Proof-4.1.3(b) P.26
+5-F-15,5F15,Block V,First Floor,Drawing Hall,Lab/Other (Not in 4.1.3 ICT Classroom list),BS&H / CSE Drawing Hall,AddInfo-4.1.1 P.67
+5-S-02,5S02,Block V,Second Floor,Lecture Hall,Yes,"CSE III/5th & III/6th Sec-A (AddInfo-4.1.1 TT P.77,86)",NAAC Proof-4.1.3(b) P.28
+5-S-03,5S03,Block V,Second Floor,Lecture Hall,Yes,"CSE III/5th & III/6th Sec-B (AddInfo-4.1.1 TT P.78,87)",NAAC Proof-4.1.3(b) P.28
+5-S-04,5S04,Block V,Second Floor,Lecture Hall,Yes,"CSE III/5th & III/6th Sec-C (AddInfo-4.1.1 TT P.79,88)",NAAC Proof-4.1.3(b) P.29
+5-S-06,5S06,Block V,Second Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),CSE Project Lab,AddInfo-4.1.1 P.69
+5-S-10,5S10,Block V,Second Floor,Lecture Hall,Yes,"CSE II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.74,83)",NAAC Proof-4.1.3(b) P.29
+5-S-11,5S11,Block V,Second Floor,Lecture Hall,Yes,"CSE II/3rd & II/4th Sec-B (AddInfo-4.1.1 TT P.75,84)",NAAC Proof-4.1.3(b) P.30
+5-S-12,5S12,Block V,Second Floor,Lecture Hall,Yes,"CSE II/3rd & II/4th Sec-C (AddInfo-4.1.1 TT P.76,85)",NAAC Proof-4.1.3(b) P.30
+5-S-14,5S14,Block V,Second Floor,Seminar Hall,Yes,Block-5 / CSE Seminar Hall,NAAC Proof-4.1.3(b) P.31; AddInfo-4.1.1 P.69
+6-G-10,6G10,Block VI,Ground Floor,Staff Room,Lab/Other (Not in 4.1.3 ICT Classroom list),ECE Staff Room,AddInfo-4.1.1 P.72
+6-G-12,6G12,Block VI,Ground Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),ECE DSP Lab,AddInfo-4.1.1 P.70
+6-F-01,6F01,Block VI,First Floor,Lecture Hall,Yes,"ECE III/5th & III/6th Sec-A (AddInfo-4.1.1 TT P.157,160)",NAAC Proof-4.1.3(b) P.31
+6-F-03,6F03,Block VI,First Floor,Lecture Hall,Yes,"ECE II/3rd & II/4th Sec-A (AddInfo-4.1.1 TT P.151,154)",NAAC Proof-4.1.3(b) P.32
+6-F-04,6F04,Block VI,First Floor,Lecture Hall,Yes,"ECE II/3rd & II/4th Sec-B (AddInfo-4.1.1 TT P.152,155)",NAAC Proof-4.1.3(b) P.32
+6-F-05,6F05,Block VI,First Floor,Lecture Hall,Yes,"ECE II/3rd & II/4th Sec-C (AddInfo-4.1.1 TT P.153,156)",NAAC Proof-4.1.3(b) P.33
+6-F-08,6F08,Block VI,First Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.33
+6-F-11,6F11,Block VI,First Floor,Laboratory,Lab/Other (Not in 4.1.3 ICT Classroom list),ECE ECAD Lab,AddInfo-4.1.1 P.71
+6-F-12,6F12,Block VI,First Floor,Lecture Hall,Yes,"ECE III/5th & III/6th Sec-B (AddInfo-4.1.1 TT P.158,161) | Photo: ECE Lecture Hall",NAAC Proof-4.1.3(b) P.34; AddInfo-4.1.1 P.71
+6-F-13,6F13,Block VI,First Floor,Lecture Hall,Yes,"ECE III/5th & III/6th Sec-C (AddInfo-4.1.1 TT P.159,162)",NAAC Proof-4.1.3(b) P.34
+6-S-01,6S01,Block VI,Second Floor,Lecture Hall,Yes,ECE Lecture Hall,NAAC Proof-4.1.3(b) P.35; AddInfo-4.1.1 P.73
+6-S-02,6S02,Block VI,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.35
+6-S-03,6S03,Block VI,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.36
+6-S-04,6S04,Block VI,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.36
+6-S-07,6S07,Block VI,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.37
+6-S-08,6S08,Block VI,Second Floor,Lecture Hall,Yes,"ECE IV/7th & IV/8th Sec-A (AddInfo-4.1.1 TT P.163,166)",NAAC Proof-4.1.3(b) P.37
+6-S-09,6S09,Block VI,Second Floor,Lecture Hall,Yes,"ECE IV/7th & IV/8th Sec-B (AddInfo-4.1.1 TT P.164,167)",NAAC Proof-4.1.3(b) P.38
+6-S-10,6S10,Block VI,Second Floor,Lecture Hall,Yes,"ECE IV/7th & IV/8th Sec-C (AddInfo-4.1.1 TT P.165,168)",NAAC Proof-4.1.3(b) P.38
+6-S-11,6S11,Block VI,Second Floor,Lecture Hall,Yes,,NAAC Proof-4.1.3(b) P.39
+6-S-12,6S12,Block VI,Second Floor,Seminar hall,Yes,ECE Seminar Hall,NAAC Proof-4.1.3(b) P.39; AddInfo-4.1.1 P.72

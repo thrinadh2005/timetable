@@ -8,40 +8,15 @@ npm-debug.log*
 .env.*
 !.env.example
 
-# The deployed frontend is the prebuilt bundle in public/.
+# Development and source files
 frontend/
-scripts/
-docs/
 scratch/
 test_screenshots/
 .screenshots/
-prisma/
-test_runner.cjs
-public/js/app.js
-
-# Keep live institutional data outside container images.
-data/**
-
-# Expo development files are not needed to serve the web export.
-mobile/.expo/
-mobile/.claude/
 *.tsbuildinfo
 .htaccess
-mobile/node_modules/
-mobile/.git/
-mobile/src/
-mobile/App.js
-mobile/index.js
-mobile/package.json
-mobile/package-lock.json
-mobile/app.json
-mobile/AGENTS.md
-mobile/LICENSE
+.DS_Store
 
-# Generated spreadsheet demos are not part of the upload-based workflow.
+# Generated spreadsheet demos
 3rd Sem TT.xlsx
 5th Sem TT.xlsx
-.gitignore
-.env
-.DS_Store
-*.log

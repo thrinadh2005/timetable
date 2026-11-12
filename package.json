@@ -9,11 +9,7 @@
     "build:frontend": "node frontend/build.cjs",
     "typecheck": "tsc --noEmit --project frontend/tsconfig.json",
     "seed": "node src/seed/seedData.js",
-    "db:migrate": "node -e \"require('dotenv').config(); const { initializeSchema, closePool } = require('./src/config/database'); initializeSchema().then(() => closePool()).then(() => console.log('Schema applied successfully.')).catch(e => { console.error(e); process.exit(1); })\"",
-    "db:transfer": "node scripts/migrate_sqlite_to_postgres.js",
-    "mobile": "cd mobile && npx expo start",
-    "mobile:web": "cd mobile && npx expo start --web",
-    "mobile:android": "cd mobile && npx expo start --android"
+    "db:migrate": "node -e \"require('dotenv').config(); const { initializeSchema, closePool } = require('./src/config/database'); initializeSchema().then(() => closePool()).then(() => console.log('Schema applied successfully.')).catch(e => { console.error(e); process.exit(1); })\""
   },
   "keywords": [
     "timetable",
